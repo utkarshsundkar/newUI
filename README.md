@@ -1,4 +1,4 @@
-# [SMKitUI React-Native Deno](https://github.com/sency-ai/smkit-ui-react-native-demo)
+# [react-native-smkit-ui demo](https://github.com/sency-ai/smkit-sdk)
 
 1. [ Installation. ](#inst)
 2. [ Setup. ](#setup)
@@ -7,16 +7,15 @@
 
 <a name="inst"></a>
 ## 1. Installation
-Firstly, add the *smkit-ui-library* dependency to your project's *package.json* file as follows:
+1. Add *react-native-smkit-ui* dependency to your project's *package.json* file.
 ```json
   "dependencies": {
-    "smkit-ui-library"
+    "react-native-smkit-ui"
   },
 ```
-After updating the *package.json*, execute `npm install` in your terminal to install the dependencies.
+1.1 Run `npm install` in your terminal to install the dependencies.
 
-Next, navigate to the *iOS folder* and open the Podfile file and add the follwing:
-
+2. Update *Podfile* in `iOS` folder:
 ```
 [1] add the source to the top of your Podfile.
 source 'https://bitbucket.org/sency-ios/sency_ios_sdk.git'
@@ -27,13 +26,13 @@ target 'YOUR_TARGET' do
   use_frameworks!
 ```
 
-Finally, in your terminal, execute `NO_FLIPPER=1 pod install` to install the necessary pods.
+3. Run `NO_FLIPPER=1 pod install` to install the necessary pods.
 
 <a name="setup"></a>
 ## 2. Setup
 
 ### iOS
-open your *xcworkspace* and then Add camera permission request to `Info.plist`
+Add camera permission request to `Info.plist`
 ```Xml
 <key>NSCameraUsageDescription</key>
 <string>Camera access is needed</string>
@@ -65,15 +64,14 @@ To reduce wait time we recommend to call `configure` on app launch.
 <a name="start"></a>
 ## 4. Start
 
-First make sure import the follwing
-
+1. Import the sdk
 ```js
 import { startAssessment, startCustomWorkout, AssessmentTypes } from 'smkit-ui-library/src/index.tsx';
 import SMKitUI from 'smkit-ui-library/src/SMKitUIView.tsx';
 import * as SMWorkoutLibrary from 'smkit-ui-library/src/SMWorkout.tsx';
 ```
 
-Now please add the `SMKitUI` view:
+2. Add `SMKitUI` view:
 ```js
 return (
   <View style={styles.centeredView}>
