@@ -1,1 +1,155 @@
-# smkit-ui-react-native-demo
+# [SMKitUI React-Native Deno](https://github.com/sency-ai/smkit-ui-react-native-demo)
+
+1. [ Installation. ](#inst)
+2. [ Setup. ](#setup)
+3. [ Configure. ](#conf)
+4. [ Start. ](#start)
+
+<a name="inst"></a>
+## 1. Installation
+Firstly, add the *smkit-ui-library* dependency to your project's *package.json* file as follows:
+```json
+  "dependencies": {
+    "smkit-ui-library"
+  },
+```
+After updating the *package.json*, execute `npm install` in your terminal to install the dependencies.
+
+Next, navigate to the *iOS folder* and open the Podfile file and add the follwing:
+
+```
+[1] add the source to the top of your Podfile.
+source 'https://bitbucket.org/sency-ios/sency_ios_sdk.git'
+source 'https://github.com/CocoaPods/Specs.git'
+
+[2] add use_frameworks! commend to your target
+target 'YOUR_TARGET' do
+  use_frameworks!
+```
+
+Finally, in your terminal, execute `NO_FLIPPER=1 pod install` to install the necessary pods.
+
+<a name="setup"></a>
+## 2. Setup
+
+### iOS
+open your *xcworkspace* and then Add camera permission request to `Info.plist`
+```Xml
+<key>NSCameraUsageDescription</key>
+<string>Camera access is needed</string>
+```
+
+### Android
+
+Comming soon
+
+<a name="conf"></a>
+## 3. Configure
+
+```js
+[1] First import configure
+import { configure } from 'smkit-ui-library/src/index.tsx';
+
+[2] then call the configure function with your auth key
+try{
+  var res = await configure("YOUR_AUTH_KEY");
+ }catch (e) {
+  console.error(e);
+}
+```
+
+To reduce wait time we recommend to call `configure` on app launch.
+
+**⚠️ smkit_ui_library will not work if you don't first call configure.**
+
+<a name="start"></a>
+## 4. Start
+
+First make sure import the follwing
+
+```js
+import { startAssessment, startCustomWorkout, AssessmentTypes } from 'smkit-ui-library/src/index.tsx';
+import SMKitUI from 'smkit-ui-library/src/SMKitUIView.tsx';
+import * as SMWorkoutLibrary from 'smkit-ui-library/src/SMWorkout.tsx';
+```
+
+Now please add the `SMKitUI` view:
+```js
+return (
+  <View style={styles.centeredView}>
+    <SMKitUI/>
+  </View>
+);
+```
+
+#### Start Assessment
+**startAssessment** starts one of Sency's blueprint assessments.
+```js
+async function startFitnessAssessment(){
+  try{
+    var result = await startAssessment(AssessmentTypes.Fitness);
+    console.log(result.summary);
+    console.log(result.didFinish);
+  }catch(e) {
+    console.error(e);
+  }
+}
+```
+
+### Start Custom Workout
+**startWorkout** starts a custom workout.
+```js
+async function startSMKitUICustomWorkout(){
+  try{
+    // list of exercies
+    var exercises = [
+      new SMWorkoutLibrary.SMExercise(
+        name: "First Exercise", // => name:string | null
+        35,                     // => totalSeconds: number | null
+        5,                      // => introSeconds: number | null
+        null,                   // => videoInstruction: string | null (url for a video)
+        null,                   // => exerciseIntro: string | null (url for a sound)
+        [SMWorkoutLibrary.UIElement.RepsCounter, SMWorkoutLibrary.UIElement.Timer], // => uiElements: UIElement[] | null
+        "HighKnees", // => detector: string
+        true, // => repBased: boolean | null
+        null, // => exerciseClosure: string | null (url for a sound)
+        13, // => targetReps: number | null
+        20, // => targetTime: number | null
+        0.3 // => scoreFactor: number | null
+      ),
+      new SMWorkoutLibrary.SMExercise(
+        "Second Exercise", // => name:string | null
+        25, // => totalSeconds: number | null
+        5, // => introSeconds: number | null
+        null, // => videoInstruction: string | null (url for a video)
+        null, // => exerciseIntro: string | null (url for a sound)
+        [SMWorkoutLibrary.UIElement.GaugeOfMotion, SMWorkoutLibrary.UIElement.Timer], // => uiElements: UIElement[] | null
+        "SquatRegularOverheadStatic", // => detector: string
+        false, // => repBased: boolean | null
+        null, // => exerciseClosure: string | null (url for a sound)
+        null, // => targetReps: number | null
+        20, // => targetTime: number | null
+        0.3 // => scoreFactor: number | null
+      ),
+    ];
+
+    var workout = new SMWorkoutLibrary.SMWorkout(
+      "50", // => id: string | null
+      "demo workout",// => name: string | null
+      null, // => workoutIntro: string | null (url for a sound)
+      null, // => soundtrack: string | null (url for a sound)
+      exercises, // => exercises: SMExercise[]
+      null, // =>  getInFrame: string | null (url for a sound)
+      null, // =>  bodycalFinished: string | null (url for a sound)
+      null // =>  workoutClosure: string | null (url for a sound)
+      );
+    var result = await startCustomWorkout(workout);
+    console.log(result.summary);
+    console.log(result.didFinish);
+  }catch(e){
+    console.error(e);
+  }
+}
+```
+
+Having issues? [Contact us](support@sency.ai) and let us know what the problem is.
