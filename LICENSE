@@ -1,674 +1,127 @@
-                    GNU GENERAL PUBLIC LICENSE
-                       Version 3, 29 June 2007
-
- Copyright (C) 2007 Free Software Foundation, Inc. <https://fsf.org/>
- Everyone is permitted to copy and distribute verbatim copies
- of this license document, but changing it is not allowed.
-
-                            Preamble
-
-  The GNU General Public License is a free, copyleft license for
-software and other kinds of works.
-
-  The licenses for most software and other practical works are designed
-to take away your freedom to share and change the works.  By contrast,
-the GNU General Public License is intended to guarantee your freedom to
-share and change all versions of a program--to make sure it remains free
-software for all its users.  We, the Free Software Foundation, use the
-GNU General Public License for most of our software; it applies also to
-any other work released this way by its authors.  You can apply it to
-your programs, too.
-
-  When we speak of free software, we are referring to freedom, not
-price.  Our General Public Licenses are designed to make sure that you
-have the freedom to distribute copies of free software (and charge for
-them if you wish), that you receive source code or can get it if you
-want it, that you can change the software or use pieces of it in new
-free programs, and that you know you can do these things.
-
-  To protect your rights, we need to prevent others from denying you
-these rights or asking you to surrender the rights.  Therefore, you have
-certain responsibilities if you distribute copies of the software, or if
-you modify it: responsibilities to respect the freedom of others.
-
-  For example, if you distribute copies of such a program, whether
-gratis or for a fee, you must pass on to the recipients the same
-freedoms that you received.  You must make sure that they, too, receive
-or can get the source code.  And you must show them these terms so they
-know their rights.
-
-  Developers that use the GNU GPL protect your rights with two steps:
-(1) assert copyright on the software, and (2) offer you this License
-giving you legal permission to copy, distribute and/or modify it.
-
-  For the developers' and authors' protection, the GPL clearly explains
-that there is no warranty for this free software.  For both users' and
-authors' sake, the GPL requires that modified versions be marked as
-changed, so that their problems will not be attributed erroneously to
-authors of previous versions.
-
-  Some devices are designed to deny users access to install or run
-modified versions of the software inside them, although the manufacturer
-can do so.  This is fundamentally incompatible with the aim of
-protecting users' freedom to change the software.  The systematic
-pattern of such abuse occurs in the area of products for individuals to
-use, which is precisely where it is most unacceptable.  Therefore, we
-have designed this version of the GPL to prohibit the practice for those
-products.  If such problems arise substantially in other domains, we
-stand ready to extend this provision to those domains in future versions
-of the GPL, as needed to protect the freedom of users.
-
-  Finally, every program is threatened constantly by software patents.
-States should not allow patents to restrict development and use of
-software on general-purpose computers, but in those that do, we wish to
-avoid the special danger that patents applied to a free program could
-make it effectively proprietary.  To prevent this, the GPL assures that
-patents cannot be used to render the program non-free.
-
-  The precise terms and conditions for copying, distribution and
-modification follow.
-
-                       TERMS AND CONDITIONS
-
-  0. Definitions.
-
-  "This License" refers to version 3 of the GNU General Public License.
-
-  "Copyright" also means copyright-like laws that apply to other kinds of
-works, such as semiconductor masks.
-
-  "The Program" refers to any copyrightable work licensed under this
-License.  Each licensee is addressed as "you".  "Licensees" and
-"recipients" may be individuals or organizations.
-
-  To "modify" a work means to copy from or adapt all or part of the work
-in a fashion requiring copyright permission, other than the making of an
-exact copy.  The resulting work is called a "modified version" of the
-earlier work or a work "based on" the earlier work.
-
-  A "covered work" means either the unmodified Program or a work based
-on the Program.
-
-  To "propagate" a work means to do anything with it that, without
-permission, would make you directly or secondarily liable for
-infringement under applicable copyright law, except executing it on a
-computer or modifying a private copy.  Propagation includes copying,
-distribution (with or without modification), making available to the
-public, and in some countries other activities as well.
-
-  To "convey" a work means any kind of propagation that enables other
-parties to make or receive copies.  Mere interaction with a user through
-a computer network, with no transfer of a copy, is not conveying.
-
-  An interactive user interface displays "Appropriate Legal Notices"
-to the extent that it includes a convenient and prominently visible
-feature that (1) displays an appropriate copyright notice, and (2)
-tells the user that there is no warranty for the work (except to the
-extent that warranties are provided), that licensees may convey the
-work under this License, and how to view a copy of this License.  If
-the interface presents a list of user commands or options, such as a
-menu, a prominent item in the list meets this criterion.
-
-  1. Source Code.
-
-  The "source code" for a work means the preferred form of the work
-for making modifications to it.  "Object code" means any non-source
-form of a work.
-
-  A "Standard Interface" means an interface that either is an official
-standard defined by a recognized standards body, or, in the case of
-interfaces specified for a particular programming language, one that
-is widely used among developers working in that language.
-
-  The "System Libraries" of an executable work include anything, other
-than the work as a whole, that (a) is included in the normal form of
-packaging a Major Component, but which is not part of that Major
-Component, and (b) serves only to enable use of the work with that
-Major Component, or to implement a Standard Interface for which an
-implementation is available to the public in source code form.  A
-"Major Component", in this context, means a major essential component
-(kernel, window system, and so on) of the specific operating system
-(if any) on which the executable work runs, or a compiler used to
-produce the work, or an object code interpreter used to run it.
-
-  The "Corresponding Source" for a work in object code form means all
-the source code needed to generate, install, and (for an executable
-work) run the object code and to modify the work, including scripts to
-control those activities.  However, it does not include the work's
-System Libraries, or general-purpose tools or generally available free
-programs which are used unmodified in performing those activities but
-which are not part of the work.  For example, Corresponding Source
-includes interface definition files associated with source files for
-the work, and the source code for shared libraries and dynamically
-linked subprograms that the work is specifically designed to require,
-such as by intimate data communication or control flow between those
-subprograms and other parts of the work.
-
-  The Corresponding Source need not include anything that users
-can regenerate automatically from other parts of the Corresponding
-Source.
-
-  The Corresponding Source for a work in source code form is that
-same work.
-
-  2. Basic Permissions.
-
-  All rights granted under this License are granted for the term of
-copyright on the Program, and are irrevocable provided the stated
-conditions are met.  This License explicitly affirms your unlimited
-permission to run the unmodified Program.  The output from running a
-covered work is covered by this License only if the output, given its
-content, constitutes a covered work.  This License acknowledges your
-rights of fair use or other equivalent, as provided by copyright law.
-
-  You may make, run and propagate covered works that you do not
-convey, without conditions so long as your license otherwise remains
-in force.  You may convey covered works to others for the sole purpose
-of having them make modifications exclusively for you, or provide you
-with facilities for running those works, provided that you comply with
-the terms of this License in conveying all material for which you do
-not control copyright.  Those thus making or running the covered works
-for you must do so exclusively on your behalf, under your direction
-and control, on terms that prohibit them from making any copies of
-your copyrighted material outside their relationship with you.
-
-  Conveying under any other circumstances is permitted solely under
-the conditions stated below.  Sublicensing is not allowed; section 10
-makes it unnecessary.
-
-  3. Protecting Users' Legal Rights From Anti-Circumvention Law.
-
-  No covered work shall be deemed part of an effective technological
-measure under any applicable law fulfilling obligations under article
-11 of the WIPO copyright treaty adopted on 20 December 1996, or
-similar laws prohibiting or restricting circumvention of such
-measures.
-
-  When you convey a covered work, you waive any legal power to forbid
-circumvention of technological measures to the extent such circumvention
-is effected by exercising rights under this License with respect to
-the covered work, and you disclaim any intention to limit operation or
-modification of the work as a means of enforcing, against the work's
-users, your or third parties' legal rights to forbid circumvention of
-technological measures.
-
-  4. Conveying Verbatim Copies.
-
-  You may convey verbatim copies of the Program's source code as you
-receive it, in any medium, provided that you conspicuously and
-appropriately publish on each copy an appropriate copyright notice;
-keep intact all notices stating that this License and any
-non-permissive terms added in accord with section 7 apply to the code;
-keep intact all notices of the absence of any warranty; and give all
-recipients a copy of this License along with the Program.
-
-  You may charge any price or no price for each copy that you convey,
-and you may offer support or warranty protection for a fee.
-
-  5. Conveying Modified Source Versions.
-
-  You may convey a work based on the Program, or the modifications to
-produce it from the Program, in the form of source code under the
-terms of section 4, provided that you also meet all of these conditions:
-
-    a) The work must carry prominent notices stating that you modified
-    it, and giving a relevant date.
-
-    b) The work must carry prominent notices stating that it is
-    released under this License and any conditions added under section
-    7.  This requirement modifies the requirement in section 4 to
-    "keep intact all notices".
-
-    c) You must license the entire work, as a whole, under this
-    License to anyone who comes into possession of a copy.  This
-    License will therefore apply, along with any applicable section 7
-    additional terms, to the whole of the work, and all its parts,
-    regardless of how they are packaged.  This License gives no
-    permission to license the work in any other way, but it does not
-    invalidate such permission if you have separately received it.
-
-    d) If the work has interactive user interfaces, each must display
-    Appropriate Legal Notices; however, if the Program has interactive
-    interfaces that do not display Appropriate Legal Notices, your
-    work need not make them do so.
-
-  A compilation of a covered work with other separate and independent
-works, which are not by their nature extensions of the covered work,
-and which are not combined with it such as to form a larger program,
-in or on a volume of a storage or distribution medium, is called an
-"aggregate" if the compilation and its resulting copyright are not
-used to limit the access or legal rights of the compilation's users
-beyond what the individual works permit.  Inclusion of a covered work
-in an aggregate does not cause this License to apply to the other
-parts of the aggregate.
-
-  6. Conveying Non-Source Forms.
-
-  You may convey a covered work in object code form under the terms
-of sections 4 and 5, provided that you also convey the
-machine-readable Corresponding Source under the terms of this License,
-in one of these ways:
-
-    a) Convey the object code in, or embodied in, a physical product
-    (including a physical distribution medium), accompanied by the
-    Corresponding Source fixed on a durable physical medium
-    customarily used for software interchange.
-
-    b) Convey the object code in, or embodied in, a physical product
-    (including a physical distribution medium), accompanied by a
-    written offer, valid for at least three years and valid for as
-    long as you offer spare parts or customer support for that product
-    model, to give anyone who possesses the object code either (1) a
-    copy of the Corresponding Source for all the software in the
-    product that is covered by this License, on a durable physical
-    medium customarily used for software interchange, for a price no
-    more than your reasonable cost of physically performing this
-    conveying of source, or (2) access to copy the
-    Corresponding Source from a network server at no charge.
-
-    c) Convey individual copies of the object code with a copy of the
-    written offer to provide the Corresponding Source.  This
-    alternative is allowed only occasionally and noncommercially, and
-    only if you received the object code with such an offer, in accord
-    with subsection 6b.
-
-    d) Convey the object code by offering access from a designated
-    place (gratis or for a charge), and offer equivalent access to the
-    Corresponding Source in the same way through the same place at no
-    further charge.  You need not require recipients to copy the
-    Corresponding Source along with the object code.  If the place to
-    copy the object code is a network server, the Corresponding Source
-    may be on a different server (operated by you or a third party)
-    that supports equivalent copying facilities, provided you maintain
-    clear directions next to the object code saying where to find the
-    Corresponding Source.  Regardless of what server hosts the
-    Corresponding Source, you remain obligated to ensure that it is
-    available for as long as needed to satisfy these requirements.
-
-    e) Convey the object code using peer-to-peer transmission, provided
-    you inform other peers where the object code and Corresponding
-    Source of the work are being offered to the general public at no
-    charge under subsection 6d.
-
-  A separable portion of the object code, whose source code is excluded
-from the Corresponding Source as a System Library, need not be
-included in conveying the object code work.
-
-  A "User Product" is either (1) a "consumer product", which means any
-tangible personal property which is normally used for personal, family,
-or household purposes, or (2) anything designed or sold for incorporation
-into a dwelling.  In determining whether a product is a consumer product,
-doubtful cases shall be resolved in favor of coverage.  For a particular
-product received by a particular user, "normally used" refers to a
-typical or common use of that class of product, regardless of the status
-of the particular user or of the way in which the particular user
-actually uses, or expects or is expected to use, the product.  A product
-is a consumer product regardless of whether the product has substantial
-commercial, industrial or non-consumer uses, unless such uses represent
-the only significant mode of use of the product.
-
-  "Installation Information" for a User Product means any methods,
-procedures, authorization keys, or other information required to install
-and execute modified versions of a covered work in that User Product from
-a modified version of its Corresponding Source.  The information must
-suffice to ensure that the continued functioning of the modified object
-code is in no case prevented or interfered with solely because
-modification has been made.
-
-  If you convey an object code work under this section in, or with, or
-specifically for use in, a User Product, and the conveying occurs as
-part of a transaction in which the right of possession and use of the
-User Product is transferred to the recipient in perpetuity or for a
-fixed term (regardless of how the transaction is characterized), the
-Corresponding Source conveyed under this section must be accompanied
-by the Installation Information.  But this requirement does not apply
-if neither you nor any third party retains the ability to install
-modified object code on the User Product (for example, the work has
-been installed in ROM).
-
-  The requirement to provide Installation Information does not include a
-requirement to continue to provide support service, warranty, or updates
-for a work that has been modified or installed by the recipient, or for
-the User Product in which it has been modified or installed.  Access to a
-network may be denied when the modification itself materially and
-adversely affects the operation of the network or violates the rules and
-protocols for communication across the network.
-
-  Corresponding Source conveyed, and Installation Information provided,
-in accord with this section must be in a format that is publicly
-documented (and with an implementation available to the public in
-source code form), and must require no special password or key for
-unpacking, reading or copying.
-
-  7. Additional Terms.
-
-  "Additional permissions" are terms that supplement the terms of this
-License by making exceptions from one or more of its conditions.
-Additional permissions that are applicable to the entire Program shall
-be treated as though they were included in this License, to the extent
-that they are valid under applicable law.  If additional permissions
-apply only to part of the Program, that part may be used separately
-under those permissions, but the entire Program remains governed by
-this License without regard to the additional permissions.
-
-  When you convey a copy of a covered work, you may at your option
-remove any additional permissions from that copy, or from any part of
-it.  (Additional permissions may be written to require their own
-removal in certain cases when you modify the work.)  You may place
-additional permissions on material, added by you to a covered work,
-for which you have or can give appropriate copyright permission.
-
-  Notwithstanding any other provision of this License, for material you
-add to a covered work, you may (if authorized by the copyright holders of
-that material) supplement the terms of this License with terms:
-
-    a) Disclaiming warranty or limiting liability differently from the
-    terms of sections 15 and 16 of this License; or
-
-    b) Requiring preservation of specified reasonable legal notices or
-    author attributions in that material or in the Appropriate Legal
-    Notices displayed by works containing it; or
-
-    c) Prohibiting misrepresentation of the origin of that material, or
-    requiring that modified versions of such material be marked in
-    reasonable ways as different from the original version; or
-
-    d) Limiting the use for publicity purposes of names of licensors or
-    authors of the material; or
-
-    e) Declining to grant rights under trademark law for use of some
-    trade names, trademarks, or service marks; or
-
-    f) Requiring indemnification of licensors and authors of that
-    material by anyone who conveys the material (or modified versions of
-    it) with contractual assumptions of liability to the recipient, for
-    any liability that these contractual assumptions directly impose on
-    those licensors and authors.
-
-  All other non-permissive additional terms are considered "further
-restrictions" within the meaning of section 10.  If the Program as you
-received it, or any part of it, contains a notice stating that it is
-governed by this License along with a term that is a further
-restriction, you may remove that term.  If a license document contains
-a further restriction but permits relicensing or conveying under this
-License, you may add to a covered work material governed by the terms
-of that license document, provided that the further restriction does
-not survive such relicensing or conveying.
-
-  If you add terms to a covered work in accord with this section, you
-must place, in the relevant source files, a statement of the
-additional terms that apply to those files, or a notice indicating
-where to find the applicable terms.
-
-  Additional terms, permissive or non-permissive, may be stated in the
-form of a separately written license, or stated as exceptions;
-the above requirements apply either way.
-
-  8. Termination.
-
-  You may not propagate or modify a covered work except as expressly
-provided under this License.  Any attempt otherwise to propagate or
-modify it is void, and will automatically terminate your rights under
-this License (including any patent licenses granted under the third
-paragraph of section 11).
-
-  However, if you cease all violation of this License, then your
-license from a particular copyright holder is reinstated (a)
-provisionally, unless and until the copyright holder explicitly and
-finally terminates your license, and (b) permanently, if the copyright
-holder fails to notify you of the violation by some reasonable means
-prior to 60 days after the cessation.
-
-  Moreover, your license from a particular copyright holder is
-reinstated permanently if the copyright holder notifies you of the
-violation by some reasonable means, this is the first time you have
-received notice of violation of this License (for any work) from that
-copyright holder, and you cure the violation prior to 30 days after
-your receipt of the notice.
-
-  Termination of your rights under this section does not terminate the
-licenses of parties who have received copies or rights from you under
-this License.  If your rights have been terminated and not permanently
-reinstated, you do not qualify to receive new licenses for the same
-material under section 10.
-
-  9. Acceptance Not Required for Having Copies.
-
-  You are not required to accept this License in order to receive or
-run a copy of the Program.  Ancillary propagation of a covered work
-occurring solely as a consequence of using peer-to-peer transmission
-to receive a copy likewise does not require acceptance.  However,
-nothing other than this License grants you permission to propagate or
-modify any covered work.  These actions infringe copyright if you do
-not accept this License.  Therefore, by modifying or propagating a
-covered work, you indicate your acceptance of this License to do so.
-
-  10. Automatic Licensing of Downstream Recipients.
-
-  Each time you convey a covered work, the recipient automatically
-receives a license from the original licensors, to run, modify and
-propagate that work, subject to this License.  You are not responsible
-for enforcing compliance by third parties with this License.
-
-  An "entity transaction" is a transaction transferring control of an
-organization, or substantially all assets of one, or subdividing an
-organization, or merging organizations.  If propagation of a covered
-work results from an entity transaction, each party to that
-transaction who receives a copy of the work also receives whatever
-licenses to the work the party's predecessor in interest had or could
-give under the previous paragraph, plus a right to possession of the
-Corresponding Source of the work from the predecessor in interest, if
-the predecessor has it or can get it with reasonable efforts.
-
-  You may not impose any further restrictions on the exercise of the
-rights granted or affirmed under this License.  For example, you may
-not impose a license fee, royalty, or other charge for exercise of
-rights granted under this License, and you may not initiate litigation
-(including a cross-claim or counterclaim in a lawsuit) alleging that
-any patent claim is infringed by making, using, selling, offering for
-sale, or importing the Program or any portion of it.
-
-  11. Patents.
-
-  A "contributor" is a copyright holder who authorizes use under this
-License of the Program or a work on which the Program is based.  The
-work thus licensed is called the contributor's "contributor version".
-
-  A contributor's "essential patent claims" are all patent claims
-owned or controlled by the contributor, whether already acquired or
-hereafter acquired, that would be infringed by some manner, permitted
-by this License, of making, using, or selling its contributor version,
-but do not include claims that would be infringed only as a
-consequence of further modification of the contributor version.  For
-purposes of this definition, "control" includes the right to grant
-patent sublicenses in a manner consistent with the requirements of
-this License.
-
-  Each contributor grants you a non-exclusive, worldwide, royalty-free
-patent license under the contributor's essential patent claims, to
-make, use, sell, offer for sale, import and otherwise run, modify and
-propagate the contents of its contributor version.
-
-  In the following three paragraphs, a "patent license" is any express
-agreement or commitment, however denominated, not to enforce a patent
-(such as an express permission to practice a patent or covenant not to
-sue for patent infringement).  To "grant" such a patent license to a
-party means to make such an agreement or commitment not to enforce a
-patent against the party.
-
-  If you convey a covered work, knowingly relying on a patent license,
-and the Corresponding Source of the work is not available for anyone
-to copy, free of charge and under the terms of this License, through a
-publicly available network server or other readily accessible means,
-then you must either (1) cause the Corresponding Source to be so
-available, or (2) arrange to deprive yourself of the benefit of the
-patent license for this particular work, or (3) arrange, in a manner
-consistent with the requirements of this License, to extend the patent
-license to downstream recipients.  "Knowingly relying" means you have
-actual knowledge that, but for the patent license, your conveying the
-covered work in a country, or your recipient's use of the covered work
-in a country, would infringe one or more identifiable patents in that
-country that you have reason to believe are valid.
-
-  If, pursuant to or in connection with a single transaction or
-arrangement, you convey, or propagate by procuring conveyance of, a
-covered work, and grant a patent license to some of the parties
-receiving the covered work authorizing them to use, propagate, modify
-or convey a specific copy of the covered work, then the patent license
-you grant is automatically extended to all recipients of the covered
-work and works based on it.
-
-  A patent license is "discriminatory" if it does not include within
-the scope of its coverage, prohibits the exercise of, or is
-conditioned on the non-exercise of one or more of the rights that are
-specifically granted under this License.  You may not convey a covered
-work if you are a party to an arrangement with a third party that is
-in the business of distributing software, under which you make payment
-to the third party based on the extent of your activity of conveying
-the work, and under which the third party grants, to any of the
-parties who would receive the covered work from you, a discriminatory
-patent license (a) in connection with copies of the covered work
-conveyed by you (or copies made from those copies), or (b) primarily
-for and in connection with specific products or compilations that
-contain the covered work, unless you entered into that arrangement,
-or that patent license was granted, prior to 28 March 2007.
-
-  Nothing in this License shall be construed as excluding or limiting
-any implied license or other defenses to infringement that may
-otherwise be available to you under applicable patent law.
-
-  12. No Surrender of Others' Freedom.
-
-  If conditions are imposed on you (whether by court order, agreement or
-otherwise) that contradict the conditions of this License, they do not
-excuse you from the conditions of this License.  If you cannot convey a
-covered work so as to satisfy simultaneously your obligations under this
-License and any other pertinent obligations, then as a consequence you may
-not convey it at all.  For example, if you agree to terms that obligate you
-to collect a royalty for further conveying from those to whom you convey
-the Program, the only way you could satisfy both those terms and this
-License would be to refrain entirely from conveying the Program.
-
-  13. Use with the GNU Affero General Public License.
-
-  Notwithstanding any other provision of this License, you have
-permission to link or combine any covered work with a work licensed
-under version 3 of the GNU Affero General Public License into a single
-combined work, and to convey the resulting work.  The terms of this
-License will continue to apply to the part which is the covered work,
-but the special requirements of the GNU Affero General Public License,
-section 13, concerning interaction through a network will apply to the
-combination as such.
-
-  14. Revised Versions of this License.
-
-  The Free Software Foundation may publish revised and/or new versions of
-the GNU General Public License from time to time.  Such new versions will
-be similar in spirit to the present version, but may differ in detail to
-address new problems or concerns.
-
-  Each version is given a distinguishing version number.  If the
-Program specifies that a certain numbered version of the GNU General
-Public License "or any later version" applies to it, you have the
-option of following the terms and conditions either of that numbered
-version or of any later version published by the Free Software
-Foundation.  If the Program does not specify a version number of the
-GNU General Public License, you may choose any version ever published
-by the Free Software Foundation.
-
-  If the Program specifies that a proxy can decide which future
-versions of the GNU General Public License can be used, that proxy's
-public statement of acceptance of a version permanently authorizes you
-to choose that version for the Program.
-
-  Later license versions may give you additional or different
-permissions.  However, no additional obligations are imposed on any
-author or copyright holder as a result of your choosing to follow a
-later version.
-
-  15. Disclaimer of Warranty.
-
-  THERE IS NO WARRANTY FOR THE PROGRAM, TO THE EXTENT PERMITTED BY
-APPLICABLE LAW.  EXCEPT WHEN OTHERWISE STATED IN WRITING THE COPYRIGHT
-HOLDERS AND/OR OTHER PARTIES PROVIDE THE PROGRAM "AS IS" WITHOUT WARRANTY
-OF ANY KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING, BUT NOT LIMITED TO,
-THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
-PURPOSE.  THE ENTIRE RISK AS TO THE QUALITY AND PERFORMANCE OF THE PROGRAM
-IS WITH YOU.  SHOULD THE PROGRAM PROVE DEFECTIVE, YOU ASSUME THE COST OF
-ALL NECESSARY SERVICING, REPAIR OR CORRECTION.
-
-  16. Limitation of Liability.
-
-  IN NO EVENT UNLESS REQUIRED BY APPLICABLE LAW OR AGREED TO IN WRITING
-WILL ANY COPYRIGHT HOLDER, OR ANY OTHER PARTY WHO MODIFIES AND/OR CONVEYS
-THE PROGRAM AS PERMITTED ABOVE, BE LIABLE TO YOU FOR DAMAGES, INCLUDING ANY
-GENERAL, SPECIAL, INCIDENTAL OR CONSEQUENTIAL DAMAGES ARISING OUT OF THE
-USE OR INABILITY TO USE THE PROGRAM (INCLUDING BUT NOT LIMITED TO LOSS OF
-DATA OR DATA BEING RENDERED INACCURATE OR LOSSES SUSTAINED BY YOU OR THIRD
-PARTIES OR A FAILURE OF THE PROGRAM TO OPERATE WITH ANY OTHER PROGRAMS),
-EVEN IF SUCH HOLDER OR OTHER PARTY HAS BEEN ADVISED OF THE POSSIBILITY OF
-SUCH DAMAGES.
-
-  17. Interpretation of Sections 15 and 16.
-
-  If the disclaimer of warranty and limitation of liability provided
-above cannot be given local legal effect according to their terms,
-reviewing courts shall apply local law that most closely approximates
-an absolute waiver of all civil liability in connection with the
-Program, unless a warranty or assumption of liability accompanies a
-copy of the Program in return for a fee.
-
-                     END OF TERMS AND CONDITIONS
-
-            How to Apply These Terms to Your New Programs
-
-  If you develop a new program, and you want it to be of the greatest
-possible use to the public, the best way to achieve this is to make it
-free software which everyone can redistribute and change under these terms.
-
-  To do so, attach the following notices to the program.  It is safest
-to attach them to the start of each source file to most effectively
-state the exclusion of warranty; and each file should have at least
-the "copyright" line and a pointer to where the full notice is found.
-
-    <one line to give the program's name and a brief idea of what it does.>
-    Copyright (C) <year>  <name of author>
-
-    This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program.  If not, see <https://www.gnu.org/licenses/>.
-
-Also add information on how to contact you by electronic and paper mail.
-
-  If the program does terminal interaction, make it output a short
-notice like this when it starts in an interactive mode:
-
-    <program>  Copyright (C) <year>  <name of author>
-    This program comes with ABSOLUTELY NO WARRANTY; for details type `show w'.
-    This is free software, and you are welcome to redistribute it
-    under certain conditions; type `show c' for details.
-
-The hypothetical commands `show w' and `show c' should show the appropriate
-parts of the General Public License.  Of course, your program's commands
-might be different; for a GUI interface, you would use an "about box".
-
-  You should also get your employer (if you work as a programmer) or school,
-if any, to sign a "copyright disclaimer" for the program, if necessary.
-For more information on this, and how to apply and follow the GNU GPL, see
-<https://www.gnu.org/licenses/>.
-
-  The GNU General Public License does not permit incorporating your program
-into proprietary programs.  If your program is a subroutine library, you
-may consider it more useful to permit linking proprietary applications with
-the library.  If this is what you want to do, use the GNU Lesser General
-Public License instead of this License.  But first, please read
-<https://www.gnu.org/licenses/why-not-lgpl.html>.
+Sency
+Terms of Use
+
+Last updated: [Sep 11th 2022]
+
+1.	ACCEPTANCE OF TERMS
+
+Welcome to Sency’s digital platform which remotely analyzes and tracks your movement and progress through our motion analysis technology (the “Motion Analysis Technology”). The website (the “Website”) and application (the “Application”) are owned and operated by Sency Interactive LTD, a corporation organized and existing under the laws of the State of Israel and its subsidiaries and/or its affiliates (“Sency” or “we” or “our”). The terms of use below (these “Terms”) govern your use of and access to the Website and Application, any use of the Sency proprietary platform and technology for visual data as a service (including any demos or trials that may be provided) (the “Solution”), and of any services provided by Sency through the Website or Application (collectively, the “Services”). 
+
+ATTENTION – PLEASE READ THESE TERMS CAREFULLY BEFORE USING THE SERVICES, REGISTERING FOR A DEMO OR TRIAL OF THE APPLICATION, OR OTHERWISE SUBMITTING AND/OR MAKING AVAILABLE ANY CONTENT OR INFORMATION, INCLUDING WITHOUT LIMITATION, ANY INFORMATION RELATING TO YOU SUCH AS NAME, CONTACT INFORMATION, IMAGES AND VIDEOS OF YOU, AND ANY OTHER MATERIALS (THE “SUBMITTED DATA”) THROUGH THE APPLICATION. “YOU” OR “USER” REFERS TO (I) ANY NATURAL PERSON THAT USES THE SERVICES FOR THEIR OWN ACTIVITY; AND (II) PHYSICAL THERAPISTS, WELLNESS COACHES, OR ANY OTHER PROFESSIONAL WHO IS INVITED BY SENCY TO PROVIDE USERS WITH CONSULTATION SERVICES TO IMPROVE THEIR PHYSICAL PERFORMANCE (THE “PROVIDERS”). BY USING THE SERVICES, INCLUDING REGISTERING FOR A DEMO OR TRIAL, OR OTHERWISE MAKING AVAILABLE ANY SUBMITTED DATA, YOU CONSENT TO BE BOUND BY THESE TERMS AND CONFIRM THAT YOU ARE OF LEGAL AGE TO FORM A BINDING CONTRACT. IF YOU DO NOT AGREE TO THESE TERMS, YOU MUST NOT USE THE SERVICES NOR REGISTER FOR ANY DEMO OR TRIAL OF THE SERVICES. THESE TERMS CONSTITUTE A LEGAL AGREEMENT BETWEEN YOU (THE PARTY USING THE SERVICES OR OTHERWISE OBTAINING ACCESS TO THE SOLUTION), AND SENCY. ANY COMMERCIAL OR PRODUCTION USE OF THE SERVICES OR THE SOLUTION SHALL BE GOVERNED BY A SEPARATE PAID ENTERPRISE/PERSONAL SERVICE AGREEMENT (“SA”) TO BE ENTERED INTO BETWEEN YOU AND SENCY. 
+
+BY ACCEPTING THESE TERMS, YOU CONFIRM YOUR UNDERSTANDING THAT NOTHING PROVIDED BY SENCY VIA ANY METHOD WHATSOEVER, CONSTITUTES A MEDICAL SERVICE. DO NOT USE THE SERVICES FOR EMERGENCY MEDICAL NEEDS NOR FOR YOUR OTHER MEDICAL NEEDS. IF YOU REQUIRE MEDICAL CARE, PLEASE CONTACT YOUR DOCTOR OR OTHER HEALTH SERVICE PROVIDER.
+
+IF YOU EXPERIENCE A MEDICAL EMERGENCY, CALL 911 IMMEDIATELY. DO NOT RELY ON SENCY IN THE EVENT OF AN EMERGENCY UNDER ANY CIRCUMSTANCES. 
+
+2.	THE SERVICES
+
+Subject to these Terms and your compliance herewith, Sency hereby grants to you a worldwide, non-exclusive, non-transferable, non-sublicensable, fully revocable, limited license, to browse and access the Services, and in the scope of the Demo or Trial (as such terms are defined below), to use and access the Solution and Services as made available under such Demo or Trial.
+
+You are solely and fully responsible for maintaining the confidentiality of your login credentials (email, username and password) of your account, and for all activities that occur under your account. You agree not to disclose your login credentials to any third party.
+
+3.	DEMO AND TRIAL OF THE SERVICES.
+
+We may make available through the Services certain demonstration(s) of the Solution and Services (a “Demo”) and/or allow you to register for a free or paid trial of the Solution and Services (a “Trial”). Any Demos or Trials and any use thereof are governed by these Terms. 
+
+4.	THE PROVIDERS
+
+Sency does not employ the Providers that provide their services as part of the Services. Sency collects and shares User Data in order to formulate feedback that is appropriate for you (“Feedback”), including but not limited to work out plans tailored specifically to you. Providers only receive User Data for the purpose of developing and providing such Feedback, and all in accordance with our Privacy Policy. Notwithstanding the foregoing, Sency cannot guarantee, and explicitly disclaims, the quality, accuracy, sufficiency and fitness for purpose of any and all Feedback provided to you by a Provider. Your relationship with the Provider is strictly with the Provider.
+
+5.	INTELLECTUAL PROPERTY; LICENSE 
+
+All rights, including intellectual property rights, that are related to or arising from the Services or Solution, including all content included on or incorporated therein, such as any analyses, reports, conclusions, discoveries, text, images, photos, any recognized form of intellectual property, UI, technology, software, and any other Sency proprietary materials included and/or used therein but excluding Submitted Data (collectively, the “Content”), and any derivative, enhancement or modification of the Content, is and shall, as between you and Sency, remain exclusively owned by Sency at all times, and is protected by applicable proprietary rights and laws.
+
+These Terms do not confer upon you any right in the Website, Application, Content, Solution or Services or any part thereof other than the limited license to use the Services and Solution as stated above. 
+
+6.	USER CONDUCT; RESTRICTION ON USE
+
+In connection with your use of the Services, you agree to abide by all applicable local, national and international laws and regulations and you may not, whether by yourself or through anyone on your behalf, nor allow or facilitate a third party to: (i) use and/or access the Services or Content for any illegal, or unauthorized purpose, including to benefit third parties, such as but not limited to disclosing any technical features, or comparative analyses relating to the Solution and/or Services, or otherwise commercially disposing of or making your access to the Services and/or Solution available to third parties; (ii) use any of the Services or any part thereof for any purpose or in any manner not explicitly authorized hereunder; (iii) violate any rights of others or the operational or security mechanisms of the Solution and Services; (iv) copy, modify, distribute, publicly display, create derivative works of, emulate, translate, reverse engineer, or decompile the Solution and/or Services, or any parts or derivatives thereof, for any purpose; (v) make available through or in connection with the Solution or Services any content, including any Submitted Data, in a manner which infringes third party rights, including intellectual property rights and privacy rights, or which may contain any unlawful content; (vi) make available in connection with the Solution and/or use of the Services any malware, viruses, spam, or any other computer code, file, or program that may or is intended to damage, hijack, or otherwise disrupt the operation of any hardware, software, or telecommunications equipment; (vii) interfere with or disrupt the operation of the Solution and/or Services, or the servers or networks that host or make them available; (viii) bypass any measures which may be used to prevent or restrict access to the Solution and/or Services and/or certain functionalities therein; (ix) remove any and all notices, restrictions and signs indicating proprietary rights of Sency and/or its licensors, contained in or accompanying the Solution, and/or Services; (x) access and/or use any Services, Solution and/or the Content provided therein in order to build a competitive product or service.
+
+7.	USER ELIGEBILITY 
+
+You represent that you are at least eighteen (18) years of age. We reserve the right to require you at any stage to provide proof of age so that we can verify that only eligible users are using the Services. In the event that we become aware that a person under the age of eighteen (18) is using the Services we reserve the right to prohibit and block such User from further accessing the Services and/or Application. 
+
+8.	USER DATA; SUBMITTED DATA
+
+In your use of and access to the Solution and Services as permitted hereunder, you may provide, and Sency may collect, store, transfer and use certain data and information related to you and to your use or access to the Solution and/or Services, including without limitation, the Submitted Data, information required for registration processes, and information that Sency derives from such information (the “User Data”), all pursuant to the provisions of our privacy policy located here [link] (the “Privacy Policy”). 
+
+By providing the Submitted Data, you grant Sency and its affiliates an irrevocable, non-exclusive, worldwide, royalty-free, non-transferable, and sublicensable license during the Term, to use, process, edit, host, reproduce and create derivative works from the Submitted Data, for the sole purpose of and as required for Sency to provide you the Services and the Solution, including as part of the Trial or Demo. In addition, you grant Sency and its affiliates a non-exclusive, worldwide, royalty-free, irrevocable, perpetual, fully paid up, license to collect, store, process, analyze, transfer, and otherwise use any and all metadata, data concerning processes, analysis and other development parameters, resulting or otherwise obtained from your use of the Services, but excluding Submitted Data which in any event shall not be used except as permitted under these Terms, for improving our products and services, provided that such data has been aggregated or anonymized such that it cannot in any way be understood to relate to any identifiable person or entity. 
+
+YOU HEREBY CONFIRM THAT YOU ARE EITHER THE ORIGINAL OWNER OF THE SUBMITTED DATA OR USER DATA YOU UPLOADED/MADE AVAILABLE OR THAT YOU HAVE THE NECESSARY RIGHTS AND AUTHORIZATIONS TO PROVIDE SUCH DATA UNDER THE TERMS HEREOF. YOU CONFIRM THAT ALL SUBMITTED DATA OR USER DATA PROVIDED BY YOU IS ACCURATE. YOU ALSO CONFIRM THAT NONE OF YOUR SUBMITTED DATA WILL INCLUDE INFORMATION THAT (I) IS SUBJECT TO CONFIDENTIALITY OBLIGATIONS, (II) VIOLATES APPLICABLE LAWS OR REGULATIONS, OR (III) POSES A RISK TO A PERSON’S SAFETY, SECURITY OR HEALTH.
+
+Other than the Submitted Data necessary for the provision of the Services, you represent and warrant that the Submitted Data does not and shall not include any other information which may be deemed Personal Information, as such term is defined in the Privacy Policy or under any applicable law, or other data that is subject to any other regulatory or statutory protection regimes. 
+
+9.	CONFIDNETIALITY
+
+Either party (a “Disclosing Party”) may make available to the other party (a “Receiving Party”) certain confidential information regarding its technology, operations and business (“Confidential Information”). Receiving Party agrees to apply and maintain appropriate technical and organizational measures to protect Confidential Information from accidental or unlawful destruction, loss, alteration, and/or unauthorized disclosure or access. Such measures will be no less than is commercially reasonable within similar and related industries. Receiving Party also agrees to not use any Confidential Information except as required to facilitate the use of the Services or Solution in the scope of the parties’ engagement hereunder. Confidential Information shall not include information that Receiving Party can show by written evidence (a) was already lawfully known to or independently developed by Receiving Party without access to or use of Confidential Information, (b) was received by Receiving Party from any third party without restrictions, (c) is publicly available and free of confidentiality restrictions. Receiving Party shall not be prevented from disclosing Confidential Information pursuant to a binding court order or similar binding legal requirement for disclosure, provided that Receiving Party provides Disclosing Party with prompt notice of such requirement and cooperates to only provide as much Confidential Information as is legally required to comply with such a request. Receiving Party shall restrict disclosure of Confidential Information to those of its employees with a reasonable need to know such information and which are bound by written confidentiality obligations no less restrictive than those set out herein. Receiving Party shall in any event remain liable for any actions or omissions performed by its employees and service providers, as if performed by Receiving Party themselves. Upon termination or expiration of these Terms for any reason or upon Disclosing Party’s written request, Receiving Party shall return or permanently destroy all Submitted Data in its possession and at Disclosing Party’s request.
+
+All Submitted Data is the Confidential Information of User and, except as expressly set forth above with respect to anonymized or aggregated data, Sency shall not disclose such Submitted Data to third parties or use such Submitted Data, except to provide the Services, including any Demo or Trial, to User. 
+
+10.	YOUR CONTRIBUTIONS TO THE APPLICATION OR THE SERVICES
+
+If you provide us with any suggestions, material, ideas, comments or other feedback relating to the Solution, the Services and/or the Content (“User Feedback”), you agree that we may, in our sole discretion, use any User Feedback in any way, including without limitations in future modifications of the Solution, Services or promotional materials relating thereto. Additionally, you agree that all User Feedback shall become the exclusive property of Sency, and you voluntarily waive any and all “moral rights” which you may have in such User Feedback.
+
+11.	PRIVACY POLICY.
+
+Information about or related to you that we collect or obtain through the Services, including Demos and Trials, is subject to our Privacy Policy, available here Add a hyperlink to Privacy Policy. By accessing the Services, including Demos or Trials, you consent to the collection and use of information as described herein and/or in our Privacy Policy, as may be amended by us from time to time.
+
+12.	DISCLAIMER OF ALL WARRANTIES
+
+YOU ACKNOWLEDGE AND AGREE THAT YOUR USE OF THE SOLUTION, SERVICES, AND CONTENT, PURSUANT HERETO, IS DONE AT YOUR OWN DISCRETION AND SOLE RISK AND THAT YOU WILL BE SOLELY RESPONSIBLE FOR ANY RESULTING CONSEQUENCES. 
+
+THE SOLUTION AND SERVICES ARE PROVIDED ON AN “AS IS” BASIS. TO THE MAXIMUM EXTENT PERMITTED BY APPLICABLE LAW, WE AND OUR AFFILIATES, EXPRESSLY DISCLAIM ALL WARRANTIES OF ANY KIND, WHETHER EXPRESS OR IMPLIED, REGARDING THE SOLUTION, THE SERVICES AND THE CONTENT, AS MADE AVAILABLE HEREUNDER, INCLUDING THE IMPLIED WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, AND NON-INFRINGEMENT.
+
+WITHOUT LIMITING THE FOREGOING, WE MAKE NO WARRANTY THAT THE SOLUTION OR SERVICES WILL BE UNINTERRUPTED, TIMELY, SECURE, OR ERROR, BUG OR VIRUS FREE; NOR DO WE WARRANT OR MAKE ANY REPRESENTATIONS REGARDING THE USE OR THE RESULTS OF THE SOLUTION, SERVICES, AND THE CONTENT, IN TERMS OF THEIR CORRECTNESS, COMPLETENESS, AVAILABILITY, USEFULNESS, RELIABILITY OR OTHERWISE; NOR DOES SENCY TAKE ANY RESPONSIBILITY FOR YOUR MISUSE OF ANY IDEAS, INFORMATION, INSTRUCTIONS, OR GUIDELINES ACCESSED THROUGH THE SERVICES. YOUR RELIANCE UPON ANY OF SENCY’S CONTENTS IS DONE AT YOUR SOLE RISK.
+
+13.	LIMITATION OF LIABILITY
+
+SENCY DISCLAIMS ANY RESPONSIBILITY FOR ANY LOSS OR HARM CAUSED IN CONNECTION WITH OR RESULTING FROM YOUR USE OF OR RELIANCE ON THE SERVICES OR THE SOLUTION.
+
+IN THE EVENT OF ANY PROBLEM WITH THE SOLUTION OR SERVICES, YOU AGREE THAT YOUR SOLE REMEDY IS TO CEASE USING THE SERVICES. UNDER NO CIRCUMSTANCES SHALL SENCY BE LIABLE FOR ANY DAMAGES OF ANY KIND, INCLUDING BUT NOT LIMITED TO, DAMAGES FOR LOSS OF PROFITS, REPUTATION, GOODWILL, USE, DATA OR OTHER INTANGIBLES, EVEN IF WE HAVE BEEN ADVISED OF THE POSSIBILITY OF SUCH DAMAGES (I) ARISING OUT OF YOUR USE OR THE INABILITY TO USE THE SERVICES, (II) FOR COST OF PROCUREMENT OF SUBSTITUTE GOODS AND SERVICES, OR (III) RESULTING FROM ANY INACCURACIES OR ERRORS OF INFORMATION RECEIVED AS A RESULT OF USING THE SOLUTION OR SERVICES. IN NO EVENT WILL SENCY, NOR ITS AFFILIATES, OR THEIR RESPECTIVE DIRECTORS, OFFICERS, SHAREHOLDERS, OR EMPLOYEES’ (“SENCY PARTIES”) AGGREGATE LIABILTY TO YOU EXCEED THE AMOUNTS PAID BY YOU TO SENCY IN RESPECT OF THE SERVICES. 
+
+YOU SHALL BE SOLELY AND FULLY RESPONSIBLE FOR ANY DAMAGE TO THE SERVICES OR ANY COMPUTER SYSTEM, ANY LOSS OF DATA, OR ANY IMPROPER USE OR DISCLOSURE OF INFORMATION ON THE SERVICES CAUSED BY YOU OR ANY PERSON USING YOUR USERNAME OR PASSWORD.
+
+SENCY DOES NOT OFFER MEDICAL ADVICE, AND NOTHING IN THE SERVICES OR SOLUTION, NOR THROUGH ANYTHING COMMUNICATED BETWEEN THE PARTIES BY ANY MEANS WHATSOEVER, ARE INTENDED TO CONSTITUTE OR REPLACE ANY MEDICAL ADVICE OR SERVICES OF A LICENSED, TRAINED, IN-PERSON PHYSICIAN, PHYSICAL THERAPIST OR OTHER HEALTH PROFESSIONAL. ANY MEDICAL OR HEALTHCARE ADVICE PROVIDED TO YOU IN RELATION TO THE SOLUTION OR SERVICES IS NOT PROVIDED BY SENCY BUT RATHER BY THE INDIVIDUAL MEDICAL OR HEALTHCARE PROVIDERS WITH WHOM YOU MUST FIRST ESTABLISH A PHYSICAL THERAPIST-PATIENT RELATIONSHIP OR A PHYSICIAN-PATIENT RELATIONSHIP. USING, ACCESSING, AND/OR BROWSING THE SERVICES, OR PROVIDING PERSONAL MEDICAL HISTORY IN RELATION TO THE SERVICES OR SOLUTION DOES NOT CREATE A PHYSICAL THERAPIST-PATIENT OR PHYSICIAN-PATIENT RELATIONSHIP BETWEEN YOU AND SENCY OR ANY OF ITS EMPLOYEES AND/OR AFFILIATES.
+
+You should consult a healthcare provider licensed in your state in all matters relating to your health. As such, the Services are not covered or meant to be covered by an insurance policy. You hereby agree that you shall not make any health or medical related decision based in whole or in part on anything contained in the Service, without further consulting a healthcare provider. Any content accessed through or offered by the Services is for informational and educational purposes only, and is not intended to cover any possible uses, directions, precautions, drug interactions, or adverse effects. 
+
+SUBJECT TO APPLICABLE LAW, YOU AGREE THAT REGARDLESS OF ANY STATUTE OR LAW TO THE CONTRARY, ANY CLAIM OR CAUSE OF ACTION BROUGHT BY YOU OR ANYONE ON YOUR BEHALF, ARISING OUT OF OR RELATED TO USE OF THE SERVICES OR TO THESE TERMS, MUST BE FILED WITHIN ONE (1) YEAR AFTER SUCH CLAIM OR CAUSE OF ACTION AROSE OR ELSE BE FOREVER BARRED.
+
+14.	INDEMNIFICATION
+
+YOU RELEASE AND AGREE TO INDEMNIFY, DEFEND AND HOLD HARMLESS AT YOUR OWN EXPENSE SENCY, OUR OFFICERS, DIRECTORS, EMPLOYEES, AGENTS, REPRESENTATIVES AND AFFILIATES (THE “INDEMNIFIED PARTIES”), FROM ALL LIABILITIES, CLAIMS, ALLEGED CLAIMS, LOSSES, DAMAGES (OF EVERY KIND, WHETHER KNOWN OR UNKNOWN AND SUSPECTED OR UNSUSPECTED), AND FEES, INCLUDING REASONABLE ATTORNEY’S FEES, RELATED IN ANY WAY TO: (I) YOUR BREACH OF ANY TERM, REPRESENTATION, WARRANTY UNDER SECTION ‎8 (USER DATA; SUBMITTED DATA), OR CONDITION OF THESE TERMS, OR A BREACH OF THESE TERMS BY ANYONE USING YOUR MOBILE DEVICE OR LOGIN CREDENTIALS, (II) YOUR USE OF, RELIANCE ON OR ACCESS TO THE SERVICES, SOLUTION, OR  ANY OF OUR USERS’ SUBMITTED DATA OR THE CONTENT (III) YOUR USE OF, RELIANCE ON OR ACCESS TO ANY THIRD PARTY SOFTWARE, APPLICATIONS OR DATA RESULTING FROM YOUR USE OF THE SERVICES; (IV) VIOLATION OF LAW OR REGULATION WITH REGARD TO YOUR SUBMITTED DATA, USER DATA, OR FEEDBACK, INCLUDING PRIVACY OR INTELLECTUAL PROPERTY RIGHTS OF THIRD PARTIES. WE WILL PROVIDE YOU WITH WRITTEN NOTICE OF SUCH ACTION, AND YOU SHALL COOPERATE FULLY IN THE DEFENSE OF ANY CLAIM. WE RESERVE THE RIGHT TO ASSUME THE EXCLUSIVE DEFENSE AND CONTROL OF ANY MATTER SUBJECT TO INDEMNIFICATION BY YOU, AT OUR OWN EXPENSE.
+
+15.	AMENDMENTS
+
+We may change the Services or these Terms at any time and at our sole discretion. If we make any material changes to these Terms, we will provide notice of these changes either on our Website or Application, and/or by sending you e-mail notifications regarding such changes to any e-mail address provided by you under the contact details. If you do not agree to the different terms, you should not use the Services. 
+
+16.	PAYMENTS
+
+In consideration for the Services, you shall pay Sency the amounts set forth in any invoice provided to you (the “Fees”). Payments shall be executed via a third-party service provider which we will make available through our Services. By choosing to proceed with a third-party payment service provider, you (i) agree to review and be bound by such third-party payment service provider’s terms of use and privacy policy, and (ii) acknowledge that you may need to hold or register an active account with that third party in order to complete a payment. If you fail to pay the Fees, Sency reserves the right to discontinue your use of and access to the Services. 
+
+17.	TERM AND TERMINATION
+
+These Terms shall go into effect upon your acceptance and shall continue for the duration of your use of the Services. Sency reserves the right to suspend or terminate your account at its sole discretion, including if we determine that you or anyone using your account violates these Terms. 
+
+18.	GOVERNING LAW
+
+These Terms will be governed by Israeli law without regard to its choice of law or conflicts of law principles. You expressly consent to the exclusive jurisdiction and venue in the courts in Tel Aviv, Israel. Notwithstanding the aforesaid, temporary relief to enjoin infringement of intellectual property rights may be sought in any court.
+
+19.	MISCELLANEOUS
+
+Sency reserves the right to change, suspend, or discontinue all or part of the Solution or Services, including as may be made available via any Demos or Trials, without prior notice, including without limitation removing any Submitted Data. You may reject such changes by discontinuing your use of the Services, including any Demos or Trials. Your continued use of the Services, including Demos, Trials, or derivatives thereto, will constitute your acceptance of and agreement to such changes.
+
+Our Services are available on many different portable electronic devices. Our connection to such devices is free of charge, but your carrier’s normal rates and fees, such as text messaging fees, may still apply.
+
+These Terms, as updated from time to time, comprise the entire agreement between you and us, states our entire liability and your exclusive remedy with respect to the Services, and supersedes all prior agreements pertaining to these Terms. If any provisions of these Terms are held to be contrary to law, then such provisions shall be construed, as nearly as possible, to reflect the original provision and the other provisions remain in full force and effect. Any failure to exercise or enforce any right or provision of these Terms shall not constitute a waiver of such right or provision. The section titles in these Terms are solely used for the convenience and have no legal or contractual significance. 
+
+These Terms are personal to you and you may not assign any of your rights or obligations hereunder. These Terms may be assigned by us without restriction.
+
+The provisions of Section ‎5 (Intellectual Property; License), Section ‎‎6 (User Conduct; Restriction on Use), Section ‎7 (User Eligibility), Section ‎11 (Privacy Policy, including the Privacy Policy referred to therein), Section ‎12 (Disclaimer of all Warranties), Section ‎13 (Limitation of Liability), Section ‎14 (Indemnification), and this Section ‎19 (Miscellaneous), will survive the termination or expiration of these Terms including any provision meant to survive such termination or expiration or any rights accrued prior thereto.
+
+If you wish to receive more information about these Terms, please contact us using the details provided below:
+
+Sency
+
+Email: contact@sency.ai
+
