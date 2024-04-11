@@ -150,4 +150,4 @@ async function startSMKitUICustomWorkout(){
 }
 ```
 
-Having issues? [Contact us](support@sency.ai) and let us know what the problem is.
+Having issues? [Contact us](mailto:support@sency.ai) and let us know what the problem is.
