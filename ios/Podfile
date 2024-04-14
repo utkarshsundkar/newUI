@@ -1,4 +1,4 @@
-source 'https://bitbucket.org/sency-ios/sency_ios_dev_sdk.git'
+source 'https://bitbucket.org/sency-ios/sency_ios_sdk.git'
 source 'https://github.com/CocoaPods/Specs.git'
 
 require_relative '../node_modules/react-native/scripts/react_native_pods'
