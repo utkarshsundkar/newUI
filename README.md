@@ -150,7 +150,7 @@ async function startSMKitUICustomWorkout(){
 }
 
 ### Start Program
-**startWorkoutProgram** starts a workout program according to yor WorkoutConig.
+**startWorkoutProgram** starts a workout program according to your WorkoutConfig.
 ```js
   async function startSMKitUIProgram(){
     try{
