@@ -148,6 +148,27 @@ async function startSMKitUICustomWorkout(){
     console.error(e);
   }
 }
-```
 
+### Start Program
+**startWorkoutProgram** starts a workout program according to yor WorkoutConig.
+```js
+  async function startSMKitUIProgram(){
+    try{
+      //WorkoutConfig
+      var config = new SMWorkoutLibrary.WorkoutConfig(
+        3, // => week: number
+        SMWorkoutLibrary.BodyZone.FullBody, // => bodyZone: BodyZone
+        SMWorkoutLibrary.WorkoutDifficulty.HighDifficulty, // => difficultyLevel: WorkoutDifficulty
+        SMWorkoutLibrary.WorkoutDuration.Short, // =>   workoutDuration: WorkoutDuration
+        "YOUR_PROGRAM_ID" // =>   programID: string
+      );
+      var result = await startWorkoutProgram(config);
+      console.log(result.summary);
+      console.log(result.didFinish);
+    }catch(e){
+      console.error(e);
+    }
+  }
+}
+```
 Having issues? [Contact us](mailto:support@sency.ai) and let us know what the problem is.

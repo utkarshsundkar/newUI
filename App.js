@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { View, Text, requireNativeComponent, StyleSheet, Pressable} from 'react-native';
-import { configure, startAssessment, startCustomWorkout, AssessmentTypes } from 'smkit-ui-library/src/index.tsx';
+import { configure, startAssessment, startCustomWorkout, AssessmentTypes, startWorkoutProgram } from 'smkit-ui-library/src/index.tsx';
 import SMKitUI from 'smkit-ui-library/src/SMKitUIView.tsx';
 import * as SMWorkoutLibrary from 'smkit-ui-library/src/SMWorkout.tsx';
 
@@ -105,6 +105,23 @@ const App = () => {
     }
   }
 
+  async function startSMKitUIProgram(){
+    try{
+      //WorkoutConfig
+      var config = new SMWorkoutLibrary.WorkoutConfig(
+        3, // => week: number
+        SMWorkoutLibrary.BodyZone.FullBody, // => bodyZone: BodyZone
+        SMWorkoutLibrary.WorkoutDifficulty.HighDifficulty, // => difficultyLevel: WorkoutDifficulty
+        SMWorkoutLibrary.WorkoutDuration.Short, // =>   workoutDuration: WorkoutDuration
+        "YOUR_PROGRAM_ID" // =>   programID: string
+      );
+      var result = await startWorkoutProgram(config);
+      console.log(result.summary);
+      console.log(result.didFinish);
+    }catch(e){
+      console.error(e);
+    }
+  }
 }
 
 const styles = StyleSheet.create({
