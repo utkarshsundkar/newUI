@@ -80,7 +80,7 @@ return (
 );
 ```
 
-#### Start Assessment
+#### [Start Assessment](https://github.com/sency-ai/smkit-sdk/blob/main/AI-Fitness-Assessment.md)
 **startAssessment** starts one of Sency's blueprint assessments.
 ```js
 async function startFitnessAssessment(){
@@ -93,6 +93,7 @@ async function startFitnessAssessment(){
   }
 }
 ```
+> Check out [this info page](https://github.com/sency-ai/smkit-sdk/blob/main/AI-Fitness-Assessment.md) if you want to learn more about **Sency's AI Fitness Assessment**
 
 ### Start Custom Workout
 **startWorkout** starts a custom workout.
