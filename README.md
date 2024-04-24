@@ -1,9 +1,9 @@
 # [react-native-smkit-ui demo](https://github.com/sency-ai/smkit-sdk)
 
-1. [ Installation. ](#inst)
-2. [ Setup. ](#setup)
-3. [ Configure. ](#conf)
-4. [ Start. ](#start)
+1. [ Installation ](#inst)
+2. [ Setup ](#setup)
+3. [ Configure ](#conf)
+4. [ Start ](#start)
 
 <a name="inst"></a>
 ## 1. Installation
@@ -146,6 +146,7 @@ async function startSMKitUICustomWorkout(){
     console.error(e);
   }
 }
+```
 
 ### Start Program
 **startWorkoutProgram** starts a workout program according to your WorkoutConfig.
@@ -169,4 +170,5 @@ async function startSMKitUICustomWorkout(){
   }
 }
 ```
+
 Having issues? [Contact us](mailto:support@sency.ai) and let us know what the problem is.
