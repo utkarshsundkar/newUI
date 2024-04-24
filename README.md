@@ -28,8 +28,7 @@ target 'YOUR_TARGET' do
 
 3. Run `NO_FLIPPER=1 pod install` to install the necessary pods.
 
-<a name="setup"></a>
-## 2. Setup
+## 2. Setup <a name="setup"></a>
 
 ### iOS
 Add camera permission request to `Info.plist`
@@ -40,10 +39,9 @@ Add camera permission request to `Info.plist`
 
 ### Android
 
-Comming soon
+No special setup is needed
 
-<a name="conf"></a>
-## 3. Configure
+## 3. Configure <a name="conf"></a>
 
 ```js
 [1] First import configure
@@ -61,8 +59,7 @@ To reduce wait time we recommend to call `configure` on app launch.
 
 **⚠️ smkit_ui_library will not work if you don't first call configure.**
 
-<a name="start"></a>
-## 4. Start
+## 4. Start <a name="start"></a>
 
 1. Import the sdk
 ```js
