@@ -4,6 +4,7 @@
 2. [ Setup ](#setup)
 3. [ Configure ](#conf)
 4. [ Start ](#start)
+5. [ Data ](#data)
 
 <a name="inst"></a>
 ## 1. Installation
@@ -170,5 +171,12 @@ async function startSMKitUICustomWorkout(){
   }
 }
 ```
+
+## Available Data Types <a name="data"></a>
+#### `AssessmentTypes`
+| Name                |
+|---------------------|
+| Fitness             |
+| Custom              |
 
 Having issues? [Contact us](mailto:support@sency.ai) and let us know what the problem is.
