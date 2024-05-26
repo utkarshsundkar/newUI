@@ -8,13 +8,7 @@
 
 <a name="inst"></a>
 ## 1. Installation
-1. Add *react-native-smkit-ui* dependency to your project's *package.json* file.
-```json
-  "dependencies": {
-    "react-native-smkit-ui"
-  },
-```
-1.1 Run `npm install` in your terminal to install the dependencies.
+1. run `npm install @sency/react-native-smkit-ui`
 
 2. Update *Podfile* in `iOS` folder:
 ```
@@ -39,14 +33,46 @@ Add camera permission request to `Info.plist`
 ```
 
 ### Android
+In order to integrate SMKitUI you need to import the smkitui dependency
+Add on project level build.gradle:
+ ```
+allprojects {
+  repositories {
+    ...
+    maven {
+      url "${artifactory_contentUrl}"
+      credentials {
+        username = "${artifactory_user}"
+        password = "${artifactory_password}"
+      }
+    }
+  }
+}
+```
 
-No special setup is needed
+#### FBJNI
+
+Both React Native and SencyMotion use **fbjni**. For example, the versions for SMKitUI that are used for
+development are:
+
+React Native (<= 0.64) uses fbjni **0.0.2**
+SMKitUI uses fbjni **0.2.2**.
+Therefore we need to exclude fbjbi on app level build.gradle:
+ ```
+dependencies {
+  ...
+  implementation("com.sency.smkitui:smkitui:${SMKitUI_Version}") {
+    exclude group: 'com.facebook.fbjni', module: 'fbjni-java-only'
+  }
+  ...
+}
+```
 
 ## 3. Configure <a name="conf"></a>
 
 ```js
 [1] First import configure
-import { configure } from 'smkit-ui-library/src/index.tsx';
+import { configure } from '@sency/react-native-smkit-ui-dev/src/index.tsx';
 
 [2] then call the configure function with your auth key
 try{
@@ -64,9 +90,9 @@ To reduce wait time we recommend to call `configure` on app launch.
 
 1. Import the sdk
 ```js
-import { startAssessment, startCustomWorkout, AssessmentTypes } from 'smkit-ui-library/src/index.tsx';
-import SMKitUI from 'smkit-ui-library/src/SMKitUIView.tsx';
-import * as SMWorkoutLibrary from 'smkit-ui-library/src/SMWorkout.tsx';
+import { startAssessment, startCustomWorkout, AssessmentTypes } from '@sency/react-native-smkit-ui-dev/src/index.tsx';
+import SMKitUI from '@sency/react-native-smkit-ui-dev/src/SMKitUIView.tsx';
+import * as SMWorkoutLibrary from '@sency/react-native-smkit-ui-dev/src/SMWorkout.tsx';
 ```
 
 2. Add `SMKitUI` view:
