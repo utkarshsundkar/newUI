@@ -35,18 +35,11 @@ Add camera permission request to `Info.plist`
 ### Android
 In order to integrate SMKitUI you need to import the smkitui dependency
 Add on project level build.gradle:
- ```
+ ```groovy
 allprojects {
-  repositories {
-    ...
     maven {
-      url "${artifactory_contentUrl}"
-      credentials {
-        username = "${artifactory_user}"
-        password = "${artifactory_password}"
-      }
+        url "https://artifacts.sency.ai/artifactory/release/"
     }
-  }
 }
 ```
 
@@ -58,10 +51,10 @@ development are:
 React Native (<= 0.64) uses fbjni **0.0.2**
 SMKitUI uses fbjni **0.2.2**.
 Therefore we need to exclude fbjbi on app level build.gradle:
- ```
+ ```groovy
 dependencies {
   ...
-  implementation("com.sency.smkitui:smkitui:${SMKitUI_Version}") {
+  implementation('com.sency.smkitui:smkitui:$latest_version'){
     exclude group: 'com.facebook.fbjni', module: 'fbjni-java-only'
   }
   ...
