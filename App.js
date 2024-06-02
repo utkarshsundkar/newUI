@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { View, Text, requireNativeComponent, StyleSheet, Pressable} from 'react-native';
-import { configure, startAssessment, startCustomWorkout, AssessmentTypes, startWorkoutProgram } from 'smkit-ui-library/src/index.tsx';
-import SMKitUI from 'smkit-ui-library/src/SMKitUIView.tsx';
-import * as SMWorkoutLibrary from 'smkit-ui-library/src/SMWorkout.tsx';
+import { configure, startAssessment, startCustomWorkout, AssessmentTypes, startWorkoutProgram } from '@sency/react-native-smkit-ui-dev/src/index.tsx';
+import SMKitUI from '@sency/react-native-smkit-ui-dev/src/SMKitUIView.tsx';
+import * as SMWorkoutLibrary from '@sency/react-native-smkit-ui-dev/src/SMWorkout.tsx';
 
 const App = () => {
   const [didConfig, setDidConfig] = useState(false);
