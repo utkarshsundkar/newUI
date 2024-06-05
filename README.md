@@ -98,11 +98,11 @@ return (
 ```
 
 #### [Start Assessment](https://github.com/sency-ai/smkit-sdk/blob/main/AI-Fitness-Assessment.md)
-**startAssessment** starts one of Sency's blueprint assessments.
+**startAssessment** starts one of Sency's blueprint assessments. 
 ```js
 async function startFitnessAssessment(){
   try{
-    var result = await startAssessment(AssessmentTypes.Fitness);
+    var result = await startAssessment(AssessmentTypes.Fitness, true); // => type: SMWorkoutLibrary.AssessmentTypes, showSummary:boolean
     console.log(result.summary);
     console.log(result.didFinish);
   }catch(e) {
