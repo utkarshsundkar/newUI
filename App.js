@@ -45,7 +45,7 @@ const App = () => {
 
   async function startFitnessAssessment(){
     try{
-      var result = await startAssessment(AssessmentTypes.Fitness);
+      var result = await startAssessment(AssessmentTypes.Fitness, true); // => type: SMWorkoutLibrary.AssessmentTypes, showSummary:boolean
       console.log(result.summary);
       console.log(result.didFinish);
     }catch(e) {
