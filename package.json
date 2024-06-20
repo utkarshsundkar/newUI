@@ -10,9 +10,9 @@
     "test": "jest"
   },
   "dependencies": {
+    "@sency/react-native-smkit-ui": "^0.1.2",
     "react": "18.2.0",
-    "react-native": "0.71.17",
-    "smkit-ui-library"
+    "react-native": "0.71.17"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",
