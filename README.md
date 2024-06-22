@@ -8,7 +8,7 @@
 
 <a name="inst"></a>
 ## 1. Installation
-1. run `npm install "@sency/react-native-smkit-ui"`
+1. run `npm install @sency/react-native-smkit-ui`
 
 2. Update *Podfile* in `iOS` folder:
 ```
