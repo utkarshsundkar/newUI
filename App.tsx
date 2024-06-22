@@ -33,7 +33,7 @@ const App = () => {
 
   async function configureSMKitUI(){
     try{
-      var res = await configure("public_live_BrYk+UxJaahIPdnb");
+      var res = await configure("YOUR_AUTH_KEY");
       console.log("DONE config");
       setDidConfig(true);
     }catch (e) {
