@@ -1,15 +1,13 @@
 import React, { useState } from 'react';
 import { View, Text, requireNativeComponent, StyleSheet, Pressable} from 'react-native';
-import { configure, startAssessment, startCustomWorkout, AssessmentTypes, startWorkoutProgram } from '@sency/react-native-smkit-ui-dev/src/index.tsx';
-import SMKitUI from '@sency/react-native-smkit-ui-dev/src/SMKitUIView.tsx';
-import * as SMWorkoutLibrary from '@sency/react-native-smkit-ui-dev/src/SMWorkout.tsx';
+import { configure, startAssessment, startCustomWorkout, AssessmentTypes, startWorkoutProgram } from '@sency/react-native-smkit-ui/src/index.tsx';
+import * as SMWorkoutLibrary from '@sency/react-native-smkit-ui/src/SMWorkout.tsx';
 
 const App = () => {
   const [didConfig, setDidConfig] = useState(false);
 
   return (
     <View style={styles.centeredView}>
-    <SMKitUI/>
       <Pressable
         style={[styles.button]}
         onPress={() => configureSMKitUI()}>
@@ -45,7 +43,7 @@ const App = () => {
 
   async function startFitnessAssessment(){
     try{
-      var result = await startAssessment(AssessmentTypes.Fitness, true); // => type: SMWorkoutLibrary.AssessmentTypes, showSummary:boolean
+      var result = await startAssessment(SMWorkoutLibrary.AssessmentTypes.Fitness, true); // => type: SMWorkoutLibrary.AssessmentTypes, showSummary:boolean
       console.log(result.summary);
       console.log(result.didFinish);
     }catch(e) {

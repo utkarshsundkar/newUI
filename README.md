@@ -34,15 +34,14 @@ Add camera permission request to `Info.plist`
 
 ### Android
 In order to integrate SMKitUI you need to import the smkitui dependency
-Add on project level build.gradle:
+Add on project level `build.gradle`:
  ```groovy
 allprojects {
     maven {
-        url "https://artifacts.sency.ai/artifactory/release/"
+        url ${artifactory_contentUrl}
     }
 }
 ```
-
 #### FBJNI
 
 Both React Native and SencyMotion use **fbjni**. For example, the versions for SMKitUI that are used for
@@ -50,15 +49,19 @@ development are:
 
 React Native (<= 0.64) uses fbjni **0.0.2**
 SMKitUI uses fbjni **0.2.2**.
-Therefore we need to exclude fbjbi on app level build.gradle:
+Therefore we need to exclude fbjbi on app level `build.gradle`:
  ```groovy
 dependencies {
-  ...
-  implementation('com.sency.smkitui:smkitui:$latest_version'){
-    exclude group: 'com.facebook.fbjni', module: 'fbjni-java-only'
+  implementation("com.sency.smkitui:smkitui:${SMKitUI_Version}") {
+      exclude group: 'com.facebook.fbjni', module: 'fbjni-java-only'
   }
-  ...
 }
+```
+
+Inside `gradle.properties` insert thoose global properties:
+```groovy
+SMKitUI_Version = 0.1.2
+artifactory_contentUrl = "https://artifacts.sency.ai/artifactory/release"
 ```
 
 ## 3. Configure <a name="conf"></a>
@@ -83,9 +86,9 @@ To reduce wait time we recommend to call `configure` on app launch.
 
 1. Import the sdk
 ```js
-import { startAssessment, startCustomWorkout, AssessmentTypes } from '@sency/react-native-smkit-ui-dev/src/index.tsx';
-import SMKitUI from '@sency/react-native-smkit-ui-dev/src/SMKitUIView.tsx';
-import * as SMWorkoutLibrary from '@sency/react-native-smkit-ui-dev/src/SMWorkout.tsx';
+import { startAssessment, startCustomWorkout, AssessmentTypes } from '@sency/react-native-smkit-ui/src/index.tsx';
+import SMKitUI from '@sency/react-native-smkit-ui/src/SMKitUIView.tsx';
+import * as SMWorkoutLibrary from '@sency/react-native-smkit-ui/src/SMWorkout.tsx';
 ```
 
 2. Add `SMKitUI` view:
