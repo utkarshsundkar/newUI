@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, requireNativeComponent, StyleSheet, Pressable} from 'react-native';
-import { configure, startAssessment, startCustomWorkout, AssessmentTypes, startWorkoutProgram } from '@sency/react-native-smkit-ui-dev/src/index.tsx';
-import * as SMWorkoutLibrary from '@sency/react-native-smkit-ui-dev/src/SMWorkout.tsx';
+import { configure, startAssessment, startCustomWorkout, AssessmentTypes, startWorkoutProgram } from '@sency/react-native-smkit-ui/src/index.tsx';
+import * as SMWorkoutLibrary from '@sency/react-native-smkit-ui/src/SMWorkout.tsx';
 
 const App = () => {
   const [didConfig, setDidConfig] = useState(false);
@@ -33,7 +33,7 @@ const App = () => {
 
   async function configureSMKitUI(){
     try{
-      var res = await configure("YOUR_AUTH_KEY");
+      var res = await configure("public_live_BrYk+UxJaahIPdnb");
       console.log("DONE config");
       setDidConfig(true);
     }catch (e) {
