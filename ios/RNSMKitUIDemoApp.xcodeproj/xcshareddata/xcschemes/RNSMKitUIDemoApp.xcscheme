@@ -15,9 +15,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "13B07F861A680F5B00A75B9A"
-               BuildableName = "smkit_ui_demo.app"
-               BlueprintName = "smkit_ui_demo"
-               ReferencedContainer = "container:smkit_ui_demo.xcodeproj">
+               BuildableName = "RNSMKitUIDemoApp.app"
+               BlueprintName = "RNSMKitUIDemoApp"
+               ReferencedContainer = "container:RNSMKitUIDemoApp.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -33,9 +33,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "00E356ED1AD99517003FC87E"
-               BuildableName = "smkit_ui_demoTests.xctest"
-               BlueprintName = "smkit_ui_demoTests"
-               ReferencedContainer = "container:smkit_ui_demo.xcodeproj">
+               BuildableName = "RNSMKitUIDemoAppTests.xctest"
+               BlueprintName = "RNSMKitUIDemoAppTests"
+               ReferencedContainer = "container:RNSMKitUIDemoApp.xcodeproj">
             </BuildableReference>
          </TestableReference>
       </Testables>
@@ -55,9 +55,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "13B07F861A680F5B00A75B9A"
-            BuildableName = "smkit_ui_demo.app"
-            BlueprintName = "smkit_ui_demo"
-            ReferencedContainer = "container:smkit_ui_demo.xcodeproj">
+            BuildableName = "RNSMKitUIDemoApp.app"
+            BlueprintName = "RNSMKitUIDemoApp"
+            ReferencedContainer = "container:RNSMKitUIDemoApp.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </LaunchAction>
@@ -72,9 +72,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "13B07F861A680F5B00A75B9A"
-            BuildableName = "smkit_ui_demo.app"
-            BlueprintName = "smkit_ui_demo"
-            ReferencedContainer = "container:smkit_ui_demo.xcodeproj">
+            BuildableName = "RNSMKitUIDemoApp.app"
+            BlueprintName = "RNSMKitUIDemoApp"
+            ReferencedContainer = "container:RNSMKitUIDemoApp.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </ProfileAction>
