@@ -2,87 +2,21 @@
 
 1. [ Installation ](#inst)
 2. [ Setup ](#setup)
-3. [ Configure ](#conf)
-4. [ Start ](#start)
+3. [ API ](#api)
 5. [ Data ](#data)
 
 <a name="inst"></a>
 ## 1. Installation
-1. run `npm install @sency/react-native-smkit-ui`
+run `npm install @sency/react-native-smkit-ui`
 
-2. Update *Podfile* in `iOS` folder:
-```
-[1] add the source to the top of your Podfile.
-source 'https://bitbucket.org/sency-ios/sency_ios_sdk.git'
-source 'https://github.com/CocoaPods/Specs.git'
 
-[2] add use_frameworks! commend to your target
-target 'YOUR_TARGET' do
-  use_frameworks!
-  
-[3] At the end of your code please add 
-
-  post_install do |installer|
-   react_native_post_install(
-     installer,
-     :mac_catalyst_enabled => false
-   )
-   installer.pods_project.targets.each do |target|
-     target.build_configurations.each do |config|
-       config.build_settings['BUILD_LIBRARY_FOR_DISTRIBUTION'] = 'YES'
-       config.build_settings['EXCLUDED_ARCHS[sdk=iphonesimulator*]'] = 'arm64'
-     end
-   end
-   __apply_Xcode_12_5_M1_post_install_workaround(installer)
- end
-end
-
-```
-
-3. Run `NO_FLIPPER=1 pod install` to install the necessary pods.
 
 ## 2. Setup <a name="setup"></a>
+* [iOS](https://github.com/sency-ai/smkit-ui-react-native-demo/blob/main/docs/ios-setup.md)
+* [Android](https://github.com/sency-ai/smkit-ui-react-native-demo/blob/main/docs/android-setup.md)
 
-### iOS
-Add camera permission request to `Info.plist`
-```Xml
-<key>NSCameraUsageDescription</key>
-<string>Camera access is needed</string>
-```
-
-### Android
-In order to integrate SMKitUI you need to import the smkitui dependency
-Add on project level `build.gradle`:
- ```groovy
-allprojects {
-    maven {
-        url ${artifactory_contentUrl}
-    }
-}
-```
-#### FBJNI
-
-Both React Native and SencyMotion use **fbjni**. For example, the versions for SMKitUI that are used for
-development are:
-
-React Native (<= 0.64) uses fbjni **0.0.2**
-SMKitUI uses fbjni **0.2.2**.
-Therefore we need to exclude fbjbi on app level `build.gradle`:
- ```groovy
-dependencies {
-  implementation("com.sency.smkitui:smkitui:${SMKitUI_Version}") {
-      exclude group: 'com.facebook.fbjni', module: 'fbjni-java-only'
-  }
-}
-```
-
-Inside `gradle.properties` insert thoose global properties:
-```groovy
-SMKitUI_Version = 0.1.2
-artifactory_contentUrl = "https://artifacts.sency.ai/artifactory/release"
-```
-
-## 3. Configure <a name="conf"></a>
+## API<a name="api"></a>
+### 1. Configure <a name="conf"></a>
 
 ```js
 [1] First import configure
@@ -100,7 +34,7 @@ To reduce wait time we recommend to call `configure` on app launch.
 
 **⚠️ smkit_ui_library will not work if you don't first call configure.**
 
-## 4. Start <a name="start"></a>
+## 2. Start <a name="start"></a>
 
 1. Import the sdk
 ```js
