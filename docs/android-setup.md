@@ -27,6 +27,6 @@ dependencies {
 
 Inside `gradle.properties` insert thoose global properties:
 ```groovy
-SMKitUI_Version = 0.1.2
+SMKitUI_Version = 0.1.4
 artifactory_contentUrl = "https://artifacts.sency.ai/artifactory/release"
 ```
