@@ -19,7 +19,7 @@ SMKitUI uses fbjni **0.2.2**.
 Therefore we need to exclude fbjbi on app level `build.gradle`:
  ```groovy
 dependencies {
-  implementation("com.sency.smkitui:smkitui:${SMKitUI_Version}") {
+  implementation("com.sency.smkitui:smkitui:$latest_version") {
       exclude group: 'com.facebook.fbjni', module: 'fbjni-java-only'
   }
 }
@@ -27,6 +27,5 @@ dependencies {
 
 Inside `gradle.properties` insert thoose global properties:
 ```groovy
-SMKitUI_Version = 0.1.4
 artifactory_contentUrl = "https://artifacts.sency.ai/artifactory/release"
 ```

@@ -107,7 +107,7 @@ android {
 dependencies {
     // The version of react-native is set by the React Native Gradle Plugin
     implementation("com.facebook.react:react-android")
-    implementation("com.sency.smkitui:smkitui:${SMKitUI_Version}") {
+    implementation("com.sency.smkitui:smkitui:0.1.6") {
         exclude group: 'com.facebook.fbjni', module: 'fbjni-java-only'
     }
 
