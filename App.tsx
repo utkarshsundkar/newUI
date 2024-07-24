@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, requireNativeComponent, StyleSheet, Pressable, ActivityIndicator, Alert} from 'react-native';
-import { configure, startAssessment, startCustomWorkout, AssessmentTypes, startWorkoutProgram } from '@sency/react-native-smkit-ui/src/index.tsx';
-import * as SMWorkoutLibrary from '@sency/react-native-smkit-ui/src/SMWorkout.tsx';
+import { configure, startAssessment, startCustomWorkout, AssessmentTypes, startWorkoutProgram } from '@sency/react-native-smkit-ui/src/index';
+import * as SMWorkoutLibrary from '@sency/react-native-smkit-ui/src/SMWorkout';
 
 const App = () => {
   const [didConfig, setDidConfig] = useState(false);
@@ -20,14 +20,14 @@ const App = () => {
         <Pressable
           disabled={!didConfig}
           style={[styles.button]}
-          onPress={() => startAssessmentSession(AssessmentTypes.Fitness, true, null)}>
+          onPress={() => startAssessmentSession(SMWorkoutLibrary.AssessmentTypes.Fitness, true, null)}>
           <Text style={styles.textStyle}>Start Assessment</Text>
         </Pressable>
 
         <Pressable
           disabled={!didConfig}
           style={[styles.button]}
-          onPress={() => startAssessmentSession(AssessmentTypes.Custom, true, "YOUR_CUSTOM_ASSESSMENT")}>
+          onPress={() => startAssessmentSession(SMWorkoutLibrary.AssessmentTypes.Custom, true, "YOUR_CUSTOM_ASSESSMENT")}>
           <Text style={styles.textStyle}>Start Custom Assessment</Text>
         </Pressable>
 
@@ -56,7 +56,7 @@ const App = () => {
   }
 
   async function startAssessmentSession(
-    type: AssessmentTypes, // => The type of assessment, which can be either AssessmentTypes.Fitness or AssessmentTypes.Custom.
+    type: SMWorkoutLibrary.AssessmentTypes, // => The type of assessment, which can be either AssessmentTypes.Fitness or AssessmentTypes.Custom.
     showSummary: boolean, // => Determines whether the summary screen will be presented at the end of the exercise.
     customAssessmentID: string, // If you have more than one custom assessment, use the customAssessmentID to specify which one to call, if not please use null.
   ) {
@@ -83,9 +83,7 @@ const App = () => {
           "HighKnees", // => detector: string
           true, // => repBased: boolean | null
           null, // => exerciseClosure: string | null (url for a sound)
-          13, // => targetReps: number | null
-          20, // => targetTime: number | null
-          0.3 // => scoreFactor: number | null
+          new SMWorkoutLibrary.SMScoringParams("", 0, 0, 0, "", null)
         ),
         new SMWorkoutLibrary.SMExercise(
           "Second Exercise", // => name:string | null
@@ -97,9 +95,7 @@ const App = () => {
           "SquatRegularOverheadStatic", // => detector: string
           false, // => repBased: boolean | null
           null, // => exerciseClosure: string | null (url for a sound)
-          null, // => targetReps: number | null
-          20, // => targetTime: number | null
-          0.3 // => scoreFactor: number | null
+          new SMWorkoutLibrary.SMScoringParams("", 0, 0, 0, "", null)
         ),
       ];
   
@@ -118,6 +114,7 @@ const App = () => {
       console.log(result.didFinish);
     }catch(e){
       console.error(e);
+      showAlert("Custom workout error", e + "");
     }
   }
 
@@ -137,6 +134,12 @@ const App = () => {
     }catch(e){
       console.error(e);
     }
+  }
+
+  function showAlert(title: string, massege: string){
+    Alert.alert(title, massege, [
+      {text: 'OK', onPress: () => console.log('OK Pressed')},
+    ]);
   }
 }
 
