@@ -20,7 +20,7 @@ const App = () => {
         <Pressable
           disabled={!didConfig}
           style={[styles.button]}
-          onPress={() => startAssessmentSession(SMWorkoutLibrary.AssessmentTypes.Fitness, true, null)}>
+          onPress={() => startAssessmentSession(SMWorkoutLibrary.AssessmentTypes.Fitness, true, "")}>
           <Text style={styles.textStyle}>Start Assessment</Text>
         </Pressable>
 
@@ -74,16 +74,16 @@ const App = () => {
       // list of exercies
       var exercises = [
         new SMWorkoutLibrary.SMExercise(
-          "First Exercise", // => name:string | null
-          35, // => totalSeconds: number | null
-          5, // => introSeconds: number | null
-          null, // => videoInstruction: string | null (url for a video)
-          null, // => exerciseIntro: string | null (url for a sound)
-          [SMWorkoutLibrary.UIElement.RepsCounter, SMWorkoutLibrary.UIElement.Timer], // => uiElements: UIElement[] | null
-          "HighKnees", // => detector: string
-          true, // => repBased: boolean | null
-          null, // => exerciseClosure: string | null (url for a sound)
-          new SMWorkoutLibrary.SMScoringParams("", 0, 0, 0, "", null)
+          "Plank", // => name:string | null
+          60, // => totalSeconds: number | null
+          8, // => introSeconds: number | null
+          "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4", // => videoInstruction: string | null (url for a video)
+          "https://commondatastorage.googleapis.com/codeskulptor-demos/DDR_assets/Sevish_-__nbsp_.mp3", // => exerciseIntro: string | null (url for a sound)
+          [SMWorkoutLibrary.UIElement.GaugeOfMotion, SMWorkoutLibrary.UIElement.Timer], // => uiElements: UIElement[] | null
+          "PlankHighStatic", // => detector: string
+          false, // => repBased: boolean | null
+          "", // => exerciseClosure: string | null (url for a sound)
+          new SMWorkoutLibrary.SMScoringParams("time", 0.5, 0, 60, null, null)
         ),
         new SMWorkoutLibrary.SMExercise(
           "Second Exercise", // => name:string | null
