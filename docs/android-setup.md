@@ -16,7 +16,7 @@ development are:
 
 React Native (<= 0.64) uses fbjni **0.0.2**
 SMKitUI uses fbjni **0.2.2**.
-Therefore we need to exclude fbjbi on app level `build.gradle`:
+Therefore we need to exclude fbjni on app level `build.gradle`:
  ```groovy
 dependencies {
   implementation("com.sency.smkitui:smkitui:$latest_version") {

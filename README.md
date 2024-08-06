@@ -20,7 +20,7 @@ run `npm install @sency/react-native-smkit-ui`
 
 ```js
 [1] First import configure
-import { configure } from '@sency/react-native-smkit-ui-dev/src/index.tsx';
+import { configure } from '@sency/react-native-smkit-ui/src/index.tsx';
 
 [2] then call the configure function with your auth key
 try{
@@ -36,20 +36,10 @@ To reduce wait time we recommend to call `configure` on app launch.
 
 ## 2. Start <a name="start"></a>
 
-1. Import the sdk
+Import the sdk and it's main functions
 ```js
-import { startAssessment, startCustomWorkout, AssessmentTypes } from '@sency/react-native-smkit-ui/src/index.tsx';
-import SMKitUI from '@sency/react-native-smkit-ui/src/SMKitUIView.tsx';
+import { startAssessment, startCustomWorkout, AssessmentTypes, startWorkoutProgram } from '@sency/react-native-smkit-ui/src/index.tsx';
 import * as SMWorkoutLibrary from '@sency/react-native-smkit-ui/src/SMWorkout.tsx';
-```
-
-2. Add `SMKitUI` view:
-```js
-return (
-  <View style={styles.centeredView}>
-    <SMKitUI/>
-  </View>
-);
 ```
 
 #### [Start Assessment](https://github.com/sency-ai/smkit-sdk/blob/main/AI-Fitness-Assessment.md)
