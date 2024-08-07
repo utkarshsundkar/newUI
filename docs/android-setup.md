@@ -4,19 +4,20 @@ In order to integrate SMKitUI you need to import the smkitui dependency
 Add on project level `build.gradle`:
  ```groovy
 allprojects {
+  repositories {
+    google()
+    jcenter()
     maven {
-        url ${artifactory_contentUrl}
+      url "${artifactory_contentUrl}"
     }
+  }
 }
 ```
-#### FBJNI
+#### Import SMKitUI and exclude FBJNI - ⚠️ do not skip this step
+In order to use SMKitUI RN Bridge we need to import smkitui on app level `build.gradle`. 
+Also both React Native and SMKitUI use **fbjni**.
+Therefore we need to exclude fbjni while importing`:
 
-Both React Native and SencyMotion use **fbjni**. For example, the versions for SMKitUI that are used for
-development are:
-
-React Native (<= 0.64) uses fbjni **0.0.2**
-SMKitUI uses fbjni **0.2.2**.
-Therefore we need to exclude fbjni on app level `build.gradle`:
  ```groovy
 dependencies {
   implementation("com.sency.smkitui:smkitui:$latest_version") {
@@ -25,7 +26,7 @@ dependencies {
 }
 ```
 
-Inside `gradle.properties` insert thoose global properties:
+Inside `gradle.properties` insert those global properties:
 ```groovy
-artifactory_contentUrl = "https://artifacts.sency.ai/artifactory/release"
+artifactory_contentUrl = https://artifacts.sency.ai/artifactory/release
 ```
