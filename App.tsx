@@ -1,6 +1,19 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, requireNativeComponent, StyleSheet, Pressable, ActivityIndicator, Alert} from 'react-native';
-import { configure, startAssessment, startCustomWorkout, AssessmentTypes, startWorkoutProgram } from '@sency/react-native-smkit-ui/src/index';
+import {
+  View,
+  Text,
+  StyleSheet,
+  Pressable,
+  ActivityIndicator,
+  Alert,
+} from 'react-native';
+import {
+  configure,
+  startAssessment,
+  startCustomWorkout,
+  startWorkoutProgram,
+  startCustomAssessment,
+} from '@sency/react-native-smkit-ui/src/index';
 import * as SMWorkoutLibrary from '@sency/react-native-smkit-ui/src/SMWorkout';
 
 const App = () => {
@@ -20,7 +33,7 @@ const App = () => {
         <Pressable
           disabled={!didConfig}
           style={[styles.button]}
-          onPress={() => startAssessmentSession(SMWorkoutLibrary.AssessmentTypes.Fitness, true, "")}>
+          onPress={() => startAssessmentSession(SMWorkoutLibrary.AssessmentTypes.Fitness, true)}>
           <Text style={styles.textStyle}>Start Assessment</Text>
         </Pressable>
 
@@ -34,24 +47,39 @@ const App = () => {
         <Pressable
           disabled={!didConfig}
           style={[styles.button]}
+          onPress={() => startAssessmentSession(SMWorkoutLibrary.AssessmentTypes.Body360, true)}>
+          <Text style={styles.textStyle}>Start Body360 Assessment</Text>
+        </Pressable>
+
+        <Pressable
+          disabled={!didConfig}
+          style={[styles.button]}
           onPress={() => startSMKitUICustomWorkout()}>
           <Text style={styles.textStyle}>Start startCustomWorkout</Text>
         </Pressable>
+
+        <Pressable
+          disabled={!didConfig}
+          style={[styles.button]}
+          onPress={() => startSMKitUICustomAssessment()}>
+          <Text style={styles.textStyle}>Start customized assessment</Text>
+        </Pressable>
+
         </View>
     </View>
   );
 
-  async function configureSMKitUI(){
+  async function configureSMKitUI() {
     setisLoading(true);
-    try{
-      var res = await configure("YOUR_AUTH_KEY");
+    try {
+      var res = await configure('YOUR_AUTH_KEY');
       setisLoading(false);
       setDidConfig(true);
-    }catch (e) {
+    } catch (e) {
       setisLoading(false);
-      Alert.alert("Configure Failed"),
-      "",
-      [{ text: 'OK', onPress: () => console.log('OK Pressed') }]
+      Alert.alert('Configure Failed'),
+        '',
+        [{text: 'OK', onPress: () => console.log('OK Pressed')}];
     }
   }
 
@@ -65,37 +93,33 @@ const App = () => {
       console.log(result.summary);
       console.log(result.didFinish);
     }catch(e) {
-      console.error(e);
+      Alert.alert('Unable to start assessment'),
+        '',
+        [{text: 'OK', onPress: () => console.log('OK Pressed')}];
     }
   }
 
-  async function startSMKitUICustomWorkout(){
+  async function startSMKitUICustomWorkout() {
     try{
       // list of exercies
       var exercises = [
         new SMWorkoutLibrary.SMExercise(
           "Plank", // => name:string | null
           60, // => totalSeconds: number | null
-          8, // => introSeconds: number | null
           "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4", // => videoInstruction: string | null (url for a video)
           "https://commondatastorage.googleapis.com/codeskulptor-demos/DDR_assets/Sevish_-__nbsp_.mp3", // => exerciseIntro: string | null (url for a sound)
           [SMWorkoutLibrary.UIElement.GaugeOfMotion, SMWorkoutLibrary.UIElement.Timer], // => uiElements: UIElement[] | null
           "PlankHighStatic", // => detector: string
-          false, // => repBased: boolean | null
           "", // => exerciseClosure: string | null (url for a sound)
-          new SMWorkoutLibrary.SMScoringParams("time", 0.5, 0, 60, null, null)
         ),
         new SMWorkoutLibrary.SMExercise(
           "Second Exercise", // => name:string | null
           25, // => totalSeconds: number | null
-          5, // => introSeconds: number | null
           null, // => videoInstruction: string | null (url for a video)
           null, // => exerciseIntro: string | null (url for a sound)
           [SMWorkoutLibrary.UIElement.GaugeOfMotion, SMWorkoutLibrary.UIElement.Timer], // => uiElements: UIElement[] | null
           "SquatRegularOverheadStatic", // => detector: string
-          false, // => repBased: boolean | null
           null, // => exerciseClosure: string | null (url for a sound)
-          new SMWorkoutLibrary.SMScoringParams("", 0, 0, 0, "", null)
         ),
       ];
   
@@ -141,6 +165,68 @@ const App = () => {
       {text: 'OK', onPress: () => console.log('OK Pressed')},
     ]);
   }
+
+  async function startSMKitUICustomAssessment() {
+    try{
+      // list of exercies
+      var exercises = [
+        new SMWorkoutLibrary.SMExercise(
+          'First Exercise', // => name:string | null
+          35, // => totalSeconds: number | null
+          'HighKnees', // => videoInstruction: string | null (url for a video)
+          null, // => exerciseIntro: string | null (url for a sound)
+          [
+            SMWorkoutLibrary.UIElement.RepsCounter,
+            SMWorkoutLibrary.UIElement.Timer,
+          ], // => uiElements: UIElement[] | null
+          'HighKnees', // => detector: string
+          null, // => exerciseClosure: string | null (url for a sound)
+          new SMWorkoutLibrary.SMScoringParams(
+            SMWorkoutLibrary.ScoringType.Reps,
+            0.3, // => scoreFactor: number | null
+            null, // => targetTime: number | null
+            20, // => targetReps: number | null
+          ),
+        ),
+        new SMWorkoutLibrary.SMExercise(
+          'Second Exercise', // => name:string | null
+          25, // => totalSeconds: number | null
+          'SquatRegularOverheadStatic', // => videoInstruction: string | null (url for a video)
+          null, // => exerciseIntro: string | null (url for a sound)
+          [
+            SMWorkoutLibrary.UIElement.GaugeOfMotion,
+            SMWorkoutLibrary.UIElement.Timer,
+          ], // => uiElements: UIElement[] | null
+          'SquatRegularOverheadStatic', // => detector: string
+          null, // => exerciseClosure: string | null (url for a sound)
+          new SMWorkoutLibrary.SMScoringParams(
+            SMWorkoutLibrary.ScoringType.Time,
+            0.5, // => scoreFactor: number | null
+            10, // => targetTime: number | null
+            null, // => targetReps: number | null
+          ),
+        ),
+      ];
+
+      var workout = new SMWorkoutLibrary.SMWorkout(
+        "50", // => id: string | null
+        "demo workout",// => name: string | null
+        null, // => workoutIntro: string | null (url for a sound)
+        null, // => soundtrack: string | null (url for a sound)
+        exercises, // => exercises: SMExercise[]
+        null, // =>  getInFrame: string | null (url for a sound)
+        null, // =>  bodycalFinished: string | null (url for a sound)
+        null // =>  workoutClosure: string | null (url for a sound)
+        );
+      var result = await startCustomAssessment(workout);
+      console.log(result.summary);
+      console.log(result.didFinish);
+    }catch(e){
+      console.error(e);
+      showAlert("Custom workout error", e + "");
+    }
+  }
+
 }
 
 const styles = StyleSheet.create({

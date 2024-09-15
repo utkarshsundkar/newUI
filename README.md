@@ -71,30 +71,22 @@ async function startSMKitUICustomWorkout(){
       new SMWorkoutLibrary.SMExercise(
         name: "First Exercise", // => name:string | null
         35,                     // => totalSeconds: number | null
-        5,                      // => introSeconds: number | null
         null,                   // => videoInstruction: string | null (url for a video)
         null,                   // => exerciseIntro: string | null (url for a sound)
         [SMWorkoutLibrary.UIElement.RepsCounter, SMWorkoutLibrary.UIElement.Timer], // => uiElements: UIElement[] | null
         "HighKnees", // => detector: string
         true, // => repBased: boolean | null
         null, // => exerciseClosure: string | null (url for a sound)
-        13, // => targetReps: number | null
-        20, // => targetTime: number | null
-        0.3 // => scoreFactor: number | null
       ),
       new SMWorkoutLibrary.SMExercise(
         "Second Exercise", // => name:string | null
         25, // => totalSeconds: number | null
-        5, // => introSeconds: number | null
         null, // => videoInstruction: string | null (url for a video)
         null, // => exerciseIntro: string | null (url for a sound)
         [SMWorkoutLibrary.UIElement.GaugeOfMotion, SMWorkoutLibrary.UIElement.Timer], // => uiElements: UIElement[] | null
         "SquatRegularOverheadStatic", // => detector: string
         false, // => repBased: boolean | null
         null, // => exerciseClosure: string | null (url for a sound)
-        null, // => targetReps: number | null
-        20, // => targetTime: number | null
-        0.3 // => scoreFactor: number | null
       ),
     ];
 
@@ -116,6 +108,69 @@ async function startSMKitUICustomWorkout(){
   }
 }
 ```
+
+### Start Custom Assessment
+**startCustomAssessment** starts a custom assessmet
+```js
+try{
+    // list of exercies
+    var exercises = [
+        new SMWorkoutLibrary.SMExercise(
+            'First Exercise', // => name:string | null
+             35, // => totalSeconds: number | null
+             'HighKnees', // => videoInstruction: string | null (url for a video)
+             null, // => exerciseIntro: string | null (url for a sound)
+             [
+                SMWorkoutLibrary.UIElement.RepsCounter,
+                SMWorkoutLibrary.UIElement.Timer,
+             ], // => uiElements: UIElement[] | null
+             'HighKnees', // => detector: string
+             null, // => exerciseClosure: string | null (url for a sound)
+             new SMWorkoutLibrary.SMScoringParams(
+                SMWorkoutLibrary.ScoringType.Reps,
+                0.3, // => scoreFactor: number | null
+                null, // => targetTime: number | null
+                20, // => targetReps: number | null
+             ),
+        ),
+        new SMWorkoutLibrary.SMExercise(
+            'Second Exercise', // => name:string | null
+             25, // => totalSeconds: number | null
+             'SquatRegularOverheadStatic', // => videoInstruction: string | null (url for a video)
+             null, // => exerciseIntro: string | null (url for a sound)
+             [
+                SMWorkoutLibrary.UIElement.GaugeOfMotion,
+                SMWorkoutLibrary.UIElement.Timer,
+             ], // => uiElements: UIElement[] | null
+             'SquatRegularOverheadStatic', // => detector: string
+             null, // => exerciseClosure: string | null (url for a sound)
+             new SMWorkoutLibrary.SMScoringParams(
+                SMWorkoutLibrary.ScoringType.Time,
+                0.5, // => scoreFactor: number | null
+                10, // => targetTime: number | null
+                null, // => targetReps: number | null
+             ),
+        ),
+    ];
+    var workout = new SMWorkoutLibrary.SMWorkout(
+        "50", // => id: string | null
+        "demo workout",// => name: string | null
+        null, // => workoutIntro: string | null (url for a sound)
+        null, // => soundtrack: string | null (url for a sound)
+        exercises, // => exercises: SMExercise[]
+        null, // =>  getInFrame: string | null (url for a sound)
+        null, // =>  bodycalFinished: string | null (url for a sound)
+        null // =>  workoutClosure: string | null (url for a sound)
+    );
+    var result = await startCustomAssessment(workout);
+    console.log(result.summary);
+    console.log(result.didFinish);
+}catch(e){
+    console.error(e);
+    showAlert("Custom workout error", e + "");
+}
+```
+
 
 ### Start Program
 **startWorkoutProgram** starts a workout program according to your WorkoutConfig.
@@ -140,7 +195,7 @@ async function startSMKitUICustomWorkout(){
 }
 ```
 
-### AssessmentTypes
+### AssessmentTypes<a name="data"></a>
 | Name (enum)              | Description |More info|
 |---------------------|---------------------|---------------------|
 | Fitness             | For individuals of any activity level who seek to enhance their physical abilities, strength, and endurance through a tailored plan.| [Link](https://github.com/sency-ai/smkit-sdk/blob/main/Assessments/AI-Fitness-Assessment.md) |
