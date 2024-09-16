@@ -33,7 +33,7 @@ const App = () => {
         <Pressable
           disabled={!didConfig}
           style={[styles.button]}
-          onPress={() => startAssessmentSession(SMWorkoutLibrary.AssessmentTypes.Fitness, true)}>
+          onPress={() => startAssessmentSession(SMWorkoutLibrary.AssessmentTypes.Fitness, true, "")}>
           <Text style={styles.textStyle}>Start Assessment</Text>
         </Pressable>
 
@@ -47,7 +47,7 @@ const App = () => {
         <Pressable
           disabled={!didConfig}
           style={[styles.button]}
-          onPress={() => startAssessmentSession(SMWorkoutLibrary.AssessmentTypes.Body360, true)}>
+          onPress={() => startAssessmentSession(SMWorkoutLibrary.AssessmentTypes.Body360, true, "")}>
           <Text style={styles.textStyle}>Start Body360 Assessment</Text>
         </Pressable>
 
