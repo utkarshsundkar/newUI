@@ -111,6 +111,7 @@ const App = () => {
           [SMWorkoutLibrary.UIElement.GaugeOfMotion, SMWorkoutLibrary.UIElement.Timer], // => uiElements: UIElement[] | null
           "PlankHighStatic", // => detector: string
           "", // => exerciseClosure: string | null (url for a sound)
+          null
         ),
         new SMWorkoutLibrary.SMExercise(
           "Second Exercise", // => name:string | null
@@ -120,6 +121,7 @@ const App = () => {
           [SMWorkoutLibrary.UIElement.GaugeOfMotion, SMWorkoutLibrary.UIElement.Timer], // => uiElements: UIElement[] | null
           "SquatRegularOverheadStatic", // => detector: string
           null, // => exerciseClosure: string | null (url for a sound)
+          null
         ),
       ];
   
@@ -186,6 +188,8 @@ const App = () => {
             0.3, // => scoreFactor: number | null
             null, // => targetTime: number | null
             20, // => targetReps: number | null
+            null,
+            null
           ),
         ),
         new SMWorkoutLibrary.SMExercise(
@@ -204,6 +208,8 @@ const App = () => {
             0.5, // => scoreFactor: number | null
             10, // => targetTime: number | null
             null, // => targetReps: number | null
+            null,
+            null
           ),
         ),
       ];

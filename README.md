@@ -77,6 +77,7 @@ async function startSMKitUICustomWorkout(){
         "HighKnees", // => detector: string
         true, // => repBased: boolean | null
         null, // => exerciseClosure: string | null (url for a sound)
+        null, // => scoringParams: SMWorkoutLibrary.SMScoringParams | null
       ),
       new SMWorkoutLibrary.SMExercise(
         "Second Exercise", // => name:string | null
@@ -87,6 +88,7 @@ async function startSMKitUICustomWorkout(){
         "SquatRegularOverheadStatic", // => detector: string
         false, // => repBased: boolean | null
         null, // => exerciseClosure: string | null (url for a sound)
+        null, // => scoringParams: SMWorkoutLibrary.SMScoringParams | null
       ),
     ];
 
@@ -127,10 +129,12 @@ try{
              'HighKnees', // => detector: string
              null, // => exerciseClosure: string | null (url for a sound)
              new SMWorkoutLibrary.SMScoringParams(
-                SMWorkoutLibrary.ScoringType.Reps,
+                SMWorkoutLibrary.ScoringType.Reps, // type: SMWorkoutLibrary.ScoringType
                 0.3, // => scoreFactor: number | null
                 null, // => targetTime: number | null
                 20, // => targetReps: number | null
+                null, // targetRom: string | null
+                null, // passCriteria: string[] | null
              ),
         ),
         new SMWorkoutLibrary.SMExercise(
@@ -145,10 +149,12 @@ try{
              'SquatRegularOverheadStatic', // => detector: string
              null, // => exerciseClosure: string | null (url for a sound)
              new SMWorkoutLibrary.SMScoringParams(
-                SMWorkoutLibrary.ScoringType.Time,
+                SMWorkoutLibrary.ScoringType.Time, // type: SMWorkoutLibrary.ScoringType
                 0.5, // => scoreFactor: number | null
                 10, // => targetTime: number | null
                 null, // => targetReps: number | null
+                null, // targetRom: string | null
+                null, // passCriteria: string[] | null
              ),
         ),
     ];
