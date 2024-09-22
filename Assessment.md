@@ -1,0 +1,42 @@
+# Assessment
+>Sency offers two primary types of assessments: Sency Blueprint assessments and Customized assessments.
+
+>**Sency Blueprint Assessments:** Developed in collaboration with Sency’s medical and fitness experts, these assessments provide a standardized, professional way to measure core aspects of movement, fitness, and a healthy lifestyle. Simply follow the "start assessment" instructions and select the [type of assessment](#assessment-types) you need.
+
+>**Sency Customized Assessments:** For those who prefer to beuild their own assessments, you can create a customized evaluation using the exercises and movements from our movement catalog, according to your specific requirements (check the CustomizedAssessment.md file for more info).
+
+
+Import the sdk and it's main functions
+```js
+import { startAssessment, startCustomWorkout, AssessmentTypes, startWorkoutProgram } from '@sency/react-native-smkit-ui/src/index.tsx';
+import * as SMWorkoutLibrary from '@sency/react-native-smkit-ui/src/SMWorkout.tsx';
+```
+
+### Start Assessment
+**startAssessment** starts one of Sency's blueprint assessments.
+You can select the assessment `type` by setting the type to any value from the `AssessmentTypes` enum.
+
+```js
+async function startAssessmentSession(
+    type: AssessmentTypes, // => The type of assessment, which can be either AssessmentTypes.Fitness or AssessmentTypes.Custom.
+    showSummary: boolean, // => Determines whether the summary screen will be presented at the end of the exercise.
+    customAssessmentID: string, // If you have more than one custom assessment, use the customAssessmentID to specify which one to call, if not please use null.
+  ){
+    try{
+    var result = await startAssessment(type, showSummary, customAssessmentID);
+    console.log(result.summary);
+    console.log(result.didFinish);
+  }catch(e) {
+    console.error(e);
+  }
+}
+```
+
+### Blueprint AssessmentTypes <a name="assessment-types"></a>
+| Name (enum)         | Description |More info|
+|---------------------|---------------------|---------------------|
+| Fitness             | For individuals of any activity level who seek to enhance their physical abilities, strength, and endurance through a tailored plan.| [Link](https://github.com/sency-ai/smkit-sdk/blob/main/Assessments/AI-Fitness-Assessment.md) |
+| Body360                 | Designed for individuals of any age and activity level, this assessment determines the need for a preventative plan or medical support.| [Link](https://github.com/sency-ai/smkit-sdk/blob/main/Assessments/360-Body-Assessment.md) |
+| Strength            |For individuals of any activity level who seek to assess their strength capabilities (core and endurance) * This assessment will be available soon. Contact us for more info.| [Link](https://github.com/sency-ai/smkit-sdk/blob/main/Assessments/Strength.md) |
+| Cardio            |For individuals of any activity level who seek to assess their cardiovascular capabilities  * This assessment will be available soon. Contact us for more info.| [Link](https://github.com/sency-ai/smkit-sdk/blob/main/Assessments/Cardio.md) |
+| Custom              |If Sency created a tailored assessment for you, you probably know it, and you should use this enum.|  |
