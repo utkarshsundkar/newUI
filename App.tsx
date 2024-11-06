@@ -89,7 +89,8 @@ const App = () => {
     customAssessmentID: string, // If you have more than one custom assessment, use the customAssessmentID to specify which one to call, if not please use null.
   ) {
     try {
-      var result = await startAssessment(type, showSummary, customAssessmentID);
+      var userData = new SMWorkoutLibrary.UserData(SMWorkoutLibrary.Gender.Female, 27)
+      var result = await startAssessment(type, showSummary, userData, false, customAssessmentID);
       console.log(result.summary);
       console.log(result.didFinish);
     }catch(e) {
@@ -172,7 +173,7 @@ const App = () => {
     try{
       // list of exercies
       var exercises = [
-        new SMWorkoutLibrary.SMExercise(
+        new SMWorkoutLibrary.SMAssessmentExercise(
           'First Exercise', // => name:string | null
           35, // => totalSeconds: number | null
           'HighKnees', // => videoInstruction: string | null (url for a video)
@@ -191,8 +192,12 @@ const App = () => {
             null,
             null
           ),
+          'HighKnees', // => summaryTitle: string | null
+          'Subtitle', // => summarySubTitle: string | null
+          'Reps', // => summaryMainMetricTitle: string | null
+          'clean reps', // => summaryMainMetricSubTitle: string | null
         ),
-        new SMWorkoutLibrary.SMExercise(
+        new SMWorkoutLibrary.SMAssessmentExercise(
           'Second Exercise', // => name:string | null
           25, // => totalSeconds: number | null
           'SquatRegularOverheadStatic', // => videoInstruction: string | null (url for a video)
@@ -211,6 +216,9 @@ const App = () => {
             null,
             null
           ),
+          "SquatRegularOverheadStatic", // => summaryTitle: string | null,
+          "Subtitle", // => summarySubTitle: string | null,
+          "timeInPosition",
         ),
       ];
 
@@ -224,7 +232,7 @@ const App = () => {
         null, // =>  bodycalFinished: string | null (url for a sound)
         null // =>  workoutClosure: string | null (url for a sound)
         );
-      var result = await startCustomAssessment(workout);
+      var result = await startCustomAssessment(workout, null, true);
       console.log(result.summary);
       console.log(result.didFinish);
     }catch(e){

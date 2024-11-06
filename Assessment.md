@@ -23,7 +23,8 @@ async function startAssessmentSession(
     customAssessmentID: string, // If you have more than one custom assessment, use the customAssessmentID to specify which one to call, if not please use null.
   ){
     try{
-    var result = await startAssessment(type, showSummary, customAssessmentID);
+    var userData = new SMWorkoutLibrary.UserData(SMWorkoutLibrary.Gender.Female, 27) 
+    var result = await startAssessment(type, showSummary, userData, false, customAssessmentID);
     console.log(result.summary);
     console.log(result.didFinish);
   }catch(e) {
