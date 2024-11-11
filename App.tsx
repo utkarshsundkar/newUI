@@ -176,7 +176,7 @@ const App = () => {
         new SMWorkoutLibrary.SMAssessmentExercise(
           'First Exercise', // => name:string | null
           35, // => totalSeconds: number | null
-          'HighKnees', // => videoInstruction: string | null (url for a video)
+          null, // => videoInstruction: string | null (url for a video)
           null, // => exerciseIntro: string | null (url for a sound)
           [
             SMWorkoutLibrary.UIElement.RepsCounter,
@@ -222,7 +222,7 @@ const App = () => {
         ),
       ];
 
-      var workout = new SMWorkoutLibrary.SMWorkout(
+      var assessment = new SMWorkoutLibrary.SMWorkout(
         "50", // => id: string | null
         "demo workout",// => name: string | null
         null, // => workoutIntro: string | null (url for a sound)
@@ -231,8 +231,18 @@ const App = () => {
         null, // =>  getInFrame: string | null (url for a sound)
         null, // =>  bodycalFinished: string | null (url for a sound)
         null // =>  workoutClosure: string | null (url for a sound)
-        );
-      var result = await startCustomAssessment(workout, null, true);
+      );
+
+      /**
+       * Initiates a custom assessment session.
+       *
+       * @param {SMWorkoutLibrary.SMWorkout} assessment - The assessment configuration for the session.
+       * @param {SMWorkoutLibrary.UserData | null} userData - User data for the assessment, or `null` if no user data is provided.
+       * @param {boolean} [forceShowUserDataScreen=false] - Forces the display of the user data screen even if user data is provided.
+       * @param {boolean} [showSummary=true] - Determines if the summary should be shown after assessment completion.
+       * @returns {Promise<{ summary: string; didFinish: boolean }>} - A promise that resolves with an object containing the summary and a flag indicating if the assessment finished.
+       */
+      var result = await startCustomAssessment(assessment, null, true, false);
       console.log(result.summary);
       console.log(result.didFinish);
     }catch(e){

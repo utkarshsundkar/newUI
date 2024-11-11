@@ -24,7 +24,19 @@ async function startAssessmentSession(
   ){
     try{
     var userData = new SMWorkoutLibrary.UserData(SMWorkoutLibrary.Gender.Female, 27) 
+    
+    /**
+    * start an assessment session.
+    *
+    * @param {SMWorkoutLibrary.AssessmentTypes} type - The type of assessment to start.
+    * @param {boolean} [showSummary=true] - Determines if the summary should be shown after assessment completion.
+    * @param {SMWorkoutLibrary.UserData | null} userData - User data for the assessment session, or `null` if no user data is provided.
+    * @param {boolean} [forceShowUserDataScreen=false] - Forces the display of the user data screen even if user data is provided.
+    * @param {string} customAssessmentID - A unique identifier for a custom assessment session.
+    * @returns {Promise<{ summary: string; didFinish: boolean }>} - A promise that resolves with an object containing the summary and a flag indicating whether the assessment finished.
+    */
     var result = await startAssessment(type, showSummary, userData, false, customAssessmentID);
+    
     console.log(result.summary);
     console.log(result.didFinish);
   }catch(e) {

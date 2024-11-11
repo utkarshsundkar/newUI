@@ -3,7 +3,7 @@
 1. [ Installation ](#inst)
 2. [ Setup ](#setup)
 3. [ API ](#api)
-5. [ Data ](#data)
+4. [ Data ](#data)
 
 <a name="inst"></a>
 ## 1. Installation
@@ -15,7 +15,7 @@ run `npm install @sency/react-native-smkit-ui`
 * [iOS](https://github.com/sency-ai/smkit-ui-react-native-demo/blob/main/docs/ios-setup.md)
 * [Android](https://github.com/sency-ai/smkit-ui-react-native-demo/blob/main/docs/android-setup.md)
 
-## API<a name="api"></a>
+## 3. API<a name="api"></a>
 ### 1. Configure <a name="conf"></a>
 
 ```js
@@ -45,7 +45,9 @@ To reduce wait time we recommend to call `configure` on app launch.
 
 
 
-### AssessmentTypes<a name="data"></a>
+##Data <a name="data"></a>
+
+### AssessmentTypes
 | Name (enum)              | Description |More info|
 |---------------------|---------------------|---------------------|
 | Fitness             | For individuals of any activity level who seek to enhance their physical abilities, strength, and endurance through a tailored plan.| [Link](https://github.com/sency-ai/smkit-sdk/blob/main/Assessments/AI-Fitness-Assessment.md) |
@@ -53,5 +55,6 @@ To reduce wait time we recommend to call `configure` on app launch.
 | Strength            |For individuals of any activity level who seek to assess their strength capabilities (core and endurance) * This assessment will be available soon. Contact us for more info.| [Link](https://github.com/sency-ai/smkit-sdk/blob/main/Assessments/Strength.md) |
 | Cardio            |For individuals of any activity level who seek to assess their cardiovascular capabilities  * This assessment will be available soon. Contact us for more info.| [Link](https://github.com/sency-ai/smkit-sdk/blob/main/Assessments/Cardio.md) |
 | Custom              |If Sency created a tailored assessment for you, you probably know it, and you should use this enum.|  |
+
 
 Having issues? [Contact us](mailto:support@sency.ai) and let us know what the problem is.

@@ -1,11 +1,12 @@
 # Workout
 
+> The customized workout enables you to create a personalized workout session using the exercises and movements from our [Movement catalog](https://github.com/sency-ai/smkit-sdk/blob/main/SDK-Movement-Catalog.md), tailored to your professional standards or personal preferences.
+
 Import the sdk and it's main functions
 ```js
 import { startAssessment, startCustomWorkout, AssessmentTypes, startWorkoutProgram } from '@sency/react-native-smkit-ui/src/index.tsx';
 import * as SMWorkoutLibrary from '@sency/react-native-smkit-ui/src/SMWorkout.tsx';
 ```
-
 
 ### Start Custom Workout
 **startWorkout** starts a custom workout.
