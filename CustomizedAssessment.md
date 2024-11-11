@@ -16,47 +16,55 @@ import * as SMWorkoutLibrary from '@sency/react-native-smkit-ui/src/SMWorkout.ts
 try{
     // list of exercies
     var exercises = [
-        new SMWorkoutLibrary.SMExercise(
-            'First Exercise', // => name:string | null
-             35, // => totalSeconds: number | null
-             'HighKnees', // => videoInstruction: string | null (url for a video)
-             null, // => exerciseIntro: string | null (url for a sound)
-             [
-                SMWorkoutLibrary.UIElement.RepsCounter,
-                SMWorkoutLibrary.UIElement.Timer,
-             ], // => uiElements: UIElement[] | null
-             'HighKnees', // => detector: string
-             null, // => exerciseClosure: string | null (url for a sound)
-             new SMWorkoutLibrary.SMScoringParams(
-                SMWorkoutLibrary.ScoringType.Reps, // type: SMWorkoutLibrary.ScoringType
-                0.3, // => scoreFactor: number | null
-                null, // => targetTime: number | null
-                20, // => targetReps: number | null
-                null, // targetRom: string | null
-                null, // passCriteria: string[] | null
-             ),
+    new SMWorkoutLibrary.SMAssessmentExercise(
+        'First Exercise', // => name:string | null
+        35, // => totalSeconds: number | null
+        'HighKnees', // => videoInstruction: string | null (url for a video)
+        null, // => exerciseIntro: string | null (url for a sound)
+        [
+            SMWorkoutLibrary.UIElement.RepsCounter,
+            SMWorkoutLibrary.UIElement.Timer,
+        ], // => uiElements: UIElement[] | null
+        'HighKnees', // => detector: string
+        null, // => exerciseClosure: string | null (url for a sound)
+        new SMWorkoutLibrary.SMScoringParams(
+            SMWorkoutLibrary.ScoringType.Reps,
+            0.3, // => scoreFactor: number | null
+            null, // => targetTime: number | null
+            20, // => targetReps: number | null
+            null,
+            null
         ),
-        new SMWorkoutLibrary.SMExercise(
-            'Second Exercise', // => name:string | null
-             25, // => totalSeconds: number | null
-             'SquatRegularOverheadStatic', // => videoInstruction: string | null (url for a video)
-             null, // => exerciseIntro: string | null (url for a sound)
-             [
-                SMWorkoutLibrary.UIElement.GaugeOfMotion,
-                SMWorkoutLibrary.UIElement.Timer,
-             ], // => uiElements: UIElement[] | null
-             'SquatRegularOverheadStatic', // => detector: string
-             null, // => exerciseClosure: string | null (url for a sound)
-             new SMWorkoutLibrary.SMScoringParams(
-                SMWorkoutLibrary.ScoringType.Time, // type: SMWorkoutLibrary.ScoringType
-                0.5, // => scoreFactor: number | null
-                10, // => targetTime: number | null
-                null, // => targetReps: number | null
-                null, // targetRom: string | null
-                null, // passCriteria: string[] | null
-             ),
+        'HighKnees', // => summaryTitle: string | null
+        'Subtitle', // => summarySubTitle: string | null
+        'Reps', // => summaryMainMetricTitle: string | null
+        'clean reps', // => summaryMainMetricSubTitle: string | null
+    ),
+    new SMWorkoutLibrary.SMAssessmentExercise(
+        'Second Exercise', // => name:string | null
+        25, // => totalSeconds: number | null
+        'SquatRegularOverheadStatic', // => videoInstruction: string | null (url for a video)
+        null, // => exerciseIntro: string | null (url for a sound)
+        [
+            SMWorkoutLibrary.UIElement.GaugeOfMotion,
+            SMWorkoutLibrary.UIElement.Timer,
+        ], // => uiElements: UIElement[] | null
+        'SquatRegularOverheadStatic', // => detector: string
+        null, // => exerciseClosure: string | null (url for a sound)
+        new SMWorkoutLibrary.SMScoringParams(
+            SMWorkoutLibrary.ScoringType.Time,
+            0.5, // => scoreFactor: number | null
+            10, // => targetTime: number | null
+            null, // => targetReps: number | null
+            null,
+            null
+          ),
+        "SquatRegularOverheadStatic", // => summaryTitle: string | null,
+        "Subtitle", // => summarySubTitle: string | null,
+        "timeInPosition",
         ),
-    ];
+      ];
+
     var workout = new SMWorkoutLibrary.SMWorkout(
         "50", // => id: string | null
         "demo workout",// => name: string | null
@@ -67,7 +75,13 @@ try{
         null, // =>  bodycalFinished: string | null (url for a sound)
         null // =>  workoutClosure: string | null (url for a sound)
     );
-    var result = await startCustomAssessment(workout);
+
+    var result = await startCustomAssessment(
+        workout, 
+        null, // => userData: SMWorkoutLibrary.UserData | null
+        true, // => forceShowUserDataScreen: boolean
+        true // => showSummary: boolean
+    );
     console.log(result.summary);
     console.log(result.didFinish);
 }catch(e){
