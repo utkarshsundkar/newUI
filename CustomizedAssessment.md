@@ -26,7 +26,7 @@ try{
             SMWorkoutLibrary.UIElement.Timer,
         ], // => uiElements: UIElement[] | null
         'HighKnees', // => detector: string
-        null, // => exerciseClosure: string | null (url for a sound)
+        null, // => exerciseClosure: string | null (url for a sound) **Note** in Android pass empty string instead of null
         new SMWorkoutLibrary.SMScoringParams(
             SMWorkoutLibrary.ScoringType.Reps,
             0.3, // => scoreFactor: number | null
@@ -50,7 +50,7 @@ try{
             SMWorkoutLibrary.UIElement.Timer,
         ], // => uiElements: UIElement[] | null
         'SquatRegularOverheadStatic', // => detector: string
-        null, // => exerciseClosure: string | null (url for a sound)
+        null, // => exerciseClosure: string | null (url for a sound) **Note** in Android pass empty string instead of null
         new SMWorkoutLibrary.SMScoringParams(
             SMWorkoutLibrary.ScoringType.Time,
             0.5, // => scoreFactor: number | null
