@@ -50,6 +50,8 @@ To reduce wait time we recommend to call `configure` on app launch.
 
 - [Build Your Own Assessment](https://github.com/sency-ai/smkit-ui-react-native-demo/blob/main/CustomizedAssessment.md)
 
+- [Workout From Program](https://github.com/sency-ai/smkit-ui-react-native-demo/blob/main/wfp.md)
+
 ##Data <a name="data"></a>
 
 ### AssessmentTypes
