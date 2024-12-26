@@ -16,8 +16,8 @@ import {
   startCustomAssessment,
   startCustomWorkout,
   startWorkoutProgram,
-} from '@sency/react-native-smkit-ui-dev';
-import * as SMWorkoutLibrary from '@sency/react-native-smkit-ui-dev/src/SMWorkout';
+} from '@sency/react-native-smkit-ui';
+import * as SMWorkoutLibrary from '@sency/react-native-smkit-ui/src/SMWorkout';
 import EditText from './components/EditText';
 import ThreeCheckboxes from './components/ThreeCheckboxes';
 import React from 'react';
