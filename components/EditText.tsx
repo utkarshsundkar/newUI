@@ -1,11 +1,16 @@
 import React from 'react';
-import { View, TextInput, StyleSheet } from 'react-native';
+import {View, TextInput, StyleSheet} from 'react-native';
 
-const EditText = ({ placeholder = '', value = '', onChangeText = (text: string) => {}, editable = true }) => {
+const EditText = ({
+  placeholder = '',
+  value = '',
+  onChangeText = (text: string) => {},
+  editable = true,
+}) => {
   return (
     <View style={styles.container}>
       <TextInput
-        style={[styles.input]}
+        style={[styles.inputField]}
         placeholder={placeholder}
         value={value}
         onChangeText={onChangeText}
@@ -21,14 +26,15 @@ const styles = StyleSheet.create({
     marginVertical: 10,
     width: '100%',
   },
-  input: {
+  inputField: {
+    width: '100%',
+    padding: 10,
+    marginVertical: 8,
     borderWidth: 1,
     borderColor: '#ccc',
     borderRadius: 5,
-    padding: 10,
-    fontSize: 16,
-    color: '#000',
-    backgroundColor: '#FFF',
+    backgroundColor: 'white',
+    color: 'black',
   },
 });
 

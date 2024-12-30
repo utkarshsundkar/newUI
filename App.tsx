@@ -27,7 +27,7 @@ const App = () => {
   const [isLoading, setisLoading] = useState(false);
 
   const [showWFPUI, setWPFUI] = useState(false);
-  const [week, setWeek] = useState('6');
+  const [week, setWeek] = useState('1');
   const [bodyZone, setBodyZone] = useState(SMWorkoutLibrary.BodyZone.FullBody);
   const [difficulty, setDifficulty] = useState(
     SMWorkoutLibrary.WorkoutDifficulty.LowDifficulty,
@@ -35,7 +35,7 @@ const App = () => {
   const [duration, setDuration] = useState(
     SMWorkoutLibrary.WorkoutDuration.Long,
   );
-  const [name, setName] = useState('PROGRAM_ID');
+  const [name, setName] = useState('YOUR_PROGRAM_ID');
 
   const [modalVisible, setModalVisible] = useState(false);
   const [summaryMessage, setSummaryMessage] = useState('');
@@ -129,31 +129,48 @@ const App = () => {
   return (
     <View style={styles.centeredView}>
       {showWFPUI ? (
-        <View>
+        <View style={styles.container}>
           <Text style={styles.textStyleWFP}>Workout ID:</Text>
-          <EditText placeholder={name} value={name} onChangeText={setName} />
+          <EditText
+            placeholder="Enter workout ID"
+            value={name}
+            onChangeText={setName}
+          />
+
           <Text style={styles.textStyleWFP}>Workout Week:</Text>
-          <EditText placeholder={week} value={week} onChangeText={setWeek} />
+          <EditText
+            placeholder="Enter workout week"
+            value={week}
+            onChangeText={setWeek}
+          />
+
           <Text style={styles.textStyleWFP}>Duration:</Text>
           <ThreeCheckboxes list={['Long', 'Short']} onPress={onDuration} />
+
           <Text style={styles.textStyleWFP}>Body Zone:</Text>
           <ThreeCheckboxes
             list={['Upper Body', 'Lower Body', 'Full Body']}
             onPress={onBodyZone}
           />
+
           <Text style={styles.textStyleWFP}>Difficulty:</Text>
           <ThreeCheckboxes
             list={['Low', 'Mid', 'High']}
             onPress={onDifficulty}
           />
-          <Pressable
-            style={[styles.button]}
-            onPress={() => startWorkoutProgramSession()}>
-            <Text style={styles.textStyle}>Start</Text>
-          </Pressable>
-          <Pressable style={[styles.button]} onPress={() => setWPFUI(false)}>
-            <Text style={styles.textStyle}>Back</Text>
-          </Pressable>
+
+          <View style={styles.buttonGroup}>
+            <Pressable
+              style={[styles.button]}
+              onPress={() => startWorkoutProgramSession()}>
+              <Text style={styles.buttonText}>Start</Text>
+            </Pressable>
+            <Pressable
+              style={[styles.button, styles.closeButton]}
+              onPress={() => setWPFUI(false)}>
+              <Text style={styles.buttonText}>Back</Text>
+            </Pressable>
+          </View>
         </View>
       ) : (
         <View>
@@ -559,9 +576,15 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   textStyleWFP: {
-    color: 'white',
+    color: '#007BFF',
     fontWeight: 'bold',
     textAlign: 'center',
+  },
+  buttonGroup: {
+    marginTop: 20,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    width: '100%',
   },
   centeredView: {
     flex: 1,
@@ -571,7 +594,7 @@ const styles = StyleSheet.create({
   },
   container: {
     flex: 1,
-    padding: 20,
+    padding: 100,
     justifyContent: 'center',
     backgroundColor: '#f5f5f5',
   },
