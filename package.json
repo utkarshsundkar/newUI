@@ -10,7 +10,8 @@
     "test": "jest"
   },
   "dependencies": {
-    "@sency/react-native-smkit-ui": "^0.2.8",
+    "@react-native-clipboard/clipboard": "^1.16.1",
+    "@sency/react-native-smkit-ui": "^0.2.8-patch1",
     "react": "18.2.0",
     "react-native": "0.74.2"
   },
