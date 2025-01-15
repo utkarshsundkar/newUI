@@ -26,8 +26,8 @@ const config = new SMWorkoutLibrary.WorkoutConfig(
   SMWorkoutLibrary.BodyZone.FullBody, // BodyZone | SMWorkoutLibrary.BodyZone
   SMWorkoutLibrary.WorkoutDifficulty.HighDifficulty, // Difficulty | SMWorkoutLibrary.WorkoutDifficulty
   SMWorkoutLibrary.WorkoutDuration.Long, // Duration | SMWorkoutLibrary.WorkoutDuration
-  'YOUR_PROGRAM_ID', // Program ID | String
   SMWorkoutLibrary.Language.English, // Langauge of the UI. Currently Supporting: EN & HE.
+  'YOUR_PROGRAM_ID', // Program ID | String
 );
 ```
 

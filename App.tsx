@@ -1114,7 +1114,7 @@ async function startSMKitUICustomAssessment() {
      * @param {boolean} [showSummary=true] - Determines if the summary should be shown after assessment completion.
      * @returns {Promise<{ summary: string; didFinish: boolean }>} - A promise that resolves with an object containing the summary and a flag indicating if the assessment finished.
      */
-    var res = await setSessionLanguge(SMWorkoutLibrary.Language.Hebrew);
+    var res = setSessionLanguge(SMWorkoutLibrary.Language.Hebrew);
     var result = await startCustomAssessment(assessment, null, true, false);
     console.log(result.summary);
     console.log(result.didFinish);

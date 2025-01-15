@@ -16,58 +16,7 @@ import * as SMWorkoutLibrary from '@sency/react-native-smkit-ui/src/SMWorkout.ts
 
 ### Start Custom Workout
 
-**Listen to Assessment's Callbacks** in order to recieve callbacks from our SDK you need to configure listeners:
-
-```js
-useEffect(() => {
-  const didExitWorkoutSubscription = DeviceEventEmitter.addListener(
-    'didExitWorkout',
-    params => {
-      console.log(
-        'Received didExitWorkout event with message:',
-        params.summary,
-      );
-    },
-  );
-
-  const workoutDidFinishSubscription = DeviceEventEmitter.addListener(
-    'workoutDidFinish',
-    params => {
-      console.log(
-        'Received workoutDidFinish event with message:',
-        params.summary,
-      );
-    },
-  );
-
-  const workoutErrorSubscription = DeviceEventEmitter.addListener(
-    'workoutError',
-    params => {
-      console.log('Received workoutError event with message:', params.error);
-    },
-  );
-
-  const exerciseDidFinishSubscription = DeviceEventEmitter.addListener(
-    'exerciseDidFinish',
-    params => {
-      console.log(
-        'Received exerciseDidFinish event with message:',
-        params.data,
-      );
-    },
-  );
-
-  // Clean up subscription
-  return () => {
-    didExitWorkoutSubscription.remove();
-    workoutDidFinishSubscription.remove();
-    workoutErrorSubscription.remove();
-    exerciseDidFinishSubscription.remove();
-  };
-}, []);
-```
-
-**startWorkout** starts a custom workout.
+`startCustomWorkout` starts a custom workout with customized exercises.
 
 ```js
 async function startSMKitUICustomWorkout(){
@@ -123,4 +72,57 @@ async function startSMKitUICustomWorkout(){
     console.error(e);
   }
 }
+```
+
+**You can also Listen to Assessment's Callbacks**
+if you want you can also recieve callbacks from our SDK:
+** ⚠️ Currently available in Android **
+
+```js
+useEffect(() => {
+  const didExitWorkoutSubscription = DeviceEventEmitter.addListener(
+    'didExitWorkout',
+    params => {
+      console.log(
+        'Received didExitWorkout event with message:',
+        params.summary,
+      );
+    },
+  );
+
+  const workoutDidFinishSubscription = DeviceEventEmitter.addListener(
+    'workoutDidFinish',
+    params => {
+      console.log(
+        'Received workoutDidFinish event with message:',
+        params.summary,
+      );
+    },
+  );
+
+  const workoutErrorSubscription = DeviceEventEmitter.addListener(
+    'workoutError',
+    params => {
+      console.log('Received workoutError event with message:', params.error);
+    },
+  );
+
+  const exerciseDidFinishSubscription = DeviceEventEmitter.addListener(
+    'exerciseDidFinish',
+    params => {
+      console.log(
+        'Received exerciseDidFinish event with message:',
+        params.data,
+      );
+    },
+  );
+
+  // Clean up subscription
+  return () => {
+    didExitWorkoutSubscription.remove();
+    workoutDidFinishSubscription.remove();
+    workoutErrorSubscription.remove();
+    exerciseDidFinishSubscription.remove();
+  };
+}, []);
 ```
