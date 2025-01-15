@@ -16,57 +16,6 @@ import * as SMWorkoutLibrary from '@sency/react-native-smkit-ui/src/SMWorkout.ts
 
 ### Start Customized Assessment
 
-**Listen to Assessment's Callbacks** in order to recieve callbacks from our SDK you need to configure listeners:
-
-```js
-useEffect(() => {
-  const didExitWorkoutSubscription = DeviceEventEmitter.addListener(
-    'didExitWorkout',
-    params => {
-      console.log(
-        'Received didExitWorkout event with message:',
-        params.summary,
-      );
-    },
-  );
-
-  const workoutDidFinishSubscription = DeviceEventEmitter.addListener(
-    'workoutDidFinish',
-    params => {
-      console.log(
-        'Received workoutDidFinish event with message:',
-        params.summary,
-      );
-    },
-  );
-
-  const workoutErrorSubscription = DeviceEventEmitter.addListener(
-    'workoutError',
-    params => {
-      console.log('Received workoutError event with message:', params.error);
-    },
-  );
-
-  const exerciseDidFinishSubscription = DeviceEventEmitter.addListener(
-    'exerciseDidFinish',
-    params => {
-      console.log(
-        'Received exerciseDidFinish event with message:',
-        params.data,
-      );
-    },
-  );
-
-  // Clean up subscription
-  return () => {
-    didExitWorkoutSubscription.remove();
-    workoutDidFinishSubscription.remove();
-    workoutErrorSubscription.remove();
-    exerciseDidFinishSubscription.remove();
-  };
-}, []);
-```
-
 **startAssessment** starts Sency's assessments with custom exercises.
 
 ```js
@@ -76,7 +25,11 @@ try {
     new SMWorkoutLibrary.SMAssessmentExercise(
       'First Exercise', // => name:string | null
       35, // => totalSeconds: number | null
-      'HighKnees', // => videoInstruction: string | null (url for a video)
+      // **Note videoInstruction** null will show no video.
+      // string that matches the detector will show Sency's video if it exists.
+      // string url to local video will play the video.
+      // string with remote url will show remote video
+      'HighKnees', // => videoInstruction: string | null
       null, // => exerciseIntro: string | null (url for a sound)
       [
         SMWorkoutLibrary.UIElement.RepsCounter,
@@ -100,6 +53,10 @@ try {
     new SMWorkoutLibrary.SMAssessmentExercise(
       'Second Exercise', // => name:string | null
       25, // => totalSeconds: number | null
+      // **Note videoInstruction** null will show no video.
+      // string that matches the detector will show Sency's video if it exists.
+      // string url to local video will play the video.
+      // string with remote url will show remote video
       'SquatRegularOverheadStatic', // => videoInstruction: string | null (url for a video)
       null, // => exerciseIntro: string | null (url for a sound)
       [
@@ -148,8 +105,72 @@ try {
     true, // => forceShowUserDataScreen: boolean
     true, // => showSummary: boolean
   );
+  console.log(result.summary); // Summary payload of the assessment
+  console.log(result.didFinish); // If the assessment ended manually ? true : false
 } catch (e) {
   console.error(e);
   showAlert('Custom workout error', e + '');
 }
+```
+
+**Set Language to Custom Assessment**
+if you want to change the language of the UI elements
+Please call `setSessionLanguge` _before_ calling `startCustomAssessment`
+
+```js
+var res = await setSessionLanguge(SMWorkoutLibrary.Language.Hebrew);
+var result = await startCustomAssessment(assessment, null, true, true);
+```
+
+**You can also Listen to Assessment's Callbacks**
+if you want you can also recieve callbacks from our SDK:
+** ⚠️ Currently available in Android **
+
+```js
+useEffect(() => {
+  const didExitWorkoutSubscription = DeviceEventEmitter.addListener(
+    'didExitWorkout',
+    params => {
+      console.log(
+        'Received didExitWorkout event with message:',
+        params.summary,
+      );
+    },
+  );
+
+  const workoutDidFinishSubscription = DeviceEventEmitter.addListener(
+    'workoutDidFinish',
+    params => {
+      console.log(
+        'Received workoutDidFinish event with message:',
+        params.summary,
+      );
+    },
+  );
+
+  const workoutErrorSubscription = DeviceEventEmitter.addListener(
+    'workoutError',
+    params => {
+      console.log('Received workoutError event with message:', params.error);
+    },
+  );
+
+  const exerciseDidFinishSubscription = DeviceEventEmitter.addListener(
+    'exerciseDidFinish',
+    params => {
+      console.log(
+        'Received exerciseDidFinish event with message:',
+        params.data,
+      );
+    },
+  );
+
+  // Clean up subscription
+  return () => {
+    didExitWorkoutSubscription.remove();
+    workoutDidFinishSubscription.remove();
+    workoutErrorSubscription.remove();
+    exerciseDidFinishSubscription.remove();
+  };
+}, []);
 ```

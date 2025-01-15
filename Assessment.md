@@ -20,7 +20,49 @@ import * as SMWorkoutLibrary from '@sency/react-native-smkit-ui/src/SMWorkout.ts
 
 ### Run Assessment
 
-**Listen to Assessment's Callbacks** in order to recieve callbacks from our SDK you need to configure listeners:
+**startAssessment** starts one of Sency's blueprint assessments.
+You can select the assessment `type` by setting the type to any value from the `AssessmentTypes` enum.
+
+```js
+async function startAssessmentSession(
+  type: AssessmentTypes, // => The type of assessment, which can be either AssessmentTypes.Fitness or AssessmentTypes.Custom.
+  showSummary: boolean, // => Determines whether the summary screen will be presented at the end of the exercise.
+  customAssessmentID: string, // If you have more than one custom assessment, use the customAssessmentID to specify which one to call, if not please use null.
+) {
+  try {
+    var userData = new SMWorkoutLibrary.UserData(
+      SMWorkoutLibrary.Gender.Female,
+      27,
+    );
+
+    /**
+     * start an assessment session.
+     *
+     * @param {SMWorkoutLibrary.AssessmentTypes} type - The type of assessment to start.
+     * @param {boolean} [showSummary=true] - Determines if the summary should be shown after assessment completion.
+     * @param {SMWorkoutLibrary.UserData | null} userData - User data for the assessment session, or `null` if no user data is provided.
+     * @param {boolean} [forceShowUserDataScreen=false] - Forces the display of the user data screen even if user data is provided.
+     * @param {string} customAssessmentID - A unique identifier for a custom assessment session.
+     * @returns {Promise<{ summary: string; didFinish: boolean }>} - A promise that resolves with an object containing the summary and a flag indicating whether the assessment finished.
+     */
+    var result = await startAssessment(
+      type,
+      showSummary,
+      userData,
+      false,
+      customAssessmentID,
+    );
+    console.log(result.summary); // Summary payload of the assessment
+    console.log(result.didFinish); // If the assessment ended manually ? true : false
+  } catch (e) {
+    console.error(e);
+  }
+}
+```
+
+**You can also Listen to Assessment's Callbacks**
+if you want you can also recieve callbacks from our SDK:
+** ⚠️ Currently available in Android **
 
 ```js
 useEffect(() => {
@@ -69,44 +111,6 @@ useEffect(() => {
     exerciseDidFinishSubscription.remove();
   };
 }, []);
-```
-
-**startAssessment** starts one of Sency's blueprint assessments.
-You can select the assessment `type` by setting the type to any value from the `AssessmentTypes` enum.
-
-```js
-async function startAssessmentSession(
-  type: AssessmentTypes, // => The type of assessment, which can be either AssessmentTypes.Fitness or AssessmentTypes.Custom.
-  showSummary: boolean, // => Determines whether the summary screen will be presented at the end of the exercise.
-  customAssessmentID: string, // If you have more than one custom assessment, use the customAssessmentID to specify which one to call, if not please use null.
-) {
-  try {
-    var userData = new SMWorkoutLibrary.UserData(
-      SMWorkoutLibrary.Gender.Female,
-      27,
-    );
-
-    /**
-     * start an assessment session.
-     *
-     * @param {SMWorkoutLibrary.AssessmentTypes} type - The type of assessment to start.
-     * @param {boolean} [showSummary=true] - Determines if the summary should be shown after assessment completion.
-     * @param {SMWorkoutLibrary.UserData | null} userData - User data for the assessment session, or `null` if no user data is provided.
-     * @param {boolean} [forceShowUserDataScreen=false] - Forces the display of the user data screen even if user data is provided.
-     * @param {string} customAssessmentID - A unique identifier for a custom assessment session.
-     * @returns {Promise<{ summary: string; didFinish: boolean }>} - A promise that resolves with an object containing the summary and a flag indicating whether the assessment finished.
-     */
-    var result = await startAssessment(
-      type,
-      showSummary,
-      userData,
-      false,
-      customAssessmentID,
-    );
-  } catch (e) {
-    console.error(e);
-  }
-}
 ```
 
 ### Blueprint AssessmentTypes <a name="assessment-types"></a>

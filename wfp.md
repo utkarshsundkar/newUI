@@ -18,7 +18,38 @@ import * as SMWorkoutLibrary from '@sency/react-native-smkit-ui/src/SMWorkout.ts
 
 ### Start Workout From Program
 
-**Listen to Workouts's Callbacks** in order to recieve callbacks from our SDK you need to configure listeners:
+**Build Config** in order to starts a workout from program, you need configuration:
+
+```js
+const config = new SMWorkoutLibrary.WorkoutConfig(
+  6, // Week Number | number
+  SMWorkoutLibrary.BodyZone.FullBody, // BodyZone | SMWorkoutLibrary.BodyZone
+  SMWorkoutLibrary.WorkoutDifficulty.HighDifficulty, // Difficulty | SMWorkoutLibrary.WorkoutDifficulty
+  SMWorkoutLibrary.WorkoutDuration.Long, // Duration | SMWorkoutLibrary.WorkoutDuration
+  'YOUR_PROGRAM_ID', // Program ID | String
+  SMWorkoutLibrary.Language.English, // Langauge of the UI. Currently Supporting: EN & HE.
+);
+```
+
+**startWorkout** starts a workout from program.
+
+```js
+async function startWorkoutProgramSession() {
+  try {
+    var result = await startWorkoutProgram(config);
+    console.log(result.summary);
+    console.log(result.didFinish);
+  } catch (e) {
+    Alert.alert('Unable to start assessment'),
+      '',
+      [{text: 'OK', onPress: () => console.log('OK Pressed')}];
+  }
+}
+```
+
+**You can also Listen to Assessment's Callbacks**
+if you want you can also recieve callbacks from our SDK:
+** ⚠️ Currently available in Android **
 
 ```js
 useEffect(() => {
@@ -67,32 +98,4 @@ useEffect(() => {
     exerciseDidFinishSubscription.remove();
   };
 }, []);
-```
-
-**Build Config** in order to starts a workout from program, you need configuration:
-
-```js
-const config = new SMWorkoutLibrary.WorkoutConfig(
-  6, // Week Number | number
-  SMWorkoutLibrary.BodyZone.FullBody, // BodyZone | SMWorkoutLibrary.BodyZone
-  SMWorkoutLibrary.WorkoutDifficulty.HighDifficulty, // Difficulty | SMWorkoutLibrary.WorkoutDifficulty
-  SMWorkoutLibrary.WorkoutDuration.Long, // Duration | SMWorkoutLibrary.WorkoutDuration
-  'YOUR_PROGRAM_ID', // Program ID | String
-);
-```
-
-**startWorkout** starts a workout from program.
-
-```js
-async function startWorkoutProgramSession() {
-  try {
-    var result = await startWorkoutProgram(config);
-    console.log(result.summary);
-    console.log(result.didFinish);
-  } catch (e) {
-    Alert.alert('Unable to start assessment'),
-      '',
-      [{text: 'OK', onPress: () => console.log('OK Pressed')}];
-  }
-}
 ```

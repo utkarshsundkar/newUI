@@ -77,6 +77,10 @@ async function startSMKitUICustomWorkout(){
       new SMWorkoutLibrary.SMExercise(
         name: "First Exercise", // => name:string | null
         35,                     // => totalSeconds: number | null
+        // **Note videoInstruction** null will show no video.
+        // string that matches the detector will show Sency's video if it exists.
+        // string url to local video will play the video.
+        // string with remote url will show remote video
         null,                   // => videoInstruction: string | null (url for a video)
         null,                   // => exerciseIntro: string | null (url for a sound)
         [SMWorkoutLibrary.UIElement.RepsCounter, SMWorkoutLibrary.UIElement.Timer], // => uiElements: UIElement[] | null
@@ -88,6 +92,10 @@ async function startSMKitUICustomWorkout(){
       new SMWorkoutLibrary.SMExercise(
         "Second Exercise", // => name:string | null
         25, // => totalSeconds: number | null
+        // **Note videoInstruction** null will show no video.
+        // string that matches the detector will show Sency's video if it exists.
+        // string url to local video will play the video.
+        // string with remote url will show remote video
         null, // => videoInstruction: string | null (url for a video)
         null, // => exerciseIntro: string | null (url for a sound)
         [SMWorkoutLibrary.UIElement.GaugeOfMotion, SMWorkoutLibrary.UIElement.Timer], // => uiElements: UIElement[] | null
