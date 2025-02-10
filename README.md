@@ -2,7 +2,7 @@
 
 - [npm](https://www.npmjs.com/package/@sency/react-native-smkit-ui)
 
-## Version: 0.2.8-patch1
+## Version: 0.2.9
 
 1. [ Installation ](#inst)
 2. [ Setup ](#setup)
