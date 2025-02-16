@@ -6,9 +6,7 @@
 
 > **Sency Customized Assessments:** For those who prefer to build their own assessments, you can create a customized evaluation using the exercises and movements from our movement catalog, according to your specific requirements (check the CustomizedAssessment.md file for more info).
 
-> To see all Assessment workout options, please refer to [Assessment Workout Options](https://github.com/sency-ai/smkit-sdk/blob/main/Assessment-Workout-Options.md)
-
-Import the sdk and it's main functions
+> To see all Assessment workout options, please refer to [Assessment Workout Options](https://github.com/sency-ai/smkit-ui-react-native-demo/blob/main/Assessment-Workout-Options.md)
 
 ```js
 import {
