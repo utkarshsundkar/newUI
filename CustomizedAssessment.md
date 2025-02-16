@@ -1,7 +1,7 @@
 # Customized Assessment
 
 > The customized assessment enables you to create a personalized evaluation using the exercises and movements from our [Movement catalog](https://github.com/sency-ai/smkit-sdk/blob/main/SDK-Movement-Catalog.md), tailored to your professional standards or personal preferences.
-> To see all Assessment workout options, please refer to [Assessment Workout Options](https://github.com/sency-ai/smkit-sdk/blob/main/Assessment-Workout-Options.md)
+> To see all Assessment workout options, please refer to [Assessment Workout Options]((https://github.com/sency-ai/smkit-ui-react-native-demo/blob/main/Assessment-Workout-Options.md)
 
 Import the sdk and it's main functions
 
