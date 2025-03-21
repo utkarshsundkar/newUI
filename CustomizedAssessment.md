@@ -24,19 +24,19 @@ try {
   // list of exercies
   var exercises = [
     new SMWorkoutLibrary.SMAssessmentExercise(
-      'First Exercise', // => name:string | null
+      'Burpees', // => name:string | null
       35, // => totalSeconds: number | null
-      // **Note videoInstruction** null will show no video.
+      null,
       // string that matches the detector will show Sency's video if it exists.
       // string url to local video will play the video.
       // string with remote url will show remote video
-      'HighKnees', // => videoInstruction: string | null
+      'Burpees', // => videoInstruction: string | null
       null, // => exerciseIntro: string | null (url for a sound)
       [
         SMWorkoutLibrary.UIElement.RepsCounter,
         SMWorkoutLibrary.UIElement.Timer,
       ], // => uiElements: UIElement[] | null
-      'HighKnees', // => detector: string
+      'Burpees', // => detector: string
       null, // => exerciseClosure: string | null (url for a sound) **Note** in Android pass empty string instead of null
       new SMWorkoutLibrary.SMScoringParams(
         SMWorkoutLibrary.ScoringType.Reps,

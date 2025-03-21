@@ -10,6 +10,7 @@
     "test": "jest"
   },
   "dependencies": {
+    "@expo/vector-icons": "^14.0.4",
     "@sency/react-native-smkit-ui": "^0.2.9",
     "react": "18.2.0",
     "react-native": "0.74.2"

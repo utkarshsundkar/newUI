@@ -1,5 +1,4 @@
-import {useState, useEffect} from 'react';
-
+import { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -10,6 +9,8 @@ import {
   TouchableOpacity,
   DeviceEventEmitter,
   Alert,
+  ScrollView,
+  Image,
 } from 'react-native';
 import {
   configure,
@@ -28,257 +29,1045 @@ import React from 'react';
 
 const App = () => {
   const [didConfig, setDidConfig] = useState(false);
-  const [isLoading, setisLoading] = useState(false);
-
+  const [isLoading, setIsLoading] = useState(false);
   const [showWFPUI, setWPFUI] = useState(false);
   const [week, setWeek] = useState('1');
   const [bodyZone, setBodyZone] = useState(SMWorkoutLibrary.BodyZone.FullBody);
-  const [difficulty, setDifficulty] = useState(
-    SMWorkoutLibrary.WorkoutDifficulty.LowDifficulty,
-  );
-  const [duration, setDuration] = useState(
-    SMWorkoutLibrary.WorkoutDuration.Long,
-  );
+  const [difficulty, setDifficulty] = useState(SMWorkoutLibrary.WorkoutDifficulty.LowDifficulty);
+  const [duration, setDuration] = useState(SMWorkoutLibrary.WorkoutDuration.Long);
   const [language, setLanguage] = useState(SMWorkoutLibrary.Language.English);
   const [name, setName] = useState('YOUR_PROGRAM_ID');
-
   const [modalVisible, setModalVisible] = useState(false);
   const [summaryMessage, setSummaryMessage] = useState('');
+  const [selectedExercises, setSelectedExercises] = useState<string[]>([]);
 
   useEffect(() => {
     configureSMKitUI();
   }, []);
 
-  // Currently available in Android
   useEffect(() => {
-    const didExitWorkoutSubscription = DeviceEventEmitter.addListener(
-      'didExitWorkout',
-      params => {
-        handleEvent(params.summary);
-        console.log(
-          'Received didExitWorkout event with message:',
-          params.summary,
-        );
-      },
-    );
+    const didExitWorkoutSubscription = DeviceEventEmitter.addListener('didExitWorkout', params => {
+      handleEvent(params.summary);
+      console.log('Received didExitWorkout event with message:', params.summary);
+    });
 
-    const workoutDidFinishSubscription = DeviceEventEmitter.addListener(
-      'workoutDidFinish',
-      params => {
-        handleEvent(params.summary);
-        console.log(
-          'Received workoutDidFinish event with message:',
-          params.summary,
-        );
-      },
-    );
+    const workoutDidFinishSubscription = DeviceEventEmitter.addListener('workoutDidFinish', params => {
+      handleEvent(params.summary);
+      console.log('Received workoutDidFinish event with message:', params.summary);
+    });
 
-    // Clean up subscription
     return () => {
       didExitWorkoutSubscription.remove();
       workoutDidFinishSubscription.remove();
     };
   }, []);
 
-  const handleEvent = (summary: string) => {
+  const handleEvent = (summary) => {
     setSummaryMessage(summary);
     setModalVisible(true);
   };
 
-  const onDuration = (index: number) => {
-    if (index == 0) {
-      setDuration(SMWorkoutLibrary.WorkoutDuration.Long);
-    } else {
-      setDuration(SMWorkoutLibrary.WorkoutDuration.Short);
+  const onDuration = (index) => {
+    setDuration(index === 0 ? SMWorkoutLibrary.WorkoutDuration.Long : SMWorkoutLibrary.WorkoutDuration.Short);
+  };
+
+  const onLanguage = (index) => {
+    setLanguage(index === 0 ? SMWorkoutLibrary.Language.Hebrew : SMWorkoutLibrary.Language.English);
+  };
+
+  const onBodyZone = (index) => {
+    setBodyZone(
+      index === 0 ? SMWorkoutLibrary.BodyZone.UpperBody :
+      index === 1 ? SMWorkoutLibrary.BodyZone.LowerBody :
+      SMWorkoutLibrary.BodyZone.FullBody
+    );
+  };
+
+  const onDifficulty = (index) => {
+    setDifficulty(
+      index === 0 ? SMWorkoutLibrary.WorkoutDifficulty.LowDifficulty :
+      index === 1 ? SMWorkoutLibrary.WorkoutDifficulty.MidDifficulty :
+      SMWorkoutLibrary.WorkoutDifficulty.HighDifficulty
+    );
+  };
+
+  const handleExerciseSelect = (exercise: string) => {
+    setSelectedExercises(prev => {
+      if (prev.includes(exercise)) {
+        return prev.filter(e => e !== exercise);
+      }
+      if (prev.length >= 3) {
+        showAlert('Maximum Exercises', 'You can only select up to 3 exercises');
+        return prev;
+      }
+      return [...prev, exercise];
+    });
+  };
+
+  const handleCategorySelect = async (category: string) => {
+    try {
+      switch (category) {
+        case 'Fitness':
+          await startAssessmentSession(SMWorkoutLibrary.AssessmentTypes.Fitness, true, '');
+          break;
+        case 'Movement':
+          await startAssessmentSession(SMWorkoutLibrary.AssessmentTypes.Body360, true, '');
+          break;
+        case 'Cardio':
+          await startAssessmentSession(SMWorkoutLibrary.AssessmentTypes.Fitness, true, '');
+          break;
+        case 'Strength':
+          const strengthExercises = [
+            new SMWorkoutLibrary.SMExercise(
+              "Burpees",               // name
+              35,                      // totalSeconds
+              "BurpeesRegular",        // videoInstruction
+              null,                    // exerciseIntro
+              [SMWorkoutLibrary.UIElement.RepsCounter, SMWorkoutLibrary.UIElement.Timer],
+              "BurpeesRegular",        // detector
+              "",                      // repBased
+              null                     // exerciseClosure
+            ),
+            new SMWorkoutLibrary.SMExercise(
+              "Froggers",             // name
+              35,                     // totalSeconds
+              "FroggersRegular",      // videoInstruction
+              null,                   // exerciseIntro
+              [SMWorkoutLibrary.UIElement.RepsCounter, SMWorkoutLibrary.UIElement.Timer],
+              "FroggersRegular",      // detector
+              "",                     // repBased
+              null                    // exerciseClosure
+            )
+          ];
+          break;
+        case 'Custom Fitness':
+          const customExercises = [
+            new SMWorkoutLibrary.SMAssessmentExercise(
+              'High Plank',          // name
+              35,                     // totalSeconds
+              'PlankHighStatic',     // videoInstruction
+              null,                   // exerciseIntro
+              [SMWorkoutLibrary.UIElement.Timer], // UI elements
+              'PlankHighStatic',     // detector
+              '',                     // successSound
+              new SMWorkoutLibrary.SMScoringParams(
+                SMWorkoutLibrary.ScoringType.Time,  // scoring type
+                0.3,                     // threshold
+                30,                      // targetTime
+                null,                    // targetReps
+                null,                    // targetDistance
+                null                     // targetCalories
+              ),
+              '',                     // failedSound
+              'High Plank',           // exerciseTitle
+              'Hold the position',    // subtitle
+              'Time',                 // scoreTitle
+              'seconds'               // scoreSubtitle
+            ),
+            new SMWorkoutLibrary.SMAssessmentExercise(
+              'Air Squat',           // name
+              35,                     // totalSeconds
+              'SquatRegular',        // videoInstruction
+              null,                   // exerciseIntro
+              [SMWorkoutLibrary.UIElement.RepsCounter, SMWorkoutLibrary.UIElement.Timer, SMWorkoutLibrary.UIElement.GaugeOfMotion], // UI elements
+              'SquatRegular',        // detector
+              '',                     // successSound
+              new SMWorkoutLibrary.SMScoringParams(
+                SMWorkoutLibrary.ScoringType.Reps,  // scoring type
+                0.3,                     // threshold
+                null,                    // targetTime
+                12,                      // targetReps
+                null,                    // targetDistance
+                null                     // targetCalories
+              ),
+              '',                     // failedSound
+              'Air Squat',            // exerciseTitle
+              'Complete the exercise', // subtitle
+              'Reps',                 // scoreTitle
+              'clean reps'            // scoreSubtitle
+            ),
+            new SMWorkoutLibrary.SMAssessmentExercise(
+              'Push-ups',            // name
+              35,                     // totalSeconds
+              'PushupRegular',       // videoInstruction
+              null,                   // exerciseIntro
+              [SMWorkoutLibrary.UIElement.RepsCounter, SMWorkoutLibrary.UIElement.Timer], // UI elements
+              'PushupRegular',       // detector
+              '',                     // successSound
+              new SMWorkoutLibrary.SMScoringParams(
+                SMWorkoutLibrary.ScoringType.Reps,  // scoring type
+                0.3,                     // threshold
+                null,                    // targetTime
+                10,                      // targetReps
+                null,                    // targetDistance
+                null                     // targetCalories
+              ),
+              '',                     // failedSound
+              'Push-ups',             // exerciseTitle
+              'Complete the exercise', // subtitle
+              'Reps',                 // scoreTitle
+              'clean reps'            // scoreSubtitle
+            ),
+            new SMWorkoutLibrary.SMAssessmentExercise(
+              'OH Squat',            // name
+              35,                     // totalSeconds
+              'SquatRegularOverheadStatic', // videoInstruction
+              null,                   // exerciseIntro
+              [SMWorkoutLibrary.UIElement.Timer, SMWorkoutLibrary.UIElement.GaugeOfMotion], // UI elements
+              'SquatRegularOverheadStatic', // detector
+              '',                     // successSound
+              new SMWorkoutLibrary.SMScoringParams(
+                SMWorkoutLibrary.ScoringType.Time,  // scoring type
+                0.3,                     // threshold
+                20,                      // targetTime
+                null,                    // targetReps
+                null,                    // targetDistance
+                null                     // targetCalories
+              ),
+              '',                     // failedSound
+              'OH Squat',             // exerciseTitle
+              'Hold the position',    // subtitle
+              'Time',                 // scoreTitle
+              'seconds'               // scoreSubtitle
+            )
+          ];
+
+          const customAssessment = new SMWorkoutLibrary.SMWorkout(
+            'custom_fitness',         // id
+            'Custom Fitness Assessment', // name
+            null,                     // workoutIntro
+            null,                     // soundtrack
+            customExercises,          // exercises
+            null,                     // getInFrame
+            null,                     // bodycalFinished
+            null                      // workoutClosure
+          );
+
+          await startCustomAssessment(
+            customAssessment,
+            null,  // userData
+            true,  // forceShowUserDataScreen
+            true   // showSummary
+          );
+          break;
+        default:
+          break;
+      }
+    } catch (error) {
+      console.error('Error starting assessment:', error);
+      Alert.alert('Error', 'Failed to start assessment');
     }
   };
 
-  const onLanguage = (index: number) => {
-    if (index == 0) {
-      setLanguage(SMWorkoutLibrary.Language.Hebrew);
-    } else {
-      setLanguage(SMWorkoutLibrary.Language.English);
+  const handleStartWorkout = async () => {
+    if (selectedExercises.length === 0) {
+      showAlert('No Exercises', 'Please select at least one exercise');
+      return;
     }
-  };
 
-  const onBodyZone = (index: number) => {
-    if (index == 0) {
-      setBodyZone(SMWorkoutLibrary.BodyZone.UpperBody);
-    } else if (index == 1) {
-      setBodyZone(SMWorkoutLibrary.BodyZone.LowerBody);
-    } else {
-      setBodyZone(SMWorkoutLibrary.BodyZone.FullBody);
-    }
-  };
+    try {
+      const exercises = selectedExercises.map(exerciseName => {
+        let detectorId;
+        let scoringType;
+        let targetReps: number | null = null;
+        let targetTime: number | null = null;
+        let uiElements = [SMWorkoutLibrary.UIElement.RepsCounter, SMWorkoutLibrary.UIElement.Timer];
 
-  const onDifficulty = (index: number) => {
-    if (index == 0) {
-      setDifficulty(SMWorkoutLibrary.WorkoutDifficulty.LowDifficulty);
-    } else if (index == 1) {
-      setDifficulty(SMWorkoutLibrary.WorkoutDifficulty.MidDifficulty);
-    } else {
-      setDifficulty(SMWorkoutLibrary.WorkoutDifficulty.HighDifficulty);
+        switch(exerciseName) {
+          case 'High Plank':
+            detectorId = 'PlankHighStatic';
+            scoringType = SMWorkoutLibrary.ScoringType.Time;
+            targetTime = 30;
+            uiElements = [SMWorkoutLibrary.UIElement.Timer];
+            break;
+          case 'Air Squat':
+            detectorId = 'SquatRegular';
+            scoringType = SMWorkoutLibrary.ScoringType.Reps;
+            targetReps = 10;
+            break;
+          case 'Push-ups':
+            detectorId = 'PushupRegular';
+            scoringType = SMWorkoutLibrary.ScoringType.Reps;
+            targetReps = 10;
+            break;
+          case 'OH Squat':
+            detectorId = 'SquatRegularOverheadStatic';
+            scoringType = SMWorkoutLibrary.ScoringType.Time;
+            targetTime = 20;
+            uiElements = [SMWorkoutLibrary.UIElement.Timer];
+            break;
+          case 'Knee Raise Left':
+            detectorId = 'StandingKneeRaiseLeft';
+            scoringType = SMWorkoutLibrary.ScoringType.Time;
+            targetTime = 15;
+            uiElements = [SMWorkoutLibrary.UIElement.GaugeOfMotion, SMWorkoutLibrary.UIElement.Timer];
+            break;
+          case 'Knee Raise Right':
+            detectorId = 'StandingKneeRaiseRight';
+            scoringType = SMWorkoutLibrary.ScoringType.Time;
+            targetTime = 15;
+            uiElements = [SMWorkoutLibrary.UIElement.GaugeOfMotion, SMWorkoutLibrary.UIElement.Timer];
+            break;
+          case 'Side Bend Left':
+            detectorId = 'StandingSideBendLeft';
+            scoringType = SMWorkoutLibrary.ScoringType.Time;
+            targetTime = 30;
+            uiElements = [SMWorkoutLibrary.UIElement.Timer];
+            break;
+          case 'Side Bend Right':
+            detectorId = 'StandingSideBendRight';
+            scoringType = SMWorkoutLibrary.ScoringType.Time;
+            targetTime = 30;
+            uiElements = [SMWorkoutLibrary.UIElement.Timer];
+            break;
+          case 'Standing Alternate Toe Touch':
+            detectorId = 'StandingAlternateToeTouch';
+            scoringType = SMWorkoutLibrary.ScoringType.Reps;
+            targetReps = 10;
+            uiElements = [SMWorkoutLibrary.UIElement.RepsCounter, SMWorkoutLibrary.UIElement.Timer];
+            break;
+          case 'Jefferson Curl':
+            detectorId = 'JeffersonCurlRight';
+            scoringType = SMWorkoutLibrary.ScoringType.Time;
+            targetTime = 20;
+            uiElements = [SMWorkoutLibrary.UIElement.GaugeOfMotion, SMWorkoutLibrary.UIElement.Timer];
+            break;
+          case 'Alternate Windmill Toe Touch':
+            detectorId = 'AlternateWindmillToeTouch';
+            scoringType = SMWorkoutLibrary.ScoringType.Reps;
+            targetReps = 10;
+            uiElements = [SMWorkoutLibrary.UIElement.RepsCounter, SMWorkoutLibrary.UIElement.Timer];
+            return new SMWorkoutLibrary.SMAssessmentExercise(
+              'AlternateWindmillToeTouch',           // name
+              35,                                     // totalSeconds
+              'AlternateWindmillToeTouch',            // videoInstruction
+              null,                                   // exerciseIntro
+              uiElements,                             // UI elements
+              'AlternateWindmillToeTouch',            // detector
+              '',                                     // successSound
+              new SMWorkoutLibrary.SMScoringParams(
+                scoringType,                          // scoring type based on exercise
+                0.3,                                  // threshold
+                targetTime,                           // targetTime (for plank and static holds)
+                targetReps,                           // targetReps (for dynamic exercises)
+                null,                                 // targetDistance
+                null                                  // targetCalories
+              ),
+              '',                                     // failedSound
+              exerciseName,                           // exerciseTitle (display name)
+              'Complete the exercise',                 // subtitle
+              'Reps',                                 // scoreTitle
+              'clean reps'                            // scoreSubtitle
+            );
+          case 'Burpees':
+            detectorId = 'Burpees';
+            scoringType = SMWorkoutLibrary.ScoringType.Reps;
+            targetReps = 10;
+            uiElements = [SMWorkoutLibrary.UIElement.RepsCounter, SMWorkoutLibrary.UIElement.Timer];
+            return new SMWorkoutLibrary.SMAssessmentExercise(
+              'Burpees',           // name
+              35,                     // totalSeconds
+              'Burpees',            // videoInstruction
+              null,                  // exerciseIntro
+              uiElements,            // UI elements
+              'Burpees',            // detector
+              '',                    // successSound
+              new SMWorkoutLibrary.SMScoringParams(
+                scoringType,         // scoring type based on exercise
+                0.3,                 // threshold
+                targetTime,          // targetTime (for plank and static holds)
+                targetReps,          // targetReps (for dynamic exercises)
+                null,                // targetDistance
+                null                 // targetCalories
+              ),
+              '',                    // failedSound
+              exerciseName,          // exerciseTitle (display name)
+              'Complete the exercise',   // subtitle
+              'Reps',  // scoreTitle
+              'clean reps'  // scoreSubtitle
+            );
+          case 'Crunches':
+            detectorId = 'Crunches';
+            scoringType = SMWorkoutLibrary.ScoringType.Reps;
+            targetReps = 15;
+            uiElements = [SMWorkoutLibrary.UIElement.RepsCounter, SMWorkoutLibrary.UIElement.Timer];
+            break;
+          case 'Froggers':
+            detectorId = 'Froggers';
+            scoringType = SMWorkoutLibrary.ScoringType.Reps;
+            targetReps = 10;
+            uiElements = [SMWorkoutLibrary.UIElement.RepsCounter, SMWorkoutLibrary.UIElement.Timer];
+            return new SMWorkoutLibrary.SMAssessmentExercise(
+              'Froggers',           // name
+              35,                     // totalSeconds
+              'Froggers',            // videoInstruction
+              null,                  // exerciseIntro
+              uiElements,            // UI elements
+              'Froggers',            // detector
+              '',                    // successSound
+              new SMWorkoutLibrary.SMScoringParams(
+                scoringType,         // scoring type based on exercise
+                0.3,                 // threshold
+                targetTime,          // targetTime (for plank and static holds)
+                targetReps,          // targetReps (for dynamic exercises)
+                null,                // targetDistance
+                null                 // targetCalories
+              ),
+              '',                    // failedSound
+              exerciseName,          // exerciseTitle (display name)
+              'Complete the exercise',   // subtitle
+              'Reps',  // scoreTitle
+              'clean reps'  // scoreSubtitle
+            );
+          case 'Glute Bridge':
+            detectorId = 'GlutesBridge';
+            scoringType = SMWorkoutLibrary.ScoringType.Reps;
+            targetReps = 12;
+            uiElements = [SMWorkoutLibrary.UIElement.RepsCounter, SMWorkoutLibrary.UIElement.Timer];
+            return new SMWorkoutLibrary.SMAssessmentExercise(
+              'GlutesBridge',           // name
+              35,                         // totalSeconds
+              'GlutesBridge',            // videoInstruction
+              null,                      // exerciseIntro
+              uiElements,                // UI elements
+              'GlutesBridge',            // detector
+              '',                        // successSound
+              new SMWorkoutLibrary.SMScoringParams(
+                scoringType,             // scoring type based on exercise
+                0.3,                     // threshold
+                targetTime,              // targetTime (for plank and static holds)
+                targetReps,              // targetReps (for dynamic exercises)
+                null,                    // targetDistance
+                null                     // targetCalories
+              ),
+              '',                        // failedSound
+              exerciseName,              // exerciseTitle (display name)
+              'Complete the exercise',   // subtitle
+              'Reps',                    // scoreTitle
+              'clean reps'               // scoreSubtitle
+            );
+          case 'High Knees':
+            detectorId = 'HighKnees';
+            scoringType = SMWorkoutLibrary.ScoringType.Reps;
+            targetReps = 20;
+            uiElements = [SMWorkoutLibrary.UIElement.RepsCounter, SMWorkoutLibrary.UIElement.Timer];
+            return new SMWorkoutLibrary.SMAssessmentExercise(
+              'HighKnees',           // name
+              35,                     // totalSeconds
+              'HighKnees',            // videoInstruction
+              null,                  // exerciseIntro
+              uiElements,            // UI elements
+              'HighKnees',            // detector
+              '',                    // successSound
+              new SMWorkoutLibrary.SMScoringParams(
+                scoringType,         // scoring type based on exercise
+                0.3,                 // threshold
+                targetTime,          // targetTime (for plank and static holds)
+                targetReps,          // targetReps (for dynamic exercises)
+                null,                // targetDistance
+                null                 // targetCalories
+              ),
+              '',                    // failedSound
+              exerciseName,          // exerciseTitle (display name)
+              'Complete the exercise',   // subtitle
+              'Reps',  // scoreTitle
+              'clean reps'  // scoreSubtitle
+            );
+          case 'Jumping Jacks':
+            detectorId = 'JumpingJacks';
+            scoringType = SMWorkoutLibrary.ScoringType.Reps;
+            targetReps = 20;
+            uiElements = [SMWorkoutLibrary.UIElement.RepsCounter, SMWorkoutLibrary.UIElement.Timer];
+            return new SMWorkoutLibrary.SMAssessmentExercise(
+              'JumpingJacks',           // name
+              35,                         // totalSeconds
+              'JumpingJacks',            // videoInstruction
+              null,                      // exerciseIntro
+              uiElements,                // UI elements
+              'JumpingJacks',            // detector
+              '',                        // successSound
+              new SMWorkoutLibrary.SMScoringParams(
+                scoringType,             // scoring type based on exercise
+                0.3,                     // threshold
+                targetTime,              // targetTime (for plank and static holds)
+                targetReps,              // targetReps (for dynamic exercises)
+                null,                    // targetDistance
+                null                     // targetCalories
+              ),
+              '',                        // failedSound
+              exerciseName,              // exerciseTitle (display name)
+              'Complete the exercise',   // subtitle
+              'Reps',                    // scoreTitle
+              'clean reps'               // scoreSubtitle
+            );
+          case 'Jumps':
+            detectorId = 'JumpRegular';
+            scoringType = SMWorkoutLibrary.ScoringType.Reps;
+            targetReps = 15;
+            uiElements = [SMWorkoutLibrary.UIElement.RepsCounter, SMWorkoutLibrary.UIElement.Timer];
+            return new SMWorkoutLibrary.SMAssessmentExercise(
+              'JumpRegular',           // name
+              35,                         // totalSeconds
+              'JumpRegular',            // videoInstruction
+              null,                      // exerciseIntro
+              uiElements,                // UI elements
+              'JumpRegular',            // detector
+              '',                        // successSound
+              new SMWorkoutLibrary.SMScoringParams(
+                scoringType,             // scoring type based on exercise
+                0.3,                     // threshold
+                targetTime,              // targetTime (for plank and static holds)
+                targetReps,              // targetReps (for dynamic exercises)
+                null,                    // targetDistance
+                null                     // targetCalories
+              ),
+              '',                        // failedSound
+              exerciseName,              // exerciseTitle (display name)
+              'Complete the exercise',   // subtitle
+              'Reps',                    // scoreTitle
+              'clean reps'               // scoreSubtitle
+            );
+          case 'Lateral Raises':
+            detectorId = 'LateralRaise';
+            scoringType = SMWorkoutLibrary.ScoringType.Reps;
+            targetReps = 12;
+            uiElements = [SMWorkoutLibrary.UIElement.RepsCounter, SMWorkoutLibrary.UIElement.Timer];
+            return new SMWorkoutLibrary.SMAssessmentExercise(
+              'LateralRaise',           // name
+              35,                         // totalSeconds
+              'LateralRaise',            // videoInstruction
+              null,                      // exerciseIntro
+              uiElements,                // UI elements
+              'LateralRaise',            // detector
+              '',                        // successSound
+              new SMWorkoutLibrary.SMScoringParams(
+                scoringType,             // scoring type based on exercise
+                0.3,                     // threshold
+                targetTime,              // targetTime (for plank and static holds)
+                targetReps,              // targetReps (for dynamic exercises)
+                null,                    // targetDistance
+                null                     // targetCalories
+              ),
+              '',                        // failedSound
+              exerciseName,              // exerciseTitle (display name)
+              'Complete the exercise',   // subtitle
+              'Reps',                    // scoreTitle
+              'clean reps'               // scoreSubtitle
+            );
+          case 'Lunge':
+            detectorId = 'LungeFront';
+            scoringType = SMWorkoutLibrary.ScoringType.Reps;
+            targetReps = 12;
+            uiElements = [SMWorkoutLibrary.UIElement.RepsCounter, SMWorkoutLibrary.UIElement.Timer];
+            return new SMWorkoutLibrary.SMAssessmentExercise(
+              'LungeFront',           // name
+              35,                         // totalSeconds
+              'LungeFront',            // videoInstruction
+              null,                      // exerciseIntro
+              uiElements,                // UI elements
+              'LungeFront',            // detector
+              '',                        // successSound
+              new SMWorkoutLibrary.SMScoringParams(
+                scoringType,             // scoring type based on exercise
+                0.3,                     // threshold
+                targetTime,              // targetTime (for plank and static holds)
+                targetReps,              // targetReps (for dynamic exercises)
+                null,                    // targetDistance
+                null                     // targetCalories
+              ),
+              '',                        // failedSound
+              exerciseName,              // exerciseTitle (display name)
+              'Complete the exercise',   // subtitle
+              'Reps',                    // scoreTitle
+              'clean reps'               // scoreSubtitle
+            );
+          case 'Lunge Jump':
+            detectorId = 'LungeJump';
+            scoringType = SMWorkoutLibrary.ScoringType.Reps;
+            targetReps = 12;
+            uiElements = [SMWorkoutLibrary.UIElement.RepsCounter, SMWorkoutLibrary.UIElement.Timer];
+            return new SMWorkoutLibrary.SMAssessmentExercise(
+              'LungeJump',           // name
+              35,                         // totalSeconds
+              'LungeJump',            // videoInstruction
+              null,                      // exerciseIntro
+              uiElements,                // UI elements
+              'LungeJump',            // detector
+              '',                        // successSound
+              new SMWorkoutLibrary.SMScoringParams(
+                scoringType,             // scoring type based on exercise
+                0.3,                     // threshold
+                targetTime,              // targetTime (for plank and static holds)
+                targetReps,              // targetReps (for dynamic exercises)
+                null,                    // targetDistance
+                null                     // targetCalories
+              ),
+              '',                        // failedSound
+              exerciseName,              // exerciseTitle (display name)
+              'Complete the exercise',   // subtitle
+              'Reps',                    // scoreTitle
+              'clean reps'               // scoreSubtitle
+            );
+          case 'Side Lunge':
+            detectorId = 'SideLunge';
+            scoringType = SMWorkoutLibrary.ScoringType.Reps;
+            targetReps = 12;
+            uiElements = [SMWorkoutLibrary.UIElement.RepsCounter, SMWorkoutLibrary.UIElement.Timer];
+            return new SMWorkoutLibrary.SMAssessmentExercise(
+              'SideLunge',           // name
+              35,                         // totalSeconds
+              'SideLunge',            // videoInstruction
+              null,                      // exerciseIntro
+              uiElements,                // UI elements
+              'SideLunge',            // detector
+              '',                        // successSound
+              new SMWorkoutLibrary.SMScoringParams(
+                scoringType,             // scoring type based on exercise
+                0.3,                     // threshold
+                targetTime,              // targetTime (for plank and static holds)
+                targetReps,              // targetReps (for dynamic exercises)
+                null,                    // targetDistance
+                null                     // targetCalories
+              ),
+              '',                        // failedSound
+              exerciseName,              // exerciseTitle (display name)
+              'Complete the exercise',   // subtitle
+              'Reps',                    // scoreTitle
+              'clean reps'               // scoreSubtitle
+            );
+          case 'Mountain Climber Plank':
+            detectorId = 'MountainClimberPlank';
+            scoringType = SMWorkoutLibrary.ScoringType.Reps;
+            targetReps = 20;
+            uiElements = [SMWorkoutLibrary.UIElement.RepsCounter, SMWorkoutLibrary.UIElement.Timer];
+            return new SMWorkoutLibrary.SMAssessmentExercise(
+              'MountainClimberPlank',           // name
+              35,                         // totalSeconds
+              'MountainClimberPlank',            // videoInstruction
+              null,                      // exerciseIntro
+              uiElements,                // UI elements
+              'MountainClimberPlank',            // detector
+              '',                        // successSound
+              new SMWorkoutLibrary.SMScoringParams(
+                scoringType,             // scoring type based on exercise
+                0.3,                     // threshold
+                targetTime,              // targetTime (for plank and static holds)
+                targetReps,              // targetReps (for dynamic exercises)
+                null,                    // targetDistance
+                null                     // targetCalories
+              ),
+              '',                        // failedSound
+              exerciseName,              // exerciseTitle (display name)
+              'Complete the exercise',   // subtitle
+              'Reps',                    // scoreTitle
+              'clean reps'               // scoreSubtitle
+            );
+          case 'Shoulder Taps Plank':
+            return new SMWorkoutLibrary.SMAssessmentExercise(
+              'PlankHighShoulderTaps',           // name
+              35,                         // totalSeconds
+              'PlankHighShoulderTaps',            // videoInstruction
+              null,                      // exerciseIntro
+              [SMWorkoutLibrary.UIElement.RepsCounter, SMWorkoutLibrary.UIElement.Timer], // UI elements
+              'PlankHighShoulderTaps',            // detector
+              '',                        // successSound
+              new SMWorkoutLibrary.SMScoringParams(
+                SMWorkoutLibrary.ScoringType.Reps,  // scoring type
+                0.3,                     // threshold
+                null,                    // targetTime
+                20,                      // targetReps
+                null,                    // targetDistance
+                null                     // targetCalories
+              ),
+              '',                        // failedSound
+              exerciseName,              // exerciseTitle
+              'Complete the exercise',   // subtitle
+              'Reps',                    // scoreTitle
+              'clean reps'               // scoreSubtitle
+            );
+          case 'Reverse Sit to Table Top':
+            return new SMWorkoutLibrary.SMAssessmentExercise(
+              'ReverseSitToTableTop',           // name
+              35,                         // totalSeconds
+              'ReverseSitToTableTop',            // videoInstruction
+              null,                      // exerciseIntro
+              [SMWorkoutLibrary.UIElement.RepsCounter, SMWorkoutLibrary.UIElement.Timer], // UI elements
+              'ReverseSitToTableTop',            // detector
+              '',                        // successSound
+              new SMWorkoutLibrary.SMScoringParams(
+                SMWorkoutLibrary.ScoringType.Reps,  // scoring type
+                0.3,                     // threshold
+                null,                    // targetTime
+                12,                      // targetReps
+                null,                    // targetDistance
+                null                     // targetCalories
+              ),
+              '',                        // failedSound
+              exerciseName,              // exerciseTitle
+              'Complete the exercise',   // subtitle
+              'Reps',                    // scoreTitle
+              'clean reps'               // scoreSubtitle
+            );
+          case 'Skater Hops':
+            return new SMWorkoutLibrary.SMAssessmentExercise(
+              'SkaterHops',           // name
+              35,                         // totalSeconds
+              'SkaterHops',            // videoInstruction
+              null,                      // exerciseIntro
+              [SMWorkoutLibrary.UIElement.RepsCounter, SMWorkoutLibrary.UIElement.Timer], // UI elements
+              'SkaterHops',            // detector
+              '',                        // successSound
+              new SMWorkoutLibrary.SMScoringParams(
+                SMWorkoutLibrary.ScoringType.Reps,  // scoring type
+                0.3,                     // threshold
+                null,                    // targetTime
+                20,                      // targetReps
+                null,                    // targetDistance
+                null                     // targetCalories
+              ),
+              '',                        // failedSound
+              exerciseName,              // exerciseTitle
+              'Complete the exercise',   // subtitle
+              'Reps',                    // scoreTitle
+              'clean reps'               // scoreSubtitle
+            );
+          case 'Ski Jumps':
+            return new SMWorkoutLibrary.SMAssessmentExercise(
+              'SkiJumps',           // name
+              35,                         // totalSeconds
+              'SkiJumps',            // videoInstruction
+              null,                      // exerciseIntro
+              [SMWorkoutLibrary.UIElement.RepsCounter, SMWorkoutLibrary.UIElement.Timer], // UI elements
+              'SkiJumps',            // detector
+              '',                        // successSound
+              new SMWorkoutLibrary.SMScoringParams(
+                SMWorkoutLibrary.ScoringType.Reps,  // scoring type
+                0.3,                     // threshold
+                null,                    // targetTime
+                20,                      // targetReps
+                null,                    // targetDistance
+                null                     // targetCalories
+              ),
+              '',                        // failedSound
+              exerciseName,              // exerciseTitle
+              'Complete the exercise',   // subtitle
+              'Reps',                    // scoreTitle
+              'clean reps'               // scoreSubtitle
+            );
+          case 'Rotation Jab Squat':
+            return new SMWorkoutLibrary.SMAssessmentExercise(
+              'SquatAndRotationJab',           // name
+              35,                         // totalSeconds
+              'SquatAndRotationJab',            // videoInstruction
+              null,                      // exerciseIntro
+              [SMWorkoutLibrary.UIElement.RepsCounter, SMWorkoutLibrary.UIElement.Timer], // UI elements
+              'SquatAndRotationJab',            // detector
+              '',                        // successSound
+              new SMWorkoutLibrary.SMScoringParams(
+                SMWorkoutLibrary.ScoringType.Reps,  // scoring type
+                0.3,                     // threshold
+                null,                    // targetTime
+                12,                      // targetReps
+                null,                    // targetDistance
+                null                     // targetCalories
+              ),
+              '',                        // failedSound
+              exerciseName,              // exerciseTitle
+              'Complete the exercise',   // subtitle
+              'Reps',                    // scoreTitle
+              'clean reps'               // scoreSubtitle
+            );
+          case 'Bicycle Crunches':
+            return new SMWorkoutLibrary.SMAssessmentExercise(
+              'StandingBicycleCrunches',           // name
+              35,                         // totalSeconds
+              'StandingBicycleCrunches',            // videoInstruction
+              null,                      // exerciseIntro
+              [SMWorkoutLibrary.UIElement.RepsCounter, SMWorkoutLibrary.UIElement.Timer], // UI elements
+              'StandingBicycleCrunches',            // detector
+              '',                        // successSound
+              new SMWorkoutLibrary.SMScoringParams(
+                SMWorkoutLibrary.ScoringType.Reps,  // scoring type
+                0.3,                     // threshold
+                null,                    // targetTime
+                20,                      // targetReps
+                null,                    // targetDistance
+                null                     // targetCalories
+              ),
+              '',                        // failedSound
+              exerciseName,              // exerciseTitle
+              'Complete the exercise',   // subtitle
+              'Reps',                    // scoreTitle
+              'clean reps'               // scoreSubtitle
+            );
+          case 'Oblique Crunches':
+            return new SMWorkoutLibrary.SMAssessmentExercise(
+              'StandingObliqueCrunches',           // name
+              35,                         // totalSeconds
+              'StandingObliqueCrunches',            // videoInstruction
+              null,                      // exerciseIntro
+              [SMWorkoutLibrary.UIElement.RepsCounter, SMWorkoutLibrary.UIElement.Timer], // UI elements
+              'StandingObliqueCrunches',            // detector
+              '',                        // successSound
+              new SMWorkoutLibrary.SMScoringParams(
+                SMWorkoutLibrary.ScoringType.Reps,  // scoring type
+                0.3,                     // threshold
+                null,                    // targetTime
+                20,                      // targetReps
+                null,                    // targetDistance
+                null                     // targetCalories
+              ),
+              '',                        // failedSound
+              exerciseName,              // exerciseTitle
+              'Complete the exercise',   // subtitle
+              'Reps',                    // scoreTitle
+              'clean reps'               // scoreSubtitle
+            );
+          case 'Shoulder Press':
+            return new SMWorkoutLibrary.SMAssessmentExercise(
+              'ShouldersPress',           // name
+              35,                         // totalSeconds
+              'ShouldersPress',            // videoInstruction
+              null,                      // exerciseIntro
+              [SMWorkoutLibrary.UIElement.RepsCounter, SMWorkoutLibrary.UIElement.Timer], // UI elements
+              'ShouldersPress',            // detector
+              '',                        // successSound
+              new SMWorkoutLibrary.SMScoringParams(
+                SMWorkoutLibrary.ScoringType.Reps,  // scoring type
+                0.3,                     // threshold
+                null,                    // targetTime
+                12,                      // targetReps
+                null,                    // targetDistance
+                null                     // targetCalories
+              ),
+              '',                        // failedSound
+              exerciseName,              // exerciseTitle
+              'Complete the exercise',   // subtitle
+              'Reps',                    // scoreTitle
+              'clean reps'               // scoreSubtitle
+            );
+          case 'Side Plank':
+            return new SMWorkoutLibrary.SMAssessmentExercise(
+              'PlankSideLowStatic',           // name
+              35,                         // totalSeconds
+              'PlankSideLowStatic',            // videoInstruction
+              null,                      // exerciseIntro
+              [SMWorkoutLibrary.UIElement.Timer], // UI elements
+              'PlankSideLowStatic',            // detector
+              '',                        // successSound
+              new SMWorkoutLibrary.SMScoringParams(
+                SMWorkoutLibrary.ScoringType.Time,  // scoring type
+                0.3,                     // threshold
+                30,                      // targetTime
+                null,                    // targetReps
+                null,                    // targetDistance
+                null                     // targetCalories
+              ),
+              '',                        // failedSound
+              exerciseName,              // exerciseTitle
+              'Hold the position',   // subtitle
+              'Time',                    // scoreTitle
+              'seconds'               // scoreSubtitle
+            );
+          case 'Tuck Hold':
+            return new SMWorkoutLibrary.SMAssessmentExercise(
+              'TuckHold',           // name
+              35,                         // totalSeconds
+              'TuckHold',            // videoInstruction
+              null,                      // exerciseIntro
+              [SMWorkoutLibrary.UIElement.Timer], // UI elements
+              'TuckHold',            // detector
+              '',                        // successSound
+              new SMWorkoutLibrary.SMScoringParams(
+                SMWorkoutLibrary.ScoringType.Time,  // scoring type
+                0.3,                     // threshold
+                30,                      // targetTime
+                null,                    // targetReps
+                null,                    // targetDistance
+                null                     // targetCalories
+              ),
+              '',                        // failedSound
+              exerciseName,              // exerciseTitle
+              'Hold the position',   // subtitle
+              'Time',                    // scoreTitle
+              'seconds'               // scoreSubtitle
+            );
+          default:
+            if (exerciseName === 'Lunge Jump') {
+              detectorId = 'LungeJump';
+              scoringType = SMWorkoutLibrary.ScoringType.Reps;
+              targetReps = 12;
+              uiElements = [SMWorkoutLibrary.UIElement.RepsCounter, SMWorkoutLibrary.UIElement.Timer];
+            } else if (exerciseName === 'Lateral Raises') {
+              detectorId = 'LateralRaise';
+              scoringType = SMWorkoutLibrary.ScoringType.Reps;
+              targetReps = 12;
+              uiElements = [SMWorkoutLibrary.UIElement.RepsCounter, SMWorkoutLibrary.UIElement.Timer];
+            } else if (exerciseName === 'Shoulder Taps Plank') {
+              detectorId = 'PlankHighShoulderTaps';
+              scoringType = SMWorkoutLibrary.ScoringType.Reps;
+              targetReps = 20;
+              uiElements = [SMWorkoutLibrary.UIElement.RepsCounter, SMWorkoutLibrary.UIElement.Timer];
+            } else if (exerciseName === 'Rotation Jab Squat') {
+              detectorId = 'SquatAndRotationJab';
+              scoringType = SMWorkoutLibrary.ScoringType.Reps;
+              targetReps = 12;
+              uiElements = [SMWorkoutLibrary.UIElement.RepsCounter, SMWorkoutLibrary.UIElement.Timer];
+            } else {
+              detectorId = exerciseName;
+              scoringType = SMWorkoutLibrary.ScoringType.Reps;
+              targetReps = 10;
+            }
+            break;
+        }
+
+        return new SMWorkoutLibrary.SMAssessmentExercise(
+          detectorId,           // name (using detector ID as name for consistency)
+          35,                     // totalSeconds
+          exerciseName === 'Alternate Windmill Toe Touch' ? 'AlternateWindmillToeTouch' : detectorId,            // videoInstruction
+          null,                  // exerciseIntro
+          uiElements,            // UI elements
+          detectorId,            // detector
+          '',                    // successSound
+          new SMWorkoutLibrary.SMScoringParams(
+            scoringType,         // scoring type based on exercise
+            0.3,                 // threshold
+            targetTime,          // targetTime (for plank and static holds)
+            targetReps,          // targetReps (for dynamic exercises)
+            null,                // targetDistance
+            null                 // targetCalories
+          ),
+          '',                    // failedSound
+          exerciseName,          // exerciseTitle (display name)
+          scoringType === SMWorkoutLibrary.ScoringType.Time ? 'Hold the position' : 'Complete the exercise',   // subtitle
+          scoringType === SMWorkoutLibrary.ScoringType.Time ? 'Time' : 'Reps',  // scoreTitle
+          scoringType === SMWorkoutLibrary.ScoringType.Time ? 'seconds held' : 'clean reps'  // scoreSubtitle
+        );
+      });
+
+      const workout = new SMWorkoutLibrary.SMWorkout(
+        '50',
+        'Custom Workout',
+        null,
+        null,
+        exercises,
+        null,
+        null,
+        null,
+      );
+
+      const result = await startCustomAssessment(workout, null, true, false);
+      console.log('Assessment result:', result.summary);
+      console.log('Did finish:', result.didFinish);
+    } catch (e) {
+      showAlert('Workout Error', e.message);
     }
   };
 
   return (
-    <View style={styles.centeredView}>
-      {showWFPUI ? (
-        <View style={styles.container}>
-          <Text style={styles.textStyleWFP}>Workout ID:</Text>
-          <EditText
-            placeholder="Enter workout ID"
-            value={name}
-            onChangeText={setName}
-          />
+    <View style={styles.mainContainer}>
+      {isLoading && <ActivityIndicator size="large" color="#C4A484" />}
+      
+      <View style={styles.headerContainer}>
+      <Image 
+          source={require('./assets/logo1.png')} 
+          style={styles.logo}
+          resizeMode="contain"
+        />
+        <Text style={styles.welcomeText}>Welcome to </Text>
+        <View style={{ flexDirection: 'row' }}>
+          <Text style={[styles.titleText, { color: 'white' }]}>Ar</Text>
+          <Text style={[styles.titleText, { color: '#E08714' }]}>thlete</Text>
+          <Text style={[styles.titleText, { color: 'white' }]}> AI Experience</Text>
+        </View>
+      </View>
 
-          <Text style={styles.textStyleWFP}>Workout Week:</Text>
-          <EditText
-            placeholder="Enter workout week"
-            value={week}
-            onChangeText={setWeek}
-          />
-
-          <Text style={styles.textStyleWFP}>Duration:</Text>
-          <ThreeCheckboxes list={['Long', 'Short']} onPress={onDuration} />
-
-          <Text style={styles.textStyleWFP}>Body Zone:</Text>
-          <ThreeCheckboxes
-            list={['Upper Body', 'Lower Body', 'Full Body']}
-            onPress={onBodyZone}
-          />
-
-          <Text style={styles.textStyleWFP}>Language:</Text>
-          <ThreeCheckboxes list={['Hebrew', 'English']} onPress={onLanguage} />
-
-          <Text style={styles.textStyleWFP}>Difficulty:</Text>
-          <ThreeCheckboxes
-            list={['Low', 'Mid', 'High']}
-            onPress={onDifficulty}
-          />
-
-          <View style={styles.buttonGroup}>
+      <ScrollView style={styles.categoryScrollContainer}>
+        <View style={styles.categoryContainer}>
+          {['Fitness', 'Movement', 'Cardio', 'Strength', 'Custom Fitness'].map((category) => (
             <Pressable
-              style={[styles.button]}
-              onPress={() => startWorkoutProgramSession()}>
-              <Text style={styles.buttonText}>Start</Text>
+              key={category}
+              style={styles.categoryButton}
+              onPress={() => handleCategorySelect(category)}
+              disabled={!didConfig}>
+              <Text style={styles.categoryText}>{category}</Text>
             </Pressable>
-            <Pressable
+          ))}
+        </View>
+      </ScrollView>
+
+      <Text style={styles.instructionText}>
+        Or scroll down and choose up to 3 exercises from the list.
+      </Text>
+
+      <ScrollView style={styles.exerciseScrollContainer}>
+        <View style={styles.exerciseContainer}>
+          {['High Plank', 'Air Squat', 'Push-ups', 'OH Squat', 'Knee Raise Left', 'Knee Raise Right', 'Side Bend Left', 'Side Bend Right', 'Standing Alternate Toe Touch', 'Jefferson Curl', 'Alternate Windmill Toe Touch', 'Burpees', 'Crunches', 'Froggers', 'Glute Bridge', 'High Knees', 'Jumping Jacks', 'Jumps', 'Lateral Raises', 'Lunge', 'Lunge Jump', 'Side Lunge', 'Mountain Climber Plank', 'Shoulder Taps Plank', 'Reverse Sit to Table Top', 'Skater Hops', 'Ski Jumps', 'Rotation Jab Squat', 'Bicycle Crunches', 'Oblique Crunches', 'Shoulder Press', 'Side Plank', 'Tuck Hold'].map((exercise) => (
+              <Pressable
+              key={exercise}
+              style={[
+                styles.exerciseButton,
+                selectedExercises.includes(exercise) && styles.selectedExercise
+              ]}
+              onPress={() => handleExerciseSelect(exercise)}
+              disabled={!didConfig}>
+              <Text style={styles.exerciseText}>{exercise}</Text>
+              </Pressable>
+          ))}
+        </View>
+      </ScrollView>
+
+      <View style={styles.bottomContainer}>
+        <Pressable
+          style={[styles.startButton, !didConfig && styles.disabledButton]}
+          onPress={handleStartWorkout}
+          disabled={!didConfig}>
+          <Text style={styles.startButtonText}>Start AI Workout</Text>
+        </Pressable>
+
+        <Text style={styles.learnMoreText}>
+          Learn More About Arthlete's AI Technology
+        </Text>
+      </View>
+
+      <Modal
+        transparent={true}
+        visible={modalVisible}
+        animationType="slide"
+        onRequestClose={() => setModalVisible(false)}>
+        <View style={styles.modalBackground}>
+          <View style={styles.modalContainer}>
+            <Text style={styles.modalText}>{summaryMessage}</Text>
+            <TouchableOpacity
               style={[styles.button, styles.closeButton]}
-              onPress={() => setWPFUI(false)}>
-              <Text style={styles.buttonText}>Back</Text>
-            </Pressable>
+              onPress={() => setModalVisible(false)}>
+              <Text style={styles.buttonText}>Close</Text>
+            </TouchableOpacity>
           </View>
         </View>
-      ) : (
-        <View>
-          {isLoading && <ActivityIndicator size="large" color="#0000ff" />}
-          <Modal
-            transparent={true}
-            visible={modalVisible}
-            animationType="slide"
-            onRequestClose={() => setModalVisible(false)}>
-            <View style={styles.modalBackground}>
-              <View style={styles.modalContainer}>
-                <Text style={styles.modalText}>{summaryMessage}</Text>
-                <TouchableOpacity
-                  style={[styles.button, styles.closeButton]}
-                  onPress={() => setModalVisible(false)}>
-                  <Text style={styles.buttonText}>Close</Text>
-                </TouchableOpacity>
-              </View>
-            </View>
-          </Modal>
-          <View>
-            <Pressable
-              disabled={!didConfig}
-              style={[styles.button]}
-              onPress={() =>
-                startAssessmentSession(
-                  SMWorkoutLibrary.AssessmentTypes.Fitness,
-                  true,
-                  '',
-                )
-              }>
-              <Text style={styles.textStyle}>Start Assessment</Text>
-            </Pressable>
-
-            <Pressable
-              disabled={!didConfig}
-              style={[styles.button]}
-              onPress={() =>
-                startAssessmentSession(
-                  SMWorkoutLibrary.AssessmentTypes.Custom,
-                  true,
-                  'YOUR_CUSTOM_ASSESSMENT',
-                )
-              }>
-              <Text style={styles.textStyle}>Start Custom Assessment</Text>
-            </Pressable>
-
-            <Pressable
-              disabled={!didConfig}
-              style={[styles.button]}
-              onPress={() =>
-                startAssessmentSession(
-                  SMWorkoutLibrary.AssessmentTypes.Body360,
-                  true,
-                  '',
-                )
-              }>
-              <Text style={styles.textStyle}>Start Body360 Assessment</Text>
-            </Pressable>
-
-            <Pressable
-              disabled={!didConfig}
-              style={[styles.button]}
-              onPress={() => startSMKitUICustomWorkout()}>
-              <Text style={styles.textStyle}>Start startCustomWorkout</Text>
-            </Pressable>
-
-            <Pressable
-              disabled={!didConfig}
-              style={[styles.button]}
-              onPress={() => startSMKitUICustomAssessment()}>
-              <Text style={styles.textStyle}>Start customized assessment</Text>
-            </Pressable>
-
-            <Pressable
-              disabled={!didConfig}
-              style={[styles.button]}
-              onPress={() => setWPFUI(true)}>
-              <Text style={styles.textStyle}>Workout from program</Text>
-            </Pressable>
-          </View>
-
-          <View></View>
-        </View>
-      )}
+      </Modal>
     </View>
   );
 
   async function configureSMKitUI() {
-    setisLoading(true);
+    setIsLoading(true);
     try {
-      await configure('');
-      setisLoading(false);
+      
+      var res = await configure("public_live_a5jSYbzaDk7sgalguc");
+      console.log("Configuration successful:", res);
+      setIsLoading(false);
       setDidConfig(true);
     } catch (e) {
-      setisLoading(false);
-      Alert.alert('Configure Failed'),
-        '',
-        [{text: 'OK', onPress: () => console.log('OK Pressed')}];
+      setIsLoading(false);
+      Alert.alert('Configure Failed', e.message, [{ text: 'OK', onPress: () => console.log('OK Pressed') }]);
     }
   }
 
   async function startWorkoutProgramSession() {
     try {
-      const parsedWeek = parseInt(week, 10); // Use base 10 for decimal numbers
-
-      if (!isNaN(parsedWeek)) {
-        console.log('Parsed integer:', parsedWeek);
-      } else {
-        throw new Error();
+      const parsedWeek = parseInt(week, 10);
+      if (isNaN(parsedWeek)) {
+        throw new Error('Invalid week number');
       }
       var config = new SMWorkoutLibrary.WorkoutConfig(
         parsedWeek,
@@ -292,16 +1081,14 @@ const App = () => {
       console.log(result.summary);
       console.log(result.didFinish);
     } catch (e) {
-      Alert.alert('Unable to start assessment'),
-        '',
-        [{text: 'OK', onPress: () => console.log('OK Pressed')}];
+      Alert.alert('Unable to start workout program', e.message, [{ text: 'OK', onPress: () => console.log('OK Pressed') }]);
     }
   }
 
   async function startAssessmentSession(
-    type: SMWorkoutLibrary.AssessmentTypes, // => The type of assessment, which can be either AssessmentTypes.Fitness or AssessmentTypes.Custom.
-    showSummary: boolean, // => Determines whether the summary screen will be presented at the end of the exercise.
-    customAssessmentID: string, // If you have more than one custom assessment, use the customAssessmentID to specify which one to call, if not please use null.
+    type,
+    showSummary,
+    customAssessmentID,
   ) {
     try {
       console.log('starting assessment');
@@ -315,435 +1102,493 @@ const App = () => {
       console.log(result.summary);
       console.log(result.didFinish);
     } catch (e) {
-      Alert.alert('Unable to start assessment'),
-        '',
-        [{text: 'OK', onPress: () => console.log('OK Pressed')}];
+      Alert.alert('Unable to start assessment', e.message, [{ text: 'OK', onPress: () => console.log('OK Pressed') }]);
     }
   }
 
   async function startSMKitUICustomWorkout() {
     try {
-      // list of exercies
       var exercises = [
         new SMWorkoutLibrary.SMAssessmentExercise(
-          'SquatRegularOverheadStatic', // Name
-          30, // Duration in seconds
-          'SquatRegularOverheadStatic', // Video instruction name
-          null, // Exercise intro
+          'SquatRegularOverheadStatic',
+          30,
+          'SquatRegularOverheadStatic',
+          null,
           [
             SMWorkoutLibrary.UIElement.GaugeOfMotion,
             SMWorkoutLibrary.UIElement.Timer,
           ],
-          'SquatRegularOverheadStatic', // Detector
-          'stam', // Closure
+          'SquatRegularOverheadStatic',
+          'stam',
           new SMWorkoutLibrary.SMScoringParams(
-            SMWorkoutLibrary.ScoringType.Time, // Scoring type
-            0.5, // Score factor
-            20, // Target time
-            null, // Target repetitions
+            SMWorkoutLibrary.ScoringType.Time,
+            0.5,
+            20,
+            null,
             null,
             null,
           ),
-          '', //Closure Failed Sound
-          'SquatRegularOverheadStatic', // => summaryTitle: string | null
-          'Subtitle', // => summarySubTitle: string | null
-          'timeInPosition', // => summaryMainMetricTitle: string | null
-          'clean reps', // => summaryMainMetricSubTitle: string | null
+          '',
+          'SquatRegularOverheadStatic',
+          'Subtitle',
+          'timeInPosition',
+          'clean reps'
         ),
         new SMWorkoutLibrary.SMAssessmentExercise(
-          'Jefferson Curl', // Name
-          30, // Duration in seconds
-          'JeffersonCurlRight', // Video instruction name
-          null, // Exercise intro
+          'Jefferson Curl',
+          30,
+          'JeffersonCurlRight',
+          null,
           [
             SMWorkoutLibrary.UIElement.GaugeOfMotion,
             SMWorkoutLibrary.UIElement.Timer,
           ],
-          'JeffersonCurlRight', // Detector
-          'stam', // Closure
+          'JeffersonCurlRight',
+          'stam',
           new SMWorkoutLibrary.SMScoringParams(
-            SMWorkoutLibrary.ScoringType.Time, // Scoring type
-            0.5, // Score factor
-            20, // Target time
-            null, // Target repetitions
+            SMWorkoutLibrary.ScoringType.Time,
+            0.5,
+            20,
+            null,
             null,
             null,
           ),
-          'JeffersonCurlRight', // => summaryTitle: string | null
-          'Subtitle', // => summarySubTitle: string | null
-          'timeInPosition', // => summaryMainMetricTitle: string | null
-          'clean reps', // => summaryMainMetricSubTitle: string | null
+          '',
+          'JeffersonCurlRight',
+          'Subtitle',
+          'timeInPosition',
+          'clean reps'
         ),
         new SMWorkoutLibrary.SMAssessmentExercise(
-          'Push-Up', // Name
-          30, // Duration in seconds
-          'PushupRegular', // Video instruction name
-          null, // Exercise intro
+          'Push-Up',
+          30,
+          'PushupRegular',
+          null,
           [
             SMWorkoutLibrary.UIElement.RepsCounter,
             SMWorkoutLibrary.UIElement.Timer,
           ],
-          'PushupRegular', // Detector
-          'stam', // Closure
+          'PushupRegular',
+          'stam',
           new SMWorkoutLibrary.SMScoringParams(
-            SMWorkoutLibrary.ScoringType.Reps, // Scoring type
-            0.5, // Score factor
-            null, // Target time
-            6, // Target repetitions
+            SMWorkoutLibrary.ScoringType.Reps,
+            0.5,
+            null,
+            6,
             null,
             null,
           ),
-          'PushupRegular', // => summaryTitle: string | null,
-          'Subtitle', // => summarySubTitle: string | null,
-          'Reps', // => summaryMainMetricTitle: string | null
-          'clean reps', // => summaryMainMetricSubTitle: string | null
+          '',
+          'PushupRegular',
+          'Subtitle',
+          'Reps',
+          'clean reps'
         ),
         new SMWorkoutLibrary.SMAssessmentExercise(
-          'LungeFrontRight', // Name
-          30, // Duration in seconds
-          'LungeFrontRight', // Video instruction name
-          null, // Exercise intro
+          'LungeFrontRight',
+          30,
+          'LungeFrontRight',
+          null,
           [
             SMWorkoutLibrary.UIElement.GaugeOfMotion,
             SMWorkoutLibrary.UIElement.Timer,
           ],
-          'LungeFront', // Detector
-          'stam', // Closure
+          'LungeFront',
+          'stam',
           new SMWorkoutLibrary.SMScoringParams(
-            SMWorkoutLibrary.ScoringType.Reps, // Scoring type
-            0.5, // Score factor
-            null, // Target time
-            20, // Target repetitions
+            SMWorkoutLibrary.ScoringType.Reps,
+            0.5,
+            null,
+            20,
             null,
             null,
           ),
-          'LungeFrontRight', // => summaryTitle: string | null
-          'Subtitle', // => summarySubTitle: string | null
-          'timeInPosition', // => summaryMainMetricTitle: string | null
-          'clean reps', // => summaryMainMetricSubTitle: string | null
+          '',
+          'LungeFrontRight',
+          'Subtitle',
+          'timeInPosition',
+          'clean reps'
         ),
         new SMWorkoutLibrary.SMAssessmentExercise(
-          'LungeFrontLeft', // Name
-          30, // Duration in seconds
-          'LungeFrontLeft', // Video instruction name
-          null, // Exercise intro
+          'LungeFrontLeft',
+          30,
+          'LungeFrontLeft',
+          null,
           [
             SMWorkoutLibrary.UIElement.GaugeOfMotion,
             SMWorkoutLibrary.UIElement.Timer,
           ],
-          'LungeFront', // Detector
-          'stam', // Closure
+          'LungeFront',
+          'stam',
           new SMWorkoutLibrary.SMScoringParams(
-            SMWorkoutLibrary.ScoringType.Reps, // Scoring type
-            0.5, // Score factor
-            null, // Target time
-            20, // Target repetitions
+            SMWorkoutLibrary.ScoringType.Reps,
+            0.5,
+            null,
+            20,
             null,
             null,
           ),
-          'LungeFrontLeft', // => summaryTitle: string | null
-          'Subtitle', // => summarySubTitle: string | null
-          'timeInPosition', // => summaryMainMetricTitle: string | null
-          'clean reps', // => summaryMainMetricSubTitle: string | null
+          '',
+          'LungeFrontLeft',
+          'Subtitle',
+          'timeInPosition',
+          'clean reps'
         ),
       ];
 
       var assessment = new SMWorkoutLibrary.SMWorkout(
-        '50', // => id: string | null
-        'demo workout', // => name: string | null
-        null, // => workoutIntro: string | null (url for a sound)
-        null, // => soundtrack: string | null (url for a sound)
-        exercises, // => exercises: SMExercise[]
-        null, // =>  getInFrame: string | null (url for a sound)
-        null, // =>  bodycalFinished: string | null (url for a sound)
-        null, // =>  workoutClosure: string | null (url for a sound)
+        '50',
+        'demo workout',
+        null,
+        null,
+        exercises,
+        null,
+        null,
+        null,
       );
 
-      /**
-       * Initiates a custom assessment session.
-       *
-       * @param {SMWorkoutLibrary.SMWorkout} assessment - The assessment configuration for the session.
-       * @returns {Promise<{ summary: string; didFinish: boolean }>} - A promise that resolves with an object containing the summary and a flag indicating if the assessment finished.
-       */
       var result = await startCustomWorkout(assessment);
       console.log(result.summary);
       console.log(result.didFinish);
     } catch (e) {
       console.error(e);
-      showAlert('Custom workout error', e + '');
+      showAlert('Custom workout error', e.message);
+    }
+  }
+
+  async function startSMKitUICustomAssessment() {
+    try {
+      // Set language and preferences first
+      await setSessionLanguage(SMWorkoutLibrary.Language.Hebrew);
+      setEndExercisePreferences(SMWorkoutLibrary.EndExercisePreferences.TargetBased);
+      setCounterPreferences(SMWorkoutLibrary.CounterPreferences.PerfectOnly);
+
+      // Optional: Use local sound files instead of URLs
+      const successSound = '';  // Remove URL and use local file or leave empty
+      const failedSound = '';   // Remove URL and use local file or leave empty
+
+      const exercises = [
+        new SMWorkoutLibrary.SMAssessmentExercise(
+          'SquatRegular',
+          35,
+          'SquatRegular',
+          null,
+          [
+            SMWorkoutLibrary.UIElement.RepsCounter,
+            SMWorkoutLibrary.UIElement.Timer,
+          ],
+          'SquatRegular',
+          successSound,
+          new SMWorkoutLibrary.SMScoringParams(
+            SMWorkoutLibrary.ScoringType.Reps,
+            0.3,
+            null,
+            5,
+            null,
+            null,
+          ),
+          failedSound,
+          'SquatRegular',
+          'Subtitle',
+          'Reps',
+          'clean reps'
+        ),
+        new SMWorkoutLibrary.SMAssessmentExercise(
+          'LungeFront',
+          35,
+          'LungeFront',
+          null,
+          [
+            SMWorkoutLibrary.UIElement.RepsCounter,
+            SMWorkoutLibrary.UIElement.Timer,
+          ],
+          'LungeFront',
+          successSound,
+          new SMWorkoutLibrary.SMScoringParams(
+            SMWorkoutLibrary.ScoringType.Reps,
+            0.3,
+            null,
+            5,
+            null,
+            null,
+          ),
+          failedSound,
+          'LungeFront',
+          'Subtitle',
+          'Reps',
+          'clean reps'
+        ),
+        new SMWorkoutLibrary.SMAssessmentExercise(
+          'HighKnees',
+          35,
+          'HighKnees',
+          null,
+          [
+            SMWorkoutLibrary.UIElement.RepsCounter,
+            SMWorkoutLibrary.UIElement.Timer,
+          ],
+          'HighKnees',
+          successSound,
+          new SMWorkoutLibrary.SMScoringParams(
+            SMWorkoutLibrary.ScoringType.Reps,
+            0.3,
+            null,
+            5,
+            null,
+            null,
+          ),
+          failedSound,
+          'HighKnees',
+          'Subtitle',
+          'Reps',
+          'clean reps'
+        ),
+        new SMWorkoutLibrary.SMAssessmentExercise(
+          'SquatRegularOverheadStatic',
+          35,
+          'SquatRegularOverheadStatic',
+          null,
+          [
+            SMWorkoutLibrary.UIElement.RepsCounter,
+            SMWorkoutLibrary.UIElement.Timer,
+          ],
+          'SquatRegularOverheadStatic',
+          successSound,
+          new SMWorkoutLibrary.SMScoringParams(
+            SMWorkoutLibrary.ScoringType.Time,
+            0.3,
+            15,
+            null,
+            null,
+            null,
+          ),
+          failedSound,
+          'SquatRegularOverheadStatic',
+          'Subtitle',
+          'Time',
+          'seconds held'
+        ),
+        new SMWorkoutLibrary.SMAssessmentExercise(
+          'PlankHighStatic',
+          35,
+          'PlankHighStatic',
+          null,
+          [
+            SMWorkoutLibrary.UIElement.RepsCounter,
+            SMWorkoutLibrary.UIElement.Timer,
+          ],
+          'PlankHighStatic',
+          successSound,
+          new SMWorkoutLibrary.SMScoringParams(
+            SMWorkoutLibrary.ScoringType.Time,
+            0.3,
+            15,
+            null,
+            null,
+            null,
+          ),
+          failedSound,
+          'PlankHighStatic',
+          'Subtitle',
+          'Time',
+          'seconds held'
+        ),
+        new SMWorkoutLibrary.SMAssessmentExercise(
+          'StandingSideBendRight',
+          35,
+          'StandingSideBendRight',
+          null,
+          [
+            SMWorkoutLibrary.UIElement.RepsCounter,
+            SMWorkoutLibrary.UIElement.Timer,
+          ],
+          'StandingSideBendRight',
+          successSound,
+          new SMWorkoutLibrary.SMScoringParams(
+            SMWorkoutLibrary.ScoringType.Time,
+            0.3,
+            15,
+            null,
+            null,
+            null,
+          ),
+          failedSound,
+          'StandingSideBendRight',
+          'Subtitle',
+          'Time',
+          'seconds held'
+        ),
+      ];
+
+      var assessment = new SMWorkoutLibrary.SMWorkout(
+        '50',
+        'demo workout',
+        null,
+        null,
+        exercises,
+        null,
+        null,
+        null,
+      );
+
+      var result = await startCustomAssessment(assessment, null, true, false);
+      console.log('Assessment result:', result.summary);
+      console.log('Did finish:', result.didFinish);
+    } catch (e) {
+      console.error('Custom assessment error:', e);
+      showAlert('Custom assessment error', e.message);
     }
   }
 };
 
-function showAlert(title: string, massege: string) {
-  Alert.alert(title, massege, [
-    {text: 'OK', onPress: () => console.log('OK Pressed')},
+function showAlert(title, message) {
+  Alert.alert(title, message, [
+    { text: 'OK', onPress: () => console.log('OK Pressed') },
   ]);
 }
 
-async function startSMKitUICustomAssessment() {
-  try {
-    var successSound =
-      'https://cdn.pixabay.com/download/audio/2024/07/04/audio_5fd8f48411.mp3?filename=success-221935.mp3';
-    var failedSound =
-      'https://cdn.pixabay.com/download/audio/2024/12/20/audio_9ce4f6c763.mp3?filename=cartoon-fail-trumpet-278822.mp3';
-
-    const exercises = [
-      new SMWorkoutLibrary.SMAssessmentExercise(
-        'SquatRegular',
-        35,
-        'SquatRegular',
-        null,
-        [
-          SMWorkoutLibrary.UIElement.RepsCounter,
-          SMWorkoutLibrary.UIElement.Timer,
-        ],
-        'SquatRegular',
-        successSound,
-        new SMWorkoutLibrary.SMScoringParams(
-          SMWorkoutLibrary.ScoringType.Reps,
-          0.3,
-          null,
-          5,
-          null,
-          null,
-        ),
-        failedSound, // closureFailedSound
-        'SquatRegular',
-        'Subtitle',
-        'Reps',
-        'clean reps',
-      ),
-      new SMWorkoutLibrary.SMAssessmentExercise(
-        'LungeFront',
-        35,
-        'LungeFront',
-        null,
-        [
-          SMWorkoutLibrary.UIElement.RepsCounter,
-          SMWorkoutLibrary.UIElement.Timer,
-        ],
-        'LungeFront',
-        successSound,
-        new SMWorkoutLibrary.SMScoringParams(
-          SMWorkoutLibrary.ScoringType.Reps,
-          0.3,
-          null,
-          5,
-          null,
-          null,
-        ),
-        failedSound, // closureFailedSound
-        'LungeFront',
-        'Subtitle',
-        'Reps',
-        'clean reps',
-      ),
-      new SMWorkoutLibrary.SMAssessmentExercise(
-        'HighKnees',
-        35,
-        'HighKnees',
-        null,
-        [
-          SMWorkoutLibrary.UIElement.RepsCounter,
-          SMWorkoutLibrary.UIElement.Timer,
-        ],
-        'HighKnees',
-        successSound,
-        new SMWorkoutLibrary.SMScoringParams(
-          SMWorkoutLibrary.ScoringType.Reps,
-          0.3,
-          null,
-          5,
-          null,
-          null,
-        ),
-        failedSound, // closureFailedSound
-        'HighKnees',
-        'Subtitle',
-        'Reps',
-        'clean reps',
-      ),
-      new SMWorkoutLibrary.SMAssessmentExercise(
-        'SquatRegularOverheadStatic',
-        35,
-        'SquatRegularOverheadStatic',
-        null,
-        [
-          SMWorkoutLibrary.UIElement.RepsCounter,
-          SMWorkoutLibrary.UIElement.Timer,
-        ],
-        'SquatRegularOverheadStatic',
-        successSound,
-        new SMWorkoutLibrary.SMScoringParams(
-          SMWorkoutLibrary.ScoringType.Time,
-          0.3,
-          15,
-          null,
-          null,
-          null,
-        ),
-        failedSound, // closureFailedSound
-        'SquatRegularOverheadStatic',
-        'Subtitle',
-        'Time',
-        'seconds held',
-      ),
-      new SMWorkoutLibrary.SMAssessmentExercise(
-        'PlankHighStatic',
-        35,
-        'PlankHighStatic',
-        null,
-        [
-          SMWorkoutLibrary.UIElement.RepsCounter,
-          SMWorkoutLibrary.UIElement.Timer,
-        ],
-        'PlankHighStatic',
-        successSound,
-        new SMWorkoutLibrary.SMScoringParams(
-          SMWorkoutLibrary.ScoringType.Time,
-          0.3,
-          15,
-          null,
-          null,
-          null,
-        ),
-        failedSound, // closureFailedSound
-        'PlankHighStatic',
-        'Subtitle',
-        'Time',
-        'seconds held',
-      ),
-      new SMWorkoutLibrary.SMAssessmentExercise(
-        'StandingSideBendRight',
-        35,
-        'StandingSideBendRight',
-        null,
-        [
-          SMWorkoutLibrary.UIElement.RepsCounter,
-          SMWorkoutLibrary.UIElement.Timer,
-        ],
-        'StandingSideBendRight',
-        successSound,
-        new SMWorkoutLibrary.SMScoringParams(
-          SMWorkoutLibrary.ScoringType.Time,
-          0.3,
-          15,
-          null,
-          null,
-          null,
-        ),
-        failedSound, // closureFailedSound
-        'PlankHighStatic',
-        'Subtitle',
-        'Time',
-        'seconds held',
-      ),
-    ];
-
-    var assessment = new SMWorkoutLibrary.SMWorkout(
-      '50', // => id: string | null
-      'demo workout', // => name: string | null
-      null, // => workoutIntro: string | null (url for a sound)
-      null, // => soundtrack: string | null (url for a sound)
-      exercises, // => exercises: SMExercise[]
-      null, // =>  getInFrame: string | null (url for a sound)
-      null, // =>  bodycalFinished: string | null (url for a sound)
-      null, // =>  workoutClosure: string | null (url for a sound)
-    );
-
-    setEndExercisePreferences(
-      SMWorkoutLibrary.EndExercisePreferences.TargetBased,
-    );
-    setCounterPreferences(SMWorkoutLibrary.CounterPreferences.PerfectOnly);
-
-    /**
-     * Initiates a custom assessment session.
-     *
-     * @param {SMWorkoutLibrary.SMWorkout} assessment - The assessment configuration for the session.
-     * @param {SMWorkoutLibrary.UserData | null} userData - User data for the assessment, or `null` if no user data is provided.
-     * @param {boolean} [forceShowUserDataScreen=false] - Forces the display of the user data screen even if user data is provided.
-     * @param {boolean} [showSummary=true] - Determines if the summary should be shown after assessment completion.
-     * @returns {Promise<{ summary: string; didFinish: boolean }>} - A promise that resolves with an object containing the summary and a flag indicating if the assessment finished.
-     */
-    var res = setSessionLanguage(SMWorkoutLibrary.Language.Hebrew);
-    var result = await startCustomAssessment(assessment, null, true, false);
-    console.log(result.summary);
-    console.log(result.didFinish);
-  } catch (e) {
-    console.error(e);
-    showAlert('Custom workout error', e + '');
-  }
-}
-
 const styles = StyleSheet.create({
-  sdk: {
+  mainContainer: {
     flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
+    backgroundColor: '#1A1A1A',
+    padding: 20,
   },
-  textStyle: {
-    color: 'blue',
+  headerContainer: {
+    marginTop: 10,
+    marginBottom: 20,
+  },
+  logo: {
+    width: 80,
+    height: 80,
+    marginBottom: 0,
+    
+    borderRadius: 20,
+  },
+  welcomeText: {
+    marginRight: 10,
+    fontSize: 24,
+    color: 'white',
+    opacity: 0.8,
+  },
+  titleText: {
+    
+    fontSize:27,
+    color: 'white',
     fontWeight: 'bold',
-    textAlign: 'center',
   },
-  textStyleWFP: {
-    color: '#007BFF',
-    fontWeight: 'bold',
-    textAlign: 'center',
+  categoryScrollContainer: {
+    flex: 1,
+    marginBottom: 10,
   },
-  buttonGroup: {
-    marginTop: 20,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+  categoryContainer: {
     width: '100%',
   },
-  centeredView: {
-    flex: 1,
+  categoryButton: {
+    width: '100%',
+    height: 50,
+    borderRadius: 15,
+    borderWidth: 1,
+    borderColor: 'rgb(255, 255, 255)',
     justifyContent: 'center',
     alignItems: 'center',
-    marginTop: 22,
+    paddingHorizontal: 20,
+    marginBottom: 10,
   },
-  container: {
+  categoryText: {
+    color: 'white',
+    fontSize: 18,
+    textAlign: 'center',
+  },
+  instructionText: {
+    color: '#F4D7CF',
+    fontSize: 16,
+    marginVertical: 10,
+    textAlign: 'center',
+  },
+  exerciseScrollContainer: {
     flex: 1,
-    padding: 120,
+    marginBottom: 10,
+  },
+  exerciseContainer: {
+    width: '100%',
+  },
+  exerciseButton: {
+    width: '100%',
+    height: 50,
+    borderRadius: 15,
+    borderWidth: 1,
+    borderColor: 'rgb(255, 255, 255)',
     justifyContent: 'center',
-    backgroundColor: '#f5f5f5',
+    alignItems: 'center',
+    paddingHorizontal: 20,
+    marginBottom: 10,
+  },
+  exerciseText: {
+    color: 'white',
+    fontSize: 18,
+    textAlign: 'center',
+  },
+  bottomContainer: {
+    marginTop: 10,
+    paddingBottom: 10,
+  },
+  startButton: {
+    width: '100%',
+    height: 50,
+    borderRadius: 25,
+    backgroundColor: '#E06714',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 10,
+  },
+  startButtonText: {
+    color: '#fff',
+    fontSize: 18,
+    fontWeight: 'bold',
+  },
+  learnMoreText: {
+    color: '#F4D7CF',
+    fontSize: 16,
+    textAlign: 'center',
+    textDecorationLine: 'underline',
   },
   modalBackground: {
     flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
     justifyContent: 'center',
     alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
   },
   modalContainer: {
     width: '80%',
-    height: '60%',
     backgroundColor: 'white',
     borderRadius: 10,
     padding: 20,
-    alignItems: 'center',
+    elevation: 5,
   },
   modalText: {
-    fontSize: 16,
-    marginBottom: 20,
+    marginBottom: 15,
     textAlign: 'center',
-    color: '#007BFF',
   },
   button: {
-    backgroundColor: '#007BFF',
-    padding: 10,
+    backgroundColor: '#2196F3',
     borderRadius: 5,
-    marginBottom: 10,
-    width: '100%',
+    padding: 10,
+    width: '45%',
     alignItems: 'center',
   },
   closeButton: {
-    backgroundColor: 'red',
+    backgroundColor: '#f44336',
   },
   buttonText: {
     color: 'white',
     fontSize: 16,
+  },
+  selectedExercise: {
+    backgroundColor: 'rgba(196, 164, 132, 0.3)',
+    borderColor: '#C4A484',
+  },
+  disabledButton: {
+    opacity: 0.5,
   },
 });
 
