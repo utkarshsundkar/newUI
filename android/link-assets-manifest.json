@@ -1,0 +1,41 @@
+{
+  "migIndex": 1,
+  "data": [
+    {
+      "path": "assets/fonts/Kurale-Regular.ttf",
+      "sha1": "da39a3ee5e6b4b0d3255bfef95601890afd80709"
+    },
+    {
+      "path": "assets/fonts/MinecraftTen.ttf",
+      "sha1": "ea76781dde6a1dfde898c92dea501694c30c907d"
+    },
+    {
+      "path": "assets/fonts/NationalPark.ttf",
+      "sha1": "e606d6da93b961d9267c71071af5e02df0769747"
+    },
+    {
+      "path": "assets/fonts/Orbitron-Bold.ttf",
+      "sha1": "7a31caae9a7d6a13327b17599d01fafdbf515cfd"
+    },
+    {
+      "path": "assets/fonts/Orbitron-Medium.ttf",
+      "sha1": "dcaa4969249f9ae987cd39113e8b1b3b95f5153b"
+    },
+    {
+      "path": "assets/fonts/Orbitron-Regular.ttf",
+      "sha1": "ac8f6b4e346fd6e2e862be2b3cf71410ca7f2d4c"
+    },
+    {
+      "path": "assets/fonts/Orbitron.ttf",
+      "sha1": "51441780e1af77d5bdbfe1fffad3a90644d8ee76"
+    },
+    {
+      "path": "assets/fonts/Pokemon.ttf",
+      "sha1": "e780bf64f4bf2679e21de7b707a56800f0f31930"
+    },
+    {
+      "path": "assets/fonts/SpecialGothic.ttf",
+      "sha1": "f84c02523463d33d768399c617c1ac4bd5c868f0"
+    }
+  ]
+}

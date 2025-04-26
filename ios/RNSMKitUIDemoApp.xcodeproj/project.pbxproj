@@ -8,12 +8,21 @@
 
 /* Begin PBXBuildFile section */
 		00E356F31AD99517003FC87E /* RNSMKitUIDemoAppTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 00E356F21AD99517003FC87E /* RNSMKitUIDemoAppTests.m */; };
+		0B99C7316FB34E6187667E06 /* Orbitron-Medium.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 1BA7379E66B84331A7035138 /* Orbitron-Medium.ttf */; };
 		13B07FBC1A68108700A75B9A /* AppDelegate.mm in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB01A68108700A75B9A /* AppDelegate.mm */; };
 		13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
 		13B07FC11A68108700A75B9A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
+		32A22088C6104B2C866C069B /* SpecialGothic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 17BB7028737E422EADDDF968 /* SpecialGothic.ttf */; };
 		40E614CF6CECB47874D02BC0 /* Pods_RNSMKitUIDemoApp_RNSMKitUIDemoAppTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B779B8877C25E9554126E1DA /* Pods_RNSMKitUIDemoApp_RNSMKitUIDemoAppTests.framework */; };
+		49BB8DC52BA6460DAEBDC697 /* Orbitron-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = CFC78C699FE14C0F8848913A /* Orbitron-Regular.ttf */; };
+		61DBB18766184DF79A1B0A7F /* MinecraftTen.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 156D505BFF924994B246F0FE /* MinecraftTen.ttf */; };
 		81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */; };
+		8A12D59CCB7349B49B349EEF /* Pokemon.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 6D3461A20175425C920937D0 /* Pokemon.ttf */; };
+		8A37D94A956B475582FAF481 /* NationalPark.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 150BA1EB5AD94ADFB1644F56 /* NationalPark.ttf */; };
+		8D6AB20BEAE7443489D1CDBB /* Orbitron.ttf in Resources */ = {isa = PBXBuildFile; fileRef = ED9E3A3A536347698B1A3238 /* Orbitron.ttf */; };
+		B76DB0E1804A42418958C8D8 /* Kurale-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = DB7C4DE675E041F99E0B0C79 /* Kurale-Regular.ttf */; };
 		CDC95CF04E2CE7AB6BA33B69 /* Pods_RNSMKitUIDemoApp.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DAF46B1CD58EA2AB6F9B07B8 /* Pods_RNSMKitUIDemoApp.framework */; };
+		E0FB7F2DA1234228B662ADB8 /* Orbitron-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = BA5A2BEC54DF4761B2D33D78 /* Orbitron-Bold.ttf */; };
 		EF880E90550B49396F262999 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 20F3CE9D54447F32D2D6A24E /* PrivacyInfo.xcprivacy */; };
 /* End PBXBuildFile section */
 
@@ -38,15 +47,24 @@
 		13B07FB61A68108700A75B9A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = RNSMKitUIDemoApp/Info.plist; sourceTree = "<group>"; };
 		13B07FB71A68108700A75B9A /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = main.m; path = RNSMKitUIDemoApp/main.m; sourceTree = "<group>"; };
 		13B07FB81A68108700A75B9A /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = PrivacyInfo.xcprivacy; path = RNSMKitUIDemoApp/PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
+		150BA1EB5AD94ADFB1644F56 /* NationalPark.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = NationalPark.ttf; path = ../assets/fonts/NationalPark.ttf; sourceTree = "<group>"; };
+		156D505BFF924994B246F0FE /* MinecraftTen.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = MinecraftTen.ttf; path = ../assets/fonts/MinecraftTen.ttf; sourceTree = "<group>"; };
 		174E2A83CDA3573F989376DF /* Pods-RNSMKitUIDemoApp.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RNSMKitUIDemoApp.release.xcconfig"; path = "Target Support Files/Pods-RNSMKitUIDemoApp/Pods-RNSMKitUIDemoApp.release.xcconfig"; sourceTree = "<group>"; };
+		17BB7028737E422EADDDF968 /* SpecialGothic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = SpecialGothic.ttf; path = ../assets/fonts/SpecialGothic.ttf; sourceTree = "<group>"; };
 		1A284D931352CA0042EDA23C /* Pods-RNSMKitUIDemoApp-RNSMKitUIDemoAppTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RNSMKitUIDemoApp-RNSMKitUIDemoAppTests.debug.xcconfig"; path = "Target Support Files/Pods-RNSMKitUIDemoApp-RNSMKitUIDemoAppTests/Pods-RNSMKitUIDemoApp-RNSMKitUIDemoAppTests.debug.xcconfig"; sourceTree = "<group>"; };
+		1BA7379E66B84331A7035138 /* Orbitron-Medium.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Orbitron-Medium.ttf"; path = "../assets/fonts/Orbitron-Medium.ttf"; sourceTree = "<group>"; };
 		20F3CE9D54447F32D2D6A24E /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xml; name = PrivacyInfo.xcprivacy; path = RNSMKitUIDemoApp/PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		58E0FE06E0058CA340229CCF /* Pods-RNSMKitUIDemoApp-RNSMKitUIDemoAppTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RNSMKitUIDemoApp-RNSMKitUIDemoAppTests.release.xcconfig"; path = "Target Support Files/Pods-RNSMKitUIDemoApp-RNSMKitUIDemoAppTests/Pods-RNSMKitUIDemoApp-RNSMKitUIDemoAppTests.release.xcconfig"; sourceTree = "<group>"; };
+		6D3461A20175425C920937D0 /* Pokemon.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = Pokemon.ttf; path = ../assets/fonts/Pokemon.ttf; sourceTree = "<group>"; };
 		81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = LaunchScreen.storyboard; path = RNSMKitUIDemoApp/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		B779B8877C25E9554126E1DA /* Pods_RNSMKitUIDemoApp_RNSMKitUIDemoAppTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_RNSMKitUIDemoApp_RNSMKitUIDemoAppTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		B7A0828745C5B0D4F4DAB557 /* Pods-RNSMKitUIDemoApp.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RNSMKitUIDemoApp.debug.xcconfig"; path = "Target Support Files/Pods-RNSMKitUIDemoApp/Pods-RNSMKitUIDemoApp.debug.xcconfig"; sourceTree = "<group>"; };
+		BA5A2BEC54DF4761B2D33D78 /* Orbitron-Bold.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Orbitron-Bold.ttf"; path = "../assets/fonts/Orbitron-Bold.ttf"; sourceTree = "<group>"; };
+		CFC78C699FE14C0F8848913A /* Orbitron-Regular.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Orbitron-Regular.ttf"; path = "../assets/fonts/Orbitron-Regular.ttf"; sourceTree = "<group>"; };
 		DAF46B1CD58EA2AB6F9B07B8 /* Pods_RNSMKitUIDemoApp.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_RNSMKitUIDemoApp.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		DB7C4DE675E041F99E0B0C79 /* Kurale-Regular.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Kurale-Regular.ttf"; path = "../assets/fonts/Kurale-Regular.ttf"; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
+		ED9E3A3A536347698B1A3238 /* Orbitron.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = Orbitron.ttf; path = ../assets/fonts/Orbitron.ttf; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -127,6 +145,7 @@
 				83CBBA001A601CBA00E9B192 /* Products */,
 				2D16E6871FA4F8E400B85C8A /* Frameworks */,
 				BBD78D7AC51CEA395F1C20DB /* Pods */,
+				F95DB8CDB781498B81972221 /* Resources */,
 			);
 			indentWidth = 2;
 			sourceTree = "<group>";
@@ -151,6 +170,22 @@
 				58E0FE06E0058CA340229CCF /* Pods-RNSMKitUIDemoApp-RNSMKitUIDemoAppTests.release.xcconfig */,
 			);
 			path = Pods;
+			sourceTree = "<group>";
+		};
+		F95DB8CDB781498B81972221 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				DB7C4DE675E041F99E0B0C79 /* Kurale-Regular.ttf */,
+				156D505BFF924994B246F0FE /* MinecraftTen.ttf */,
+				150BA1EB5AD94ADFB1644F56 /* NationalPark.ttf */,
+				BA5A2BEC54DF4761B2D33D78 /* Orbitron-Bold.ttf */,
+				1BA7379E66B84331A7035138 /* Orbitron-Medium.ttf */,
+				CFC78C699FE14C0F8848913A /* Orbitron-Regular.ttf */,
+				ED9E3A3A536347698B1A3238 /* Orbitron.ttf */,
+				6D3461A20175425C920937D0 /* Pokemon.ttf */,
+				17BB7028737E422EADDDF968 /* SpecialGothic.ttf */,
+			);
+			name = Resources;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -247,6 +282,15 @@
 				81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */,
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
 				EF880E90550B49396F262999 /* PrivacyInfo.xcprivacy in Resources */,
+				B76DB0E1804A42418958C8D8 /* Kurale-Regular.ttf in Resources */,
+				61DBB18766184DF79A1B0A7F /* MinecraftTen.ttf in Resources */,
+				8A37D94A956B475582FAF481 /* NationalPark.ttf in Resources */,
+				E0FB7F2DA1234228B662ADB8 /* Orbitron-Bold.ttf in Resources */,
+				0B99C7316FB34E6187667E06 /* Orbitron-Medium.ttf in Resources */,
+				49BB8DC52BA6460DAEBDC697 /* Orbitron-Regular.ttf in Resources */,
+				8D6AB20BEAE7443489D1CDBB /* Orbitron.ttf in Resources */,
+				8A12D59CCB7349B49B349EEF /* Pokemon.ttf in Resources */,
+				32A22088C6104B2C866C069B /* SpecialGothic.ttf in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -436,7 +480,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
 				CURRENT_PROJECT_VERSION = 4;
-				DEVELOPMENT_TEAM = RJZ8GBLWY7;
+				DEVELOPMENT_TEAM = PC6DU86MCS;
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = RNSMKitUIDemoApp/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 14.5;
@@ -465,7 +509,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
 				CURRENT_PROJECT_VERSION = 4;
-				DEVELOPMENT_TEAM = RJZ8GBLWY7;
+				DEVELOPMENT_TEAM = PC6DU86MCS;
 				INFOPLIST_FILE = RNSMKitUIDemoApp/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 14.5;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -570,7 +614,10 @@
 					"-DFOLLY_CFG_NO_COROUTINES=1",
 					"-DFOLLY_HAVE_CLOCK_GETTIME=1",
 				);
-				OTHER_LDFLAGS = "$(inherited)  ";
+				OTHER_LDFLAGS = (
+					"$(inherited)",
+					" ",
+				);
 				REACT_NATIVE_PATH = "${PODS_ROOT}/../../node_modules/react-native";
 				SDKROOT = iphoneos;
 				USE_HERMES = true;
@@ -657,7 +704,10 @@
 					"-DFOLLY_CFG_NO_COROUTINES=1",
 					"-DFOLLY_HAVE_CLOCK_GETTIME=1",
 				);
-				OTHER_LDFLAGS = "$(inherited)  ";
+				OTHER_LDFLAGS = (
+					"$(inherited)",
+					" ",
+				);
 				REACT_NATIVE_PATH = "${PODS_ROOT}/../../node_modules/react-native";
 				SDKROOT = iphoneos;
 				USE_HERMES = true;
