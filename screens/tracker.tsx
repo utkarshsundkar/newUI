@@ -375,6 +375,8 @@ const getCurrentWeekDates = () => {
 const DAYS = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
 const CURRENT_WEEK = getCurrentWeekDates();
 
+const getDateKey = (dateString: string) => dateString;
+
 const Tracker = ({ 
   onBack, 
   exerciseCount, 
@@ -388,6 +390,8 @@ const Tracker = ({
   const [calories, setCalories] = useState('0');
   const [sleepHours, setSleepHours] = useState('00:00');
   const [lastSavedDate, setLastSavedDate] = useState('');
+  const [debugCaloriesKey, setDebugCaloriesKey] = useState('');
+  const [debugCaloriesValue, setDebugCaloriesValue] = useState('');
   
   const [modalConfig, setModalConfig] = useState<ModalConfig>({
     visible: false,
@@ -405,6 +409,36 @@ const Tracker = ({
 
   useEffect(() => {
     loadTrackerData();
+  }, [selectedDate]);
+
+  useEffect(() => {
+    const loadSavedData = async () => {
+      try {
+        const data = await AsyncStorage.getItem(`tracker_${selectedDate}`);
+        if (data) {
+          const parsedData: TrackerData = JSON.parse(data);
+          if (parsedData.exerciseCount) {
+            onExerciseCountUpdate(parsedData.exerciseCount);
+          }
+        }
+      } catch (error) {
+        console.error('Error loading saved data:', error);
+      }
+    };
+    
+    loadSavedData();
+  }, [selectedDate]);
+
+  useEffect(() => {
+    // Set up a timer to reset calories at midnight
+    const now = new Date();
+    const midnight = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1, 0, 0, 0, 0);
+    const msUntilMidnight = midnight.getTime() - now.getTime();
+    const timer = setTimeout(() => {
+      setCalories('0');
+      AsyncStorage.setItem(`diet_calories_${getDateKey(selectedDate)}`, '0');
+    }, msUntilMidnight);
+    return () => clearTimeout(timer);
   }, [selectedDate]);
 
   const checkAndResetDaily = async () => {
@@ -437,26 +471,34 @@ const Tracker = ({
 
   const loadTrackerData = async () => {
     try {
-      // Always set to default values first
       setWaterIntake('0');
       setSteps('0');
       setCalories('0');
       setSleepHours('00:00');
       onExerciseCountUpdate('0');
 
-      const data = await AsyncStorage.getItem(`tracker_${selectedDate}`);
+      console.log('Tracker: selectedDate', selectedDate);
+      const data = await AsyncStorage.getItem(`tracker_${getDateKey(selectedDate)}`);
       if (data) {
         const parsedData: TrackerData = JSON.parse(data);
-        // Only update states if the values exist and are not empty
         if (parsedData.waterIntake && parsedData.waterIntake !== '') setWaterIntake(parsedData.waterIntake);
         if (parsedData.steps && parsedData.steps !== '') setSteps(parsedData.steps);
-        if (parsedData.calories && parsedData.calories !== '') setCalories(parsedData.calories);
         if (parsedData.sleepHours && parsedData.sleepHours !== '') setSleepHours(parsedData.sleepHours);
         if (parsedData.exerciseCount && parsedData.exerciseCount !== '') onExerciseCountUpdate(parsedData.exerciseCount);
       }
+      // Read calories from diet using selected date key
+      const dietCaloriesKey = `diet_calories_${getDateKey(selectedDate)}`;
+      const dietCalories = await AsyncStorage.getItem(dietCaloriesKey);
+      setDebugCaloriesKey(dietCaloriesKey);
+      setDebugCaloriesValue(dietCalories || 'null');
+      console.log('Tracker: reading', dietCaloriesKey, 'value:', dietCalories);
+      if (dietCalories) {
+        setCalories(dietCalories);
+      } else {
+        setCalories('0');
+      }
     } catch (error) {
       console.error('Error loading tracker data:', error);
-      // On error, ensure we show default values
       setWaterIntake('0');
       setSteps('0');
       setCalories('0');
@@ -668,22 +710,27 @@ const Tracker = ({
                   ]}
                   onPress={() => handleDateSelect(date.toString())}
                 >
-                  <Text style={[
-                    styles.dayText,
-                    isSelected && !isToday && styles.selectedDayText,
-                    isSelected && isToday && styles.todaySelectedDayText,
-                    !isSelected && isToday && styles.todayText
-                  ]}>{day}</Text>
-                  <Text style={[
-                    styles.dateText,
-                    isSelected && !isToday && styles.selectedDayText,
-                    isSelected && isToday && styles.todaySelectedDayText,
-                    !isSelected && isToday && styles.todayText
-                  ]}>{date}</Text>
-                  {isToday && <View style={[
-                    styles.dateDot,
-                    isSelected && styles.selectedDayDot
-                  ]} />}
+                  <View style={{ position: 'relative', alignItems: 'center', justifyContent: 'center', minHeight: 48 }}>
+                    {isToday && (
+                      <View style={styles.currentDateCircle} />
+                    )}
+                    <Text style={[
+                      styles.dayText,
+                      isSelected && !isToday && styles.selectedDayText,
+                      isSelected && isToday && styles.todaySelectedDayText,
+                      !isSelected && isToday && styles.todayText
+                    ]}>{day}</Text>
+                    <Text style={[
+                      styles.dateText,
+                      isSelected && !isToday && styles.selectedDayText,
+                      isSelected && isToday && styles.todaySelectedDayText,
+                      !isSelected && isToday && styles.todayText
+                    ]}>{date}</Text>
+                    {isToday && <View style={[
+                      styles.dateDot,
+                      isSelected && styles.selectedDayDot
+                    ]} />}
+                  </View>
                 </TouchableOpacity>
               );
             })}
@@ -716,23 +763,6 @@ const Tracker = ({
               <ProgressRing progress={parseInt(steps) / 10000} />
               <Text style={styles.valueText}>{steps}</Text>
               <Text style={styles.unitText}>steps</Text>
-            </View>
-          </Card>
-
-          <Card 
-            title="Calories" 
-            customStyle={styles.caloriesCard}
-            editable
-            onUpdate={handleCaloriesUpdate}
-            placeholder="Enter calories"
-            value={calories}
-            unit="Kcal"
-          >
-            <View style={styles.centerContent}>
-              <View style={styles.caloriesTextContainer}>
-                <Text style={[styles.valueText, styles.caloriesText]}>{calories}</Text>
-                <Text style={styles.unitText}>Kcal</Text>
-              </View>
             </View>
           </Card>
 
@@ -821,7 +851,7 @@ const styles = StyleSheet.create({
     fontFamily: Platform.OS === 'ios' ? 'System' : 'Roboto',
   },
   sectionHeader: {
-    fontSize: 20,
+    fontSize: 18,
     fontWeight: '600',
     color: '#fff',
     marginBottom: 8,
@@ -842,9 +872,9 @@ const styles = StyleSheet.create({
   },
   card: {
     width: '48%',
-    backgroundColor: '#2A2A2A',
-    borderRadius: 12,
-    padding: 12,
+    backgroundColor: '#FFFFFF',
+    borderRadius: 16,
+    padding: 16,
     marginBottom: 8,
     minHeight: 150,
   },
@@ -856,8 +886,9 @@ const styles = StyleSheet.create({
   },
   cardTitle: {
     fontSize: 16,
-    color: '#999',
+    color: '#222222',
     marginBottom: 8,
+    opacity: 0.7,
   },
   cardContent: {
     flex: 1,
@@ -899,13 +930,14 @@ const styles = StyleSheet.create({
   valueText: {
     fontSize: 28,
     fontWeight: '600',
-    color: '#fff',
+    color: '#222222',
     marginTop: 4,
   },
   unitText: {
     fontSize: 14,
-    color: '#999',
+    color: '#222222',
     marginTop: 2,
+    opacity: 0.6,
   },
   progressContainer: {
     alignItems: 'center',
@@ -984,14 +1016,15 @@ const styles = StyleSheet.create({
     color: 'white',
   },
   waterValue: {
-    fontSize: 28,
+    fontSize: 32,
     fontWeight: '600',
-    color: '#F47551',
+    color: '#222222',
     marginTop: 4,
   },
   waterUnit: {
     fontSize: 14,
-    color: '#999',
+    color: '#222222',
+    opacity: 0.6,
     marginTop: 2,
   },
   waterBarsContainer: {
@@ -1052,23 +1085,24 @@ const styles = StyleSheet.create({
   sleepValue: {
     fontSize: 20,
     fontWeight: '600',
-    color: '#F47551',
+    color: '#222222',
     textAlign: 'center',
   },
   sleepUnit: {
     fontSize: 12,
-    color: '#999',
+    color: '#222222',
     textAlign: 'center',
     marginTop: 2,
+    opacity: 0.6,
   },
   waterCard: {
-    backgroundColor: '#2A2A2A',
+    backgroundColor: '#FFFFFF',
   },
   walkCard: {
-    backgroundColor: '#2A2A2A',
+    backgroundColor: '#FFFFFF',
   },
   sleepCard: {
-    backgroundColor: '#2A2A2A',
+    backgroundColor: '#FFFFFF',
     height: 200,
   },
   centerContent: {
@@ -1079,7 +1113,7 @@ const styles = StyleSheet.create({
     height: '100%',
   },
   caloriesCard: {
-    backgroundColor: '#2A2A2A',
+    backgroundColor: '#FFFFFF',
     height: 200,
   },
   modalOverlay: {
@@ -1136,7 +1170,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#1A1A1A',
   },
   exerciseCard: {
-    backgroundColor: '#2A2A2A',
+    backgroundColor: '#FFFFFF',
     height: 200,
   },
   exerciseContent: {
@@ -1158,14 +1192,15 @@ const styles = StyleSheet.create({
   exerciseCount: {
     fontSize: 32,
     fontWeight: '700',
-    color: '#F47551',
+    color: '#fff',
     textAlign: 'center',
   },
   exerciseUnit: {
     fontSize: 12,
-    color: '#999',
+    color: '#fff',
     textAlign: 'center',
     marginTop: 2,
+    opacity: 0.6,
   },
   caloriesTextContainer: {
     alignItems: 'center',
@@ -1176,7 +1211,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     fontSize: 35,
     fontWeight: 'bold',
-    color: '#F47551',
+    color: '#222222',
   },
   weekViewContainer: {
     paddingTop: 0,
@@ -1195,7 +1230,10 @@ const styles = StyleSheet.create({
     minWidth: 40,
   },
   selectedDay: {
-    backgroundColor: '#F47551',
+    backgroundColor: 'rgba(244, 117, 81, 0.15)',
+    borderWidth: 1,
+    borderColor: '#F47551',
+    borderRadius: 24,
   },
   dayText: {
     fontSize: 13,
@@ -1208,7 +1246,8 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
   },
   selectedDayText: {
-    color: '#1A1A1A',
+    color: '#F47551',
+    fontWeight: '600',
   },
   dateDot: {
     width: 4,
@@ -1218,7 +1257,7 @@ const styles = StyleSheet.create({
     marginTop: 4,
   },
   selectedDayDot: {
-    backgroundColor: '#1A1A1A',
+    backgroundColor: '#F47551',
   },
   todayText: {
     color: '#F47551',
@@ -1226,12 +1265,22 @@ const styles = StyleSheet.create({
   },
   todaySelectedDay: {
     backgroundColor: 'rgba(244, 117, 81, 0.15)',
-    borderWidth: 1,
-    borderColor: '#F47551',
   },
   todaySelectedDayText: {
     color: '#F47551',
     fontWeight: '600',
+  },
+  currentDateCircle: {
+    position: 'absolute',
+    top: -12,
+    left: -14,
+    width: 48,
+    height: 72,
+    borderRadius: 24,
+    borderWidth: 1.5,
+    borderColor: '#F47551',
+    backgroundColor: 'rgba(244, 117, 81, 0.15)',
+    zIndex: -1,
   },
 });
 

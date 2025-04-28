@@ -28,6 +28,28 @@ import EditText from '../components/EditText';
 import ThreeCheckboxes from '../components/ThreeCheckboxes';
 import React from 'react';
 
+// Add these interfaces at the top of the file, after imports
+interface ExerciseStatus {
+  completed: boolean;
+  skipped: boolean;
+}
+
+interface ExerciseWithStatus {
+  name: string;
+  completed: boolean;
+  skipped: boolean;
+}
+
+interface WorkoutExercise {
+  name: string;
+  [key: string]: any; // Allow other properties from SMAssessmentExercise
+}
+
+interface WorkoutWithEvents extends SMWorkoutLibrary.SMWorkout {
+  onExerciseCompleted?: (exercise: WorkoutExercise) => void;
+  onExerciseSkipped?: (exercise: WorkoutExercise) => void;
+}
+
 const Workout = ({ onBack, onNavigate }) => {
   const [didConfig, setDidConfig] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -195,22 +217,22 @@ const Workout = ({ onBack, onNavigate }) => {
           exerciseName,
           35,
           config.detector,
-          null,
+            null,
           config.isTimeBased 
             ? [SMWorkoutLibrary.UIElement.Timer, SMWorkoutLibrary.UIElement.GaugeOfMotion]
             : [SMWorkoutLibrary.UIElement.RepsCounter, SMWorkoutLibrary.UIElement.Timer, SMWorkoutLibrary.UIElement.GaugeOfMotion],
           config.detector,
-          '',
-          new SMWorkoutLibrary.SMScoringParams(
+            '',
+            new SMWorkoutLibrary.SMScoringParams(
             config.isTimeBased ? SMWorkoutLibrary.ScoringType.Time : SMWorkoutLibrary.ScoringType.Reps,
-            0.3,
+              0.3,
             config.isTimeBased ? config.duration : null,
             !config.isTimeBased ? config.reps : null,
-            null,
-            null
-          ),
-          '',
-          exerciseName,
+              null,
+              null
+            ),
+            '',
+            exerciseName,
           config.isTimeBased ? `Hold for ${config.duration} seconds` : `Complete ${config.reps} reps`,
           config.isTimeBased ? 'Time' : 'Reps',
           'clean reps'
@@ -226,9 +248,46 @@ const Workout = ({ onBack, onNavigate }) => {
         null,
         null,
         null
-      );
+      ) as any; // Use any type for workout to allow event handlers
 
-      await startCustomAssessment(workout, null, true, true);
+      // Create a tracking object for exercise status
+      const exerciseStatus: Record<string, ExerciseStatus> = {};
+      (workoutExercises as any[]).forEach((exercise: any) => {
+        exerciseStatus[exercise.name] = {
+          completed: false,
+          skipped: false
+        };
+      });
+
+      // Set up event handlers for exercise status
+      workout.onExerciseCompleted = (exercise: any) => {
+        if (exerciseStatus[exercise.name]) {
+          exerciseStatus[exercise.name].completed = true;
+        }
+      };
+
+      workout.onExerciseSkipped = (exercise: any) => {
+        if (exerciseStatus[exercise.name]) {
+          exerciseStatus[exercise.name].skipped = true;
+        }
+      };
+
+      const result = await startCustomAssessment(workout, null, true, true);
+      if (result.didFinish) {
+        // Convert exercise status to array format for the event
+        const exerciseStatusArray: ExerciseWithStatus[] = (workoutExercises as any[]).map((exercise: any) => ({
+          name: exercise.name,
+          ...exerciseStatus[exercise.name]
+        }));
+
+        DeviceEventEmitter.emit('didExitWorkout', { 
+          type: 'workout_completed',
+          exercises: exerciseStatusArray,
+          totalExercises: workoutExercises.length,
+          completedExercises: Object.values(exerciseStatus).filter((status: ExerciseStatus) => status.completed).length,
+          skippedExercises: Object.values(exerciseStatus).filter((status: ExerciseStatus) => status.skipped).length
+        });
+      }
     } catch (error) {
       console.error('Workout error:', error);
       Alert.alert('Error', 'Failed to start workout. Please try again.');
@@ -1043,8 +1102,7 @@ const Workout = ({ onBack, onNavigate }) => {
               />
               <WorkoutButton 
                 title="PUSH-UPS CHALLENGE" 
-                onPress={() => {
-                  // Push-ups workout code remains the same
+                onPress={async () => {
                   setSelectedExercises(['Push-ups']);
                   const pushupExercise = new SMWorkoutLibrary.SMAssessmentExercise(
                     'Push-ups',
@@ -1054,7 +1112,7 @@ const Workout = ({ onBack, onNavigate }) => {
                     [SMWorkoutLibrary.UIElement.RepsCounter, SMWorkoutLibrary.UIElement.Timer],
                     'PushupRegular',
                     '',
-              new SMWorkoutLibrary.SMScoringParams(
+                    new SMWorkoutLibrary.SMScoringParams(
                       SMWorkoutLibrary.ScoringType.Reps,
                       0.3,
                       null,
@@ -1078,12 +1136,18 @@ const Workout = ({ onBack, onNavigate }) => {
                     null,
                     null,
                   );
-                  startCustomAssessment(workout, null, true, true);
+                  const result = await startCustomAssessment(workout, null, true, true);
+                  if (result.didFinish) {
+                    DeviceEventEmitter.emit('didExitWorkout', { 
+        type: 'workout_completed',
+                      exercises: [pushupExercise]
+                    });
+                  }
                 }}
               />
               <WorkoutButton 
                 title="UPPER BODY" 
-                onPress={() => {
+                onPress={async () => {
                   const upperBodyExercises = [
                     new SMWorkoutLibrary.SMAssessmentExercise(
                       'ShoulderPress',
@@ -1093,7 +1157,7 @@ const Workout = ({ onBack, onNavigate }) => {
                       [SMWorkoutLibrary.UIElement.RepsCounter, SMWorkoutLibrary.UIElement.Timer, SMWorkoutLibrary.UIElement.GaugeOfMotion],
                       'ShouldersPress',
                       '',
-              new SMWorkoutLibrary.SMScoringParams(
+                      new SMWorkoutLibrary.SMScoringParams(
                         SMWorkoutLibrary.ScoringType.Reps,
                         0.3,
                         null,
@@ -1185,12 +1249,18 @@ const Workout = ({ onBack, onNavigate }) => {
                     null,
                     null,
                   );
-                  startCustomAssessment(workout, null, true, true);
+                  const result = await startCustomAssessment(workout, null, true, true);
+                  if (result.didFinish) {
+                    DeviceEventEmitter.emit('didExitWorkout', { 
+                      type: 'workout_completed',
+                      exercises: upperBodyExercises
+                    });
+                  }
                 }}
               />
               <WorkoutButton 
                 title="FULL BODY BURN" 
-                onPress={() => {
+                onPress={async () => {
                   const fullBodyExercises = [
                     new SMWorkoutLibrary.SMAssessmentExercise(
                       'JumpingJacks',
@@ -1200,7 +1270,7 @@ const Workout = ({ onBack, onNavigate }) => {
                       [SMWorkoutLibrary.UIElement.RepsCounter, SMWorkoutLibrary.UIElement.Timer],
                       'JumpingJacks',
                       '',
-              new SMWorkoutLibrary.SMScoringParams(
+                      new SMWorkoutLibrary.SMScoringParams(
                         SMWorkoutLibrary.ScoringType.Reps,
                         0.3,
                         null,
@@ -1292,7 +1362,13 @@ const Workout = ({ onBack, onNavigate }) => {
                     null,
                     null,
                   );
-                  startCustomAssessment(workout, null, true, true);
+                  const result = await startCustomAssessment(workout, null, true, true);
+                  if (result.didFinish) {
+                    DeviceEventEmitter.emit('didExitWorkout', { 
+                      type: 'workout_completed',
+                      exercises: fullBodyExercises
+                    });
+                  }
                 }}
               />
               <WorkoutButton 
@@ -2064,7 +2140,7 @@ const Workout = ({ onBack, onNavigate }) => {
               />
               <WorkoutButton 
                 title="UPPER BODY" 
-                onPress={() => {
+                onPress={async () => {
                   const upperBodyExercises = [
                     new SMWorkoutLibrary.SMAssessmentExercise(
                       'ShoulderPress',
@@ -2074,7 +2150,7 @@ const Workout = ({ onBack, onNavigate }) => {
                       [SMWorkoutLibrary.UIElement.RepsCounter, SMWorkoutLibrary.UIElement.Timer, SMWorkoutLibrary.UIElement.GaugeOfMotion],
                       'ShouldersPress',
                       '',
-              new SMWorkoutLibrary.SMScoringParams(
+                      new SMWorkoutLibrary.SMScoringParams(
                         SMWorkoutLibrary.ScoringType.Reps,
                         0.3,
                         null,
@@ -2166,12 +2242,18 @@ const Workout = ({ onBack, onNavigate }) => {
                     null,
                     null,
                   );
-                  startCustomAssessment(workout, null, true, true);
+                  const result = await startCustomAssessment(workout, null, true, true);
+                  if (result.didFinish) {
+                    DeviceEventEmitter.emit('didExitWorkout', { 
+                      type: 'workout_completed',
+                      exercises: upperBodyExercises
+                    });
+                  }
                 }}
               />
               <WorkoutButton 
                 title="FULL BODY BURN" 
-                onPress={() => {
+                onPress={async () => {
                   const fullBodyExercises = [
                     new SMWorkoutLibrary.SMAssessmentExercise(
                       'JumpingJacks',
@@ -2181,7 +2263,7 @@ const Workout = ({ onBack, onNavigate }) => {
                       [SMWorkoutLibrary.UIElement.RepsCounter, SMWorkoutLibrary.UIElement.Timer],
                       'JumpingJacks',
                       '',
-              new SMWorkoutLibrary.SMScoringParams(
+                      new SMWorkoutLibrary.SMScoringParams(
                         SMWorkoutLibrary.ScoringType.Reps,
                         0.3,
                         null,
@@ -2273,7 +2355,13 @@ const Workout = ({ onBack, onNavigate }) => {
                     null,
                     null,
                   );
-                  startCustomAssessment(workout, null, true, true);
+                  const result = await startCustomAssessment(workout, null, true, true);
+                  if (result.didFinish) {
+                    DeviceEventEmitter.emit('didExitWorkout', { 
+                      type: 'workout_completed',
+                      exercises: fullBodyExercises
+                    });
+                  }
                 }}
               />
               <WorkoutButton 
@@ -3023,7 +3111,7 @@ const Workout = ({ onBack, onNavigate }) => {
               />
               <WorkoutButton 
                 title="UPPER BODY" 
-                onPress={() => {
+                onPress={async () => {
                   const upperBodyExercises = [
                     new SMWorkoutLibrary.SMAssessmentExercise(
                       'ShoulderPress',
@@ -3115,22 +3203,28 @@ const Workout = ({ onBack, onNavigate }) => {
                     )
                   ];
 
-      const workout = new SMWorkoutLibrary.SMWorkout(
+                  const workout = new SMWorkoutLibrary.SMWorkout(
                     'upper_body',
                     'Upper Body',
-        null,
-        null,
+                    null,
+                    null,
                     upperBodyExercises,
-        null,
-        null,
-        null,
-      );
-                  startCustomAssessment(workout, null, true, true);
+                    null,
+                    null,
+                    null,
+                  );
+                  const result = await startCustomAssessment(workout, null, true, true);
+                  if (result.didFinish) {
+                    DeviceEventEmitter.emit('didExitWorkout', { 
+                      type: 'workout_completed',
+                      exercises: upperBodyExercises
+                    });
+                  }
                 }}
               />
               <WorkoutButton 
                 title="FULL BODY BURN" 
-                onPress={() => {
+                onPress={async () => {
                   const fullBodyExercises = [
                     new SMWorkoutLibrary.SMAssessmentExercise(
                       'JumpingJacks',
@@ -3232,7 +3326,13 @@ const Workout = ({ onBack, onNavigate }) => {
                     null,
                     null
                   );
-                  startCustomAssessment(workout, null, true, true);
+                  const result = await startCustomAssessment(workout, null, true, true);
+                  if (result.didFinish) {
+                    DeviceEventEmitter.emit('didExitWorkout', { 
+                      type: 'workout_completed',
+                      exercises: fullBodyExercises
+                    });
+                  }
                 }}
               />
               <WorkoutButton 
@@ -3329,14 +3429,14 @@ const Workout = ({ onBack, onNavigate }) => {
                     )
                   ];
 
-      const workout = new SMWorkoutLibrary.SMWorkout(
+                  const workout = new SMWorkoutLibrary.SMWorkout(
                     'advanced_mobility_stretch',
                     'Advanced Mobility & Stretch',
-        null,
-        null,
+                    null,
+                    null,
                     mobilityExercises,
-        null,
-        null,
+                    null,
+                    null,
                     null
                   );
                   startCustomAssessment(workout, null, true, true);
@@ -4009,6 +4109,22 @@ const Workout = ({ onBack, onNavigate }) => {
       var result = await startCustomAssessment(assessment, null, true, false);
       console.log('Assessment result:', result.summary);
       console.log('Did finish:', result.didFinish);
+
+      // Track all exercises and their status
+      const exerciseStatus = (exercises as any[]).map((e: any) => ({
+        name: e.exercise.name,
+        completed: e.completed,
+        skipped: e.skipped,
+        total: exercises.length
+      }));
+      
+      // Emit workout completion event with all exercise statuses
+      DeviceEventEmitter.emit('workout_completed', {
+        exercises: exerciseStatus,
+        totalExercises: exercises.length,
+        completedExercises: (exercises as any[]).filter((e: any) => e.completed).length,
+        skippedExercises: (exercises as any[]).filter((e: any) => e.skipped).length
+      });
     } catch (e) {
       console.error('Custom assessment error:', e);
       showAlert('Custom assessment error', e.message);

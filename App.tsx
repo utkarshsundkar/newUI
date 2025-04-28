@@ -30,6 +30,7 @@ import React from 'react';
 import WorkoutScreen from './screens/workout';
 import Diet from './screens/diet';
 import Tracker from './screens/tracker';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 // Add this array at the top of the file, after imports
 const MOTIVATION_QUOTES = [
@@ -131,6 +132,7 @@ const App = () => {
     'Oblique Crunches': 10
   });
   const [dailyQuote, setDailyQuote] = useState(MOTIVATION_QUOTES[0]);
+  const [pendingSwitchToTracker, setPendingSwitchToTracker] = useState(false);
 
   const updateDuration = (exerciseName, increment) => {
     setExerciseDurations(prev => ({
@@ -307,10 +309,16 @@ const App = () => {
   useEffect(() => {
     const didExitWorkoutSubscription = DeviceEventEmitter.addListener('didExitWorkout', params => {
       console.log('Workout exited');
+      if (params.type === 'workout_completed' && params.exercises) {
+        incrementExerciseCount(params.exercises.length);
+      }
     });
 
     const workoutDidFinishSubscription = DeviceEventEmitter.addListener('workoutDidFinish', params => {
       console.log('Workout finished');
+      if (params.exercises) {
+        incrementExerciseCount(params.exercises.length);
+      }
     });
 
     return () => {
@@ -329,6 +337,25 @@ const App = () => {
     const quoteIndex = (dayOfMonth - 1) % MOTIVATION_QUOTES.length;
     setDailyQuote(MOTIVATION_QUOTES[quoteIndex]);
   }, []); // Empty dependency array means this runs once when component mounts
+
+  useEffect(() => {
+    const loadInitialExerciseCount = async () => {
+      try {
+        const today = new Date().toISOString().split('T')[0];
+        const data = await AsyncStorage.getItem(`tracker_${today}`);
+        if (data) {
+          const parsedData = JSON.parse(data);
+          if (parsedData.exerciseCount) {
+            setExerciseCount(parseInt(parsedData.exerciseCount));
+          }
+        }
+      } catch (error) {
+        console.error('Error loading initial exercise count:', error);
+      }
+    };
+
+    loadInitialExerciseCount();
+  }, []);
 
   const handleEvent = (summary) => {
     if (summary.type === 'workout_completed') {
@@ -1273,50 +1300,26 @@ const App = () => {
   };
 
   const handleAssessment = async (type: string) => {
-    if (!isConfigured) {
-      Alert.alert('Not Ready', 'Please wait for SDK configuration');
-      return;
-    }
-
     try {
       switch (type) {
         case 'FITNESS':
-          await startAssessment(
-            SMWorkoutLibrary.AssessmentTypes.Fitness,
-            false,
-            null,
-            false,
-            ''
-          );
+          incrementExerciseCount(5); // Fitness has 5 exercises
+          await startAssessmentSession(SMWorkoutLibrary.AssessmentTypes.Fitness, false, '');
           break;
         case 'MOVEMENT':
-          await startAssessment(
-            SMWorkoutLibrary.AssessmentTypes.Body360,
-            false,
-            null,
-            false,
-            ''
-          );
+          incrementExerciseCount(3); // Movement has 3 exercises
+          await startAssessmentSession(SMWorkoutLibrary.AssessmentTypes.Body360, false, '');
           break;
         case 'STRENGTH':
-          await startAssessment(
-            SMWorkoutLibrary.AssessmentTypes.Fitness,
-            false,
-            null,
-            false,
-            ''
-          );
+          incrementExerciseCount(4); // Strength has 4 exercises
+          await startAssessmentSession(SMWorkoutLibrary.AssessmentTypes.Fitness, false, '');
           break;
         case 'CARDIO':
-          await startAssessment(
-            SMWorkoutLibrary.AssessmentTypes.Fitness,
-            false,
-            null,
-            false,
-            ''
-          );
+          incrementExerciseCount(3); // Cardio has 3 exercises
+          await startAssessmentSession(SMWorkoutLibrary.AssessmentTypes.Fitness, false, '');
           break;
         case 'CUSTOM':
+          incrementExerciseCount(2); // Custom has 2 exercises
           const customExercises = [
             new SMWorkoutLibrary.SMAssessmentExercise(
               'Push-ups',
@@ -1635,8 +1638,28 @@ const App = () => {
     return `${month} ${day}`;
   };
 
-  const incrementExerciseCount = (count: number = 1) => {
-    setExerciseCount(prev => prev + count);
+  const incrementExerciseCount = async (count: number = 1) => {
+    try {
+      const today = new Date().toISOString().split('T')[0];
+      const newCount = exerciseCount + count;
+      setExerciseCount(newCount);
+      
+      // Save to today's tracker data
+      const existingData = await AsyncStorage.getItem(`tracker_${today}`);
+      const trackerData = existingData ? JSON.parse(existingData) : {
+        waterIntake: '0',
+        steps: '0',
+        calories: '0',
+        sleepHours: '00:00',
+        exerciseCount: '0',
+        date: today
+      };
+      
+      trackerData.exerciseCount = newCount.toString();
+      await AsyncStorage.setItem(`tracker_${today}`, JSON.stringify(trackerData));
+    } catch (error) {
+      console.error('Error updating exercise count:', error);
+    }
   };
 
   // Function to select random workouts
@@ -1749,10 +1772,20 @@ const App = () => {
           }}
         />
       ) : showDietScreen ? (
-        <Diet onBack={() => {
-          setShowDietScreen(false);
-          setActiveTab('HOME');
-        }} />
+        <Diet 
+          onBack={() => {
+            setShowDietScreen(false);
+            setActiveTab('HOME');
+          }}
+          onSaveCalories={async () => {
+            if (pendingSwitchToTracker) {
+              setShowDietScreen(false);
+              setShowTrackerScreen(true);
+              setActiveTab('TRACKER');
+              setPendingSwitchToTracker(false);
+            }
+          }}
+        />
       ) : showTrackerScreen ? (
         <Tracker 
           onBack={() => {
@@ -1761,7 +1794,24 @@ const App = () => {
             setActiveTab('HOME');
           }}
           exerciseCount={exerciseCount.toString()}
-          onExerciseCountUpdate={(count) => setExerciseCount(parseInt(count))}
+          onExerciseCountUpdate={async (count) => {
+            const numCount = parseInt(count);
+            if (!isNaN(numCount)) {
+              setExerciseCount(numCount);
+              const today = new Date().toISOString().split('T')[0];
+              const existingData = await AsyncStorage.getItem(`tracker_${today}`);
+              const trackerData = existingData ? JSON.parse(existingData) : {
+                waterIntake: '0',
+                steps: '0',
+                calories: '0',
+                sleepHours: '00:00',
+                exerciseCount: '0',
+                date: today
+              };
+              trackerData.exerciseCount = numCount.toString();
+              await AsyncStorage.setItem(`tracker_${today}`, JSON.stringify(trackerData));
+            }
+          }}
         />
       ) : (
         <ScrollView style={styles.scrollView}>
@@ -1832,19 +1882,13 @@ const App = () => {
               <View style={styles.assessmentRow}>
                 <TouchableOpacity 
                   style={styles.assessmentButton}
-                  onPress={() => {
-                    incrementExerciseCount(5); // Fitness has 5 exercises
-                    handleAssessment('FITNESS');
-                  }}
+                  onPress={() => handleAssessment('FITNESS')}
                 >
                   <Text style={styles.assessmentButtonText}>FITNESS</Text>
                 </TouchableOpacity>
                 <TouchableOpacity 
                   style={styles.assessmentButton}
-                  onPress={() => {
-                    incrementExerciseCount(3); // Movement has 3 exercises
-                    handleAssessment('MOVEMENT');
-                  }}
+                  onPress={() => handleAssessment('MOVEMENT')}
                 >
                   <Text style={styles.assessmentButtonText}>MOVEMENT</Text>
                 </TouchableOpacity>
@@ -1852,29 +1896,20 @@ const App = () => {
               <View style={styles.assessmentRow}>
                 <TouchableOpacity 
                   style={styles.assessmentButton}
-                  onPress={() => {
-                    incrementExerciseCount(4); // Strength has 4 exercises
-                    handleAssessment('STRENGTH');
-                  }}
+                  onPress={() => handleAssessment('STRENGTH')}
                 >
                   <Text style={styles.assessmentButtonText}>STRENGTH</Text>
                 </TouchableOpacity>
                 <TouchableOpacity 
                   style={styles.assessmentButton}
-                  onPress={() => {
-                    incrementExerciseCount(3); // Cardio has 3 exercises
-                    handleAssessment('CARDIO');
-                  }}
+                  onPress={() => handleAssessment('CARDIO')}
                 >
                   <Text style={styles.assessmentButtonText}>CARDIO</Text>
                 </TouchableOpacity>
               </View>
               <TouchableOpacity 
                 style={styles.customFitnessButton}
-                onPress={() => {
-                  incrementExerciseCount(2); // Custom has 2 exercises
-                  handleAssessment('CUSTOM');
-                }}
+                onPress={() => handleAssessment('CUSTOM')}
               >
                 <Text style={styles.assessmentButtonText}>CUSTOM FITNESS</Text>
               </TouchableOpacity>
@@ -1946,11 +1981,11 @@ const App = () => {
           setShowTrackerScreen(false);
           setActiveTab('DIET');
         })}
-        {renderNavItem('TRACKER', null, () => {
-          setShowTrackerScreen(true);
+        {renderNavItem('LEADERBOARD', null, () => {
+          setActiveTab('LEADERBOARD');
           setShowWorkoutScreen(false);
           setShowDietScreen(false);
-          setActiveTab('TRACKER');
+          setShowTrackerScreen(false);
         })}
         {renderNavItem('PROFILE', null)}
       </View>

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Dimensions, Animated, StatusBar, Modal, TextInput, Alert, SafeAreaView } from "react-native";
 import { Calendar, DateData } from 'react-native-calendars';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 // Enhanced color palette for dark theme
 const colors = {
@@ -998,7 +999,16 @@ const FoodListModal: React.FC<{
   );
 };
 
-const Diet: React.FC<{ onBack: () => void }> = ({ onBack }) => {
+const getDateKey = (dateString: string) => dateString;
+
+const MEALS_DATA_KEY = 'meals_data';
+
+interface DietProps {
+  onBack: () => void;
+  onSaveCalories?: () => Promise<void> | void;
+}
+
+const Diet: React.FC<DietProps> = ({ onBack, onSaveCalories }) => {
   const today = new Date();
   const [selectedDate, setSelectedDate] = useState(today.getDate().toString());
   const [showCalendar, setShowCalendar] = useState(false);
@@ -1128,15 +1138,13 @@ const Diet: React.FC<{ onBack: () => void }> = ({ onBack }) => {
             calories: selectedItem.calories,
             portions: selectedItem.portion,
             macros: {
-              carbs: Math.round(selectedItem.calories * 0.5 / 4), // 50% of calories from carbs
-              protein: Math.round(selectedItem.calories * 0.3 / 4), // 30% of calories from protein
-              fat: Math.round(selectedItem.calories * 0.2 / 9) // 20% of calories from fat
+              carbs: Math.round(selectedItem.calories * 0.5 / 4),
+              protein: Math.round(selectedItem.calories * 0.3 / 4),
+              fat: Math.round(selectedItem.calories * 0.2 / 9)
             }
           };
-
           const currentCalories = meal.calories || 0;
           const currentMacros = meal.macros || { carbs: 0, protein: 0, fat: 0 };
-
           return {
             ...meal,
             calories: currentCalories + selectedItem.calories,
@@ -1150,7 +1158,12 @@ const Diet: React.FC<{ onBack: () => void }> = ({ onBack }) => {
         }
         return meal;
       });
-
+      // Save total calories to AsyncStorage with full date key
+      const todayKey = getDateKey(selectedDate);
+      const totalCalories = updatedMeals.reduce((total, meal) => total + (meal.calories || 0), 0);
+      AsyncStorage.setItem(`diet_calories_${todayKey}`, totalCalories.toString()).then(() => {
+        if (onSaveCalories) onSaveCalories();
+      });
       return {
         ...prevMealsData,
         [selectedDate]: updatedMeals
@@ -1164,10 +1177,8 @@ const Diet: React.FC<{ onBack: () => void }> = ({ onBack }) => {
         if (meal.id === mealId) {
           const itemToRemove = meal.items.find(item => item.id === itemId);
           if (!itemToRemove) return meal;
-
           const updatedItems = meal.items.filter(item => item.id !== itemId);
           const currentMacros = meal.macros || { carbs: 0, protein: 0, fat: 0 };
-
           return {
             ...meal,
             items: updatedItems,
@@ -1181,7 +1192,12 @@ const Diet: React.FC<{ onBack: () => void }> = ({ onBack }) => {
         }
         return meal;
       });
-
+      // Save total calories to AsyncStorage with full date key
+      const todayKey = getDateKey(selectedDate);
+      const totalCalories = updatedMeals.reduce((total, meal) => total + (meal.calories || 0), 0);
+      AsyncStorage.setItem(`diet_calories_${todayKey}`, totalCalories.toString()).then(() => {
+        if (onSaveCalories) onSaveCalories();
+      });
       return {
         ...prevMealsData,
         [selectedDate]: updatedMeals
@@ -1192,6 +1208,35 @@ const Diet: React.FC<{ onBack: () => void }> = ({ onBack }) => {
   useEffect(() => {
     setDailyQuote(getDailyQuote());
   }, []);
+
+  useEffect(() => {
+    // Save calories for the selected date whenever mealsData or selectedDate changes
+    const meals = mealsData[selectedDate] || [];
+    const totalCalories = meals.reduce((total, meal) => total + (meal.calories || 0), 0);
+    AsyncStorage.setItem(`diet_calories_${getDateKey(selectedDate)}`, totalCalories.toString()).then(() => {
+      if (onSaveCalories) onSaveCalories();
+    });
+  }, [mealsData, selectedDate]);
+
+  // Load mealsData from AsyncStorage on mount and when selectedDate changes
+  useEffect(() => {
+    const loadMealsData = async () => {
+      try {
+        const stored = await AsyncStorage.getItem(MEALS_DATA_KEY);
+        if (stored) {
+          setMealsData(JSON.parse(stored));
+        }
+      } catch (e) {
+        // ignore
+      }
+    };
+    loadMealsData();
+  }, [selectedDate]);
+
+  // Save mealsData to AsyncStorage whenever it changes
+  useEffect(() => {
+    AsyncStorage.setItem(MEALS_DATA_KEY, JSON.stringify(mealsData));
+  }, [mealsData]);
 
   const renderWeekView = () => (
     <View style={styles.weekViewContainer}>
@@ -1404,7 +1449,7 @@ const styles = StyleSheet.create({
     paddingBottom: 12,
   },
   weekViewText: {
-    fontSize: 15,
+    fontSize: 18,
     color: colors.text,
     marginRight: 4,
     fontWeight: 'bold',
