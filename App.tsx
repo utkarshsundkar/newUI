@@ -1865,7 +1865,7 @@ const App = () => {
         {/* Avatar Section */}
         <View style={styles.avatarContainer}>
           <Image 
-            source={require('./assets/Figurew.png')} 
+            source={require('./assets/Figure.png')} 
             style={styles.avatar}
           />
         </View>
