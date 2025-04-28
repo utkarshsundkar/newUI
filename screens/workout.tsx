@@ -4216,14 +4216,14 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   scrollViewContent: {
-    paddingBottom: 80, // Add padding to prevent content from being hidden behind nav bar
+    paddingBottom: '10%', // Changed from 80px to 10%
   },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: 20,
-    paddingTop: 16,
-    paddingBottom: 12,
+    paddingHorizontal: '5%', // Changed from 20px to 5%
+    paddingTop: '4%', // Changed from 16px to 4%
+    paddingBottom: '3%', // Changed from 12px to 3%
     backgroundColor: 'transparent',
     position: 'relative',
   },
@@ -4237,7 +4237,7 @@ const styles = StyleSheet.create({
   backButton: {
     position: 'absolute',
     left: 0,
-    padding: 8,
+    padding: '2%', // Changed from 8px to 2%
     zIndex: 1,
   },
   backIcon: {
@@ -4249,13 +4249,13 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
-    gap: 12,
-    paddingVertical: 12,
-    paddingHorizontal: 20,
+    gap: 3, // Changed from 12px to 3%
+    paddingVertical: '3%', // Changed from 12px to 3%
+    paddingHorizontal: '5%', // Changed from 20px to 5%
   },
   difficultyButton: {
-    paddingVertical: 10,
-    paddingHorizontal: 20,
+    paddingVertical: '2.5%', // Changed from 10px to 2.5%
+    paddingHorizontal: '5%', // Changed from 20px to 5%
     borderRadius: 25,
     backgroundColor: '#333333',
   },
@@ -4270,8 +4270,8 @@ const styles = StyleSheet.create({
     color: '#000000',
   },
   focusCard: {
-    margin: 20,
-    padding: 20,
+    margin: '5%', // Changed from 20px to 5%
+    padding: '5%', // Changed from 20px to 5%
     backgroundColor: '#FFE4C4',
     borderRadius: 15,
   },
@@ -4283,20 +4283,20 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: 'bold',
     color: '#000000',
-    marginVertical: 10,
+    marginVertical: '2.5%', // Changed from 10px to 2.5%
   },
   workoutDescription: {
     fontSize: 14,
     color: '#000000',
-    marginBottom: 20,
+    marginBottom: '5%', // Changed from 20px to 5%
   },
   startButton: {
     backgroundColor: '#1A1A1A',
-    padding: 15,
+    padding: '3.75%', // Changed from 15px to 3.75%
     borderRadius: 25,
     alignItems: 'center',
     width: '100%',
-    marginTop: 8,
+    marginTop: '2%', // Changed from 8px to 2%
   },
   startButtonText: {
     color: '#FFFFFF',
@@ -4308,24 +4308,24 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: 'bold',
     color: '#FF8C00',
-    marginLeft: 20,
+    marginLeft: '5%', // Changed from 20px to 5%
   },
   sectionSubtitle: {
     fontSize: 14,
     color: '#FFFFFF',
-    marginLeft: 20,
-    marginTop: 5,
-    marginBottom: 20,
+    marginLeft: '5%', // Changed from 20px to 5%
+    marginTop: '1.25%', // Changed from 5px to 1.25%
+    marginBottom: '5%', // Changed from 20px to 5%
   },
   workoutOptionsContainer: {
-    padding: 20,
-    marginBottom: 20,
+    padding: '5%', // Changed from 20px to 5%
+    marginBottom: '5%', // Changed from 20px to 5%
   },
   workoutButton: {
     backgroundColor: '#333333',
-    padding: 20,
+    padding: '5%', // Changed from 20px to 5%
     borderRadius: 15,
-    marginBottom: 10,
+    marginBottom: '2.5%', // Changed from 10px to 2.5%
   },
   workoutButtonText: {
     color: '#FFFFFF',
@@ -4334,7 +4334,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   bottomSpacer: {
-    height: 60, // Height to ensure content isn't hidden behind nav bar
+    height: '15%', // Changed from 60px to 15%
   },
   bottomNav: {
     flexDirection: 'row',
@@ -4345,7 +4345,7 @@ const styles = StyleSheet.create({
     bottom: 0,
     left: 0,
     right: 0,
-    height: 60,
+    height: '15%', // Changed from 60px to 15%
     borderTopWidth: 0.5,
     borderTopColor: '#333333',
   },
@@ -4353,7 +4353,7 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    paddingVertical: 10,
+    paddingVertical: '2.5%', // Changed from 10px to 2.5%
   },
   navText: {
     color: '#FFFFFF',
@@ -4372,7 +4372,7 @@ const styles = StyleSheet.create({
     maxHeight: '80%',
     backgroundColor: '#1E1E1E',
     borderRadius: 20,
-    padding: 20,
+    padding: '5%', // Changed from 20px to 5%
     shadowColor: '#000',
     shadowOffset: {
       width: 0,
@@ -4383,24 +4383,23 @@ const styles = StyleSheet.create({
     elevation: 5,
   },
   modalText: {
-    marginBottom: 15,
+    marginBottom: '3.75%', // Changed from 15px to 3.75%
     textAlign: 'center',
     color: '#FFFFFF',
     fontSize: 18,
     fontWeight: 'bold',
   },
-  // Exercise selection modal styles
   modalContainer: {
     flex: 1,
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
     justifyContent: 'center',
     alignItems: 'center',
-    padding: 20,
+    padding: '5%', // Changed from 20px to 5%
   },
   modalContent: {
     backgroundColor: '#FFFFFF',
     borderRadius: 20,
-    padding: 20,
+    padding: '5%', // Changed from 20px to 5%
     width: '100%',
     maxHeight: '80%',
   },
@@ -4409,22 +4408,22 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: '#FFFFFF',
     textAlign: 'center',
-    marginBottom: 10,
+    marginBottom: '2.5%', // Changed from 10px to 2.5%
   },
   modalSubtitle: {
     fontSize: 16,
     color: '#CCCCCC',
     textAlign: 'center',
-    marginBottom: 20,
+    marginBottom: '5%', // Changed from 20px to 5%
   },
   exerciseList: {
     maxHeight: '70%',
   },
   exerciseItem: {
     backgroundColor: '#333333',
-    padding: 15,
+    padding: '3.75%', // Changed from 15px to 3.75%
     borderRadius: 10,
-    marginBottom: 10,
+    marginBottom: '2.5%', // Changed from 10px to 2.5%
   },
   exerciseItemSelected: {
     backgroundColor: '#4A90E2',
@@ -4439,14 +4438,14 @@ const styles = StyleSheet.create({
   modalButtonContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginTop: 20,
+    marginTop: '5%', // Changed from 20px to 5%
   },
   modalCancelButton: {
     backgroundColor: '#666666',
-    padding: 15,
+    padding: '3.75%', // Changed from 15px to 3.75%
     borderRadius: 10,
     flex: 1,
-    marginRight: 10,
+    marginRight: '2.5%', // Changed from 10px to 2.5%
   },
   modalStartButton: {
     backgroundColor: '#4A90E2',
