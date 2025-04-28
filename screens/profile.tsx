@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, TouchableOpacity, StyleSheet, ScrollView, Dimensions, Linking, Platform } from "react-native";
+import { View, Text, TouchableOpacity, StyleSheet, ScrollView, Dimensions, Linking, Platform, SafeAreaView } from "react-native";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
@@ -27,6 +27,9 @@ type RootStackParamList = {
     profileData?: ProfileData;
   };
   PrivacyPolicy: undefined;
+  Main: undefined;
+  Diet: undefined;
+  Workout: undefined;
 };
 
 type ProfileScreenNavigationProp = NativeStackNavigationProp<RootStackParamList>;
@@ -47,6 +50,7 @@ const ProfileScreen = () => {
 
   const [notificationEnabled, setNotificationEnabled] = useState<boolean>(false);
   const [selectedEmoji, setSelectedEmoji] = useState<string>("👤");
+  const [selectedTab, setSelectedTab] = useState('profile');
 
   // Load profile data from AsyncStorage
   const loadProfileData = async () => {
@@ -91,8 +95,34 @@ const ProfileScreen = () => {
     navigation.navigate('EditProfile', { profileData });
   };
 
+  const handleNavigation = (screen: keyof RootStackParamList) => {
+    switch (screen) {
+      case 'Profile':
+        navigation.navigate('Profile', {});
+        break;
+      case 'EditProfile':
+        navigation.navigate('EditProfile', { profileData });
+        break;
+      default:
+        navigation.navigate(screen);
+    }
+  };
+
+  const renderNavItem = (name: string, screen: keyof RootStackParamList) => {
+    const isActive = selectedTab === name.toLowerCase();
+    return (
+      <TouchableOpacity
+        style={styles.navItem}
+        onPress={() => handleNavigation(screen)}
+      >
+        {isActive && <View style={styles.activeIndicator} />}
+        <Text style={[styles.navText, isActive && styles.activeNavText]}>{name}</Text>
+      </TouchableOpacity>
+    );
+  };
+
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       <ScrollView style={styles.scrollView}>
         {/* Curved Top Bar */}
         <View style={styles.curvedTopBar}>
@@ -179,7 +209,14 @@ const ProfileScreen = () => {
           </TouchableOpacity>
         </View>
       </ScrollView>
-    </View>
+
+      <View style={styles.bottomNav}>
+        {renderNavItem('HOME', 'Main')}
+        {renderNavItem('DIET', 'Diet')}
+        {renderNavItem('WORKOUT', 'Workout')}
+        {renderNavItem('PROFILE', 'Profile')}
+      </View>
+    </SafeAreaView>
   );
 };
 
@@ -278,6 +315,42 @@ const styles = StyleSheet.create({
   settingEmoji: {
     fontSize: 24,
     marginRight: 10,
+  },
+  bottomNav: {
+    flexDirection: 'row',
+    backgroundColor: '#000000',
+    paddingTop: 12,
+    paddingBottom: 24,
+    borderTopWidth: 1,
+    borderTopColor: '#2C2C2C',
+    justifyContent: 'space-between',
+    paddingHorizontal: 30,
+  },
+  navItem: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 8,
+    position: 'relative',
+    minWidth: 80,
+  },
+  activeIndicator: {
+    position: 'absolute',
+    bottom: -16,
+    left: 0,
+    right: 0,
+    height: 2,
+    backgroundColor: '#F47551',
+    borderRadius: 1,
+  },
+  navText: {
+    color: '#FFFFFF',
+    fontSize: 14,
+    fontFamily: 'NationalPark',
+    fontWeight: '500',
+  },
+  activeNavText: {
+    color: '#F47551',
+    fontWeight: '600',
   },
 });
 
