@@ -7,6 +7,7 @@ import Icon from 'react-native-vector-icons/Ionicons'; // For bottom nav icons
 import LinearGradient from 'react-native-linear-gradient';
 import { Svg, Path, Circle, Defs, Stop, LinearGradient as SvgGradient } from 'react-native-svg';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { DeviceEventEmitter } from 'react-native';
 
 const { width } = Dimensions.get('window');
 const CARD_WIDTH = (width - 48) / 2;
@@ -405,6 +406,20 @@ const Tracker = ({
     setDailyQuote(getDailyQuote());
     checkAndResetDaily();
     loadTrackerData();
+
+    // Add listener for exercise count updates
+    const exerciseCountSubscription = DeviceEventEmitter.addListener(
+      'exerciseCountUpdated',
+      (data) => {
+        if (data.count !== undefined) {
+          onExerciseCountUpdate(data.count.toString());
+        }
+      }
+    );
+
+    return () => {
+      exerciseCountSubscription.remove();
+    };
   }, []);
 
   useEffect(() => {
@@ -1172,6 +1187,7 @@ const styles = StyleSheet.create({
   exerciseCard: {
     backgroundColor: '#FFFFFF',
     height: 200,
+    width: '48%',
   },
   exerciseContent: {
     flex: 1,

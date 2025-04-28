@@ -212,13 +212,14 @@ const WorkoutScreen: React.FC<WorkoutScreenProps> = ({ onBack, onNavigate, credi
   };
 
   const handleStartWorkout = async () => {
-    if (selectedExercises.length === 0) {
-      Alert.alert('No Exercises Selected', 'Please select at least one exercise');
-      return;
-    }
-
     try {
-      setModalVisible(false);
+      // Initialize exercise status
+      const initialStatus = selectedExercises.reduce((acc, exercise) => {
+        acc[exercise] = { completed: false, skipped: false };
+        return acc;
+      }, {});
+      setExerciseStatus(initialStatus);
+
       const workoutExercises = selectedExercises.map(exerciseName => {
         const config = exerciseConfigs[exerciseName];
         return new SMWorkoutLibrary.SMAssessmentExercise(
@@ -258,47 +259,39 @@ const WorkoutScreen: React.FC<WorkoutScreenProps> = ({ onBack, onNavigate, credi
         null
       ) as any; // Use any type for workout to allow event handlers
 
-      // Create a tracking object for exercise status
-      const exerciseStatus: Record<string, ExerciseStatus> = {};
-      (workoutExercises as any[]).forEach((exercise: any) => {
-        exerciseStatus[exercise.name] = {
-          completed: false,
-          skipped: false
-        };
-      });
-
-      // Set up event handlers for exercise status
+      // Add exercise completion handlers
       workout.onExerciseCompleted = (exercise: any) => {
-        if (exerciseStatus[exercise.name]) {
-          exerciseStatus[exercise.name].completed = true;
-        }
+        setExerciseStatus(prev => ({
+          ...prev,
+          [exercise.name]: { ...prev[exercise.name], completed: true }
+        }));
+        onExerciseCompleted(exercise);
       };
 
       workout.onExerciseSkipped = (exercise: any) => {
-        if (exerciseStatus[exercise.name]) {
-          exerciseStatus[exercise.name].skipped = true;
-        }
+        setExerciseStatus(prev => ({
+          ...prev,
+          [exercise.name]: { ...prev[exercise.name], skipped: true }
+        }));
+        onExerciseSkipped(exercise);
       };
 
-      const result = await startCustomAssessment(workout, null, true, true);
+      const result = await startCustomAssessment(workout, null, false, false);
+      console.log('Assessment result:', result.summary);
       if (result.didFinish) {
-        // Convert exercise status to array format for the event
-        const exerciseStatusArray: ExerciseWithStatus[] = (workoutExercises as any[]).map((exercise: any) => ({
-          name: exercise.name,
-          ...exerciseStatus[exercise.name]
-        }));
-
-        DeviceEventEmitter.emit('didExitWorkout', { 
+        // Count completed exercises
+        const completedCount = Object.values(exerciseStatus).filter(status => status.completed).length;
+        handleEvent({ 
           type: 'workout_completed',
-          exercises: exerciseStatusArray,
-          totalExercises: workoutExercises.length,
-          completedExercises: Object.values(exerciseStatus).filter((status: ExerciseStatus) => status.completed).length,
-          skippedExercises: Object.values(exerciseStatus).filter((status: ExerciseStatus) => status.skipped).length
+          completedExercises: completedCount,
+          exercises: selectedExercises.map(name => ({
+            name,
+            ...exerciseStatus[name]
+          }))
         });
       }
-    } catch (error) {
-      console.error('Workout error:', error);
-      Alert.alert('Error', 'Failed to start workout. Please try again.');
+    } catch (e) {
+      showAlert('Workout Error', e.message);
     }
   };
 
@@ -388,25 +381,46 @@ const WorkoutScreen: React.FC<WorkoutScreenProps> = ({ onBack, onNavigate, credi
 
   const handleEvent = (summary) => {
     console.log('Workout event:', summary);
-    if (summary.type === 'exercise_completed') {
+    
+    // Handle exercise completion
+    if (summary.type === 'exercise_completed' || summary.event === 'exercise_completed') {
       console.log('Exercise completed, awarding credits');
       const newCredits = credits + 5;
       setCredits(newCredits);
       
-      // Save credits to AsyncStorage
-      const today = new Date().toISOString().split('T')[0];
-      AsyncStorage.getItem(`tracker_${today}`).then(existingData => {
-        const trackerData = existingData ? JSON.parse(existingData) : {
-          waterIntake: '0',
-          steps: '0',
-          calories: '0',
-          sleepHours: '00:00',
-          exerciseCount: '0',
-          credits: '0',
-          date: today
-        };
-        trackerData.credits = newCredits.toString();
-        AsyncStorage.setItem(`tracker_${today}`, JSON.stringify(trackerData));
+      // Emit event for tracker
+      DeviceEventEmitter.emit('didExitWorkout', {
+        type: 'workout_completed',
+        completedExercises: 1,
+        source: 'workout'
+      });
+    } 
+    // Handle workout completion
+    else if (summary.type === 'workout_completed') {
+      // Calculate completed exercises
+      let completedCount = 0;
+      
+      if (summary.exercises) {
+        if (Array.isArray(summary.exercises)) {
+          // If exercises array is provided, count completed ones
+          completedCount = summary.exercises.filter((ex: any) => 
+            ex.completed || (!ex.skipped && !ex.failed)
+          ).length;
+        } else {
+          // If just a number is provided
+          completedCount = 1;
+        }
+      } else if (summary.completedExercises) {
+        completedCount = summary.completedExercises;
+      }
+
+      console.log('Workout completed, counted exercises:', completedCount);
+      
+      // Emit event for tracker with completed exercise count
+      DeviceEventEmitter.emit('didExitWorkout', {
+        type: 'workout_completed',
+        completedExercises: completedCount,
+        source: 'workout'
       });
     }
   };
@@ -627,48 +641,30 @@ const WorkoutScreen: React.FC<WorkoutScreenProps> = ({ onBack, onNavigate, credi
   );
 
   const onExerciseCompleted = (exercise: WorkoutExercise) => {
-    console.log('Exercise completed callback:', exercise);
-    const newCredits = credits + 5;
-    setCredits(newCredits);
-    
-    // Save credits to AsyncStorage
-    const today = new Date().toISOString().split('T')[0];
-    AsyncStorage.getItem(`tracker_${today}`).then(existingData => {
-      const trackerData = existingData ? JSON.parse(existingData) : {
-        waterIntake: '0',
-        steps: '0',
-        calories: '0',
-        sleepHours: '00:00',
-        exerciseCount: '0',
-        credits: '0',
-        date: today
-      };
-      trackerData.credits = newCredits.toString();
-      AsyncStorage.setItem(`tracker_${today}`, JSON.stringify(trackerData));
+    console.log('Exercise completed:', exercise.name);
+    // Emit event for single exercise completion
+    DeviceEventEmitter.emit('didExitWorkout', {
+      type: 'workout_completed',
+      completedExercises: 1,
+      source: 'workout',
+      exerciseName: exercise.name
     });
   };
 
   const onExerciseSkipped = (exercise: WorkoutExercise) => {
-    console.log('Exercise skipped callback:', exercise);
-    const newCredits = credits + 5;
-    setCredits(newCredits);
-    
-    // Save credits to AsyncStorage
-    const today = new Date().toISOString().split('T')[0];
-    AsyncStorage.getItem(`tracker_${today}`).then(existingData => {
-      const trackerData = existingData ? JSON.parse(existingData) : {
-        waterIntake: '0',
-        steps: '0',
-        calories: '0',
-        sleepHours: '00:00',
-        exerciseCount: '0',
-        credits: '0',
-        date: today
-      };
-      trackerData.credits = newCredits.toString();
-      AsyncStorage.setItem(`tracker_${today}`, JSON.stringify(trackerData));
+    console.log('Exercise skipped:', exercise.name);
+    // Emit event for skipped exercise (still counts as attempted)
+    DeviceEventEmitter.emit('didExitWorkout', {
+      type: 'workout_completed',
+      completedExercises: 1,
+      source: 'workout',
+      exerciseName: exercise.name,
+      skipped: true
     });
   };
+
+  // Add exercise status tracking
+  const [exerciseStatus, setExerciseStatus] = useState<{[key: string]: ExerciseStatus}>({});
 
   return (
     <SafeAreaView style={styles.container}>

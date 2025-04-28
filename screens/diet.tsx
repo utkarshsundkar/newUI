@@ -1489,9 +1489,9 @@ const styles = StyleSheet.create({
     marginTop: 4,
   },
   statsContainer: {
-    paddingHorizontal: 24,
+    paddingHorizontal: 30,
     paddingVertical: 20,
-    marginHorizontal: 20,
+    marginHorizontal: 10,
     marginTop: 8,
     height: 140,
     backgroundColor: '#FFFFFF',
@@ -1525,7 +1525,7 @@ const styles = StyleSheet.create({
   },
   macrosContainer: {
     flex: 1,
-    paddingLeft: 16,
+    paddingLeft: 4,
     justifyContent: 'center',
   },
   macroItem: {
@@ -1551,7 +1551,7 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingHorizontal: 20,
     paddingTop: 12,
-    paddingBottom: 80,
+    paddingBottom: 20,
   },
   sectionTitle: {
     fontSize: 20,
@@ -1567,6 +1567,7 @@ const styles = StyleSheet.create({
   mealItemContainer: {
     width: '100%',
     marginBottom: 8,
+    minHeight: 60,
   },
   mealItem: {
     backgroundColor: colors.mealItemBg,

@@ -27,12 +27,18 @@ import * as SMWorkoutLibrary from '@sency/react-native-smkit-ui/src/SMWorkout';
 import EditText from './components/EditText';
 import ThreeCheckboxes from './components/ThreeCheckboxes';
 import React from 'react';
+import { NavigationContainer, useNavigation } from '@react-navigation/native';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import WorkoutScreen from './screens/workout';
 import Diet from './screens/diet';
 import Tracker from './screens/tracker';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Leaderboard from './screens/leaderboard';
 import Profile from './screens/profile';
+import ProgressScreen from './screens/progress';
+import EditProfileScreen from './screens/EditProfileScreen';
+import PrivacyPolicyScreen from './screens/PrivacyPolicyScreen';
 
 // Add this array at the top of the file, after imports
 const MOTIVATION_QUOTES = [
@@ -73,7 +79,23 @@ const colors = {
   navigationBg: '#000000',
 };
 
-const App = () => {
+type RootStackParamList = {
+  Main: undefined;
+  Workout: undefined;
+  Progress: undefined;
+  Diet: undefined;
+  Tracker: undefined;
+  Leaderboard: undefined;
+  Profile: undefined;
+  EditProfile: undefined;
+  PrivacyPolicy: undefined;
+};
+
+const Stack = createNativeStackNavigator<RootStackParamList>();
+
+type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
+
+const MainContent = () => {
   const [credits, setCredits] = useState(0);
   const [isConfigured, setIsConfigured] = useState(false);
   const [activeTab, setActiveTab] = useState('Home');
@@ -141,14 +163,15 @@ const App = () => {
   const [dailyQuote, setDailyQuote] = useState(MOTIVATION_QUOTES[0]);
   const [pendingSwitchToTracker, setPendingSwitchToTracker] = useState(false);
   const [selectedTab, setSelectedTab] = useState('home');
+  const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]);
 
-  // Load credits from AsyncStorage on app start
+  // Load credits from AsyncStorage on component mount
   useEffect(() => {
     const loadCredits = async () => {
       try {
-        const storedCredits = await AsyncStorage.getItem('userCredits');
-        if (storedCredits !== null) {
-          setCredits(parseInt(storedCredits, 10));
+        const savedCredits = await AsyncStorage.getItem('credits');
+        if (savedCredits) {
+          setCredits(parseInt(savedCredits));
         }
       } catch (error) {
         console.error('Error loading credits:', error);
@@ -157,13 +180,16 @@ const App = () => {
     loadCredits();
   }, []);
 
-  // Update credits and save to AsyncStorage
-  const updateCredits = async (newCredits: number) => {
+  // Function to update credits
+  const updateCredits = async (amount: number) => {
     try {
+      const newCredits = credits + amount;
       setCredits(newCredits);
-      await AsyncStorage.setItem('userCredits', newCredits.toString());
+      await AsyncStorage.setItem('credits', newCredits.toString());
+      // Optional: Add a visual feedback when credits are updated
+      console.log(`Credits updated: +${amount}. New total: ${newCredits}`);
     } catch (error) {
-      console.error('Error saving credits:', error);
+      console.error('Error updating credits:', error);
     }
   };
 
@@ -218,6 +244,8 @@ const App = () => {
 
   const startMobilityWorkout = async () => {
     try {
+      // Award 4 credits for starting mobility workout
+      await updateCredits(4);
       const exercises = [
         new SMWorkoutLibrary.SMAssessmentExercise(
           'StandingSideBendLeft',
@@ -340,25 +368,73 @@ const App = () => {
   }, []);
 
   useEffect(() => {
-    const didExitWorkoutSubscription = DeviceEventEmitter.addListener('didExitWorkout', params => {
-      console.log('Workout exited');
-      if (params.type === 'workout_completed' && params.exercises) {
-        incrementExerciseCount(params.exercises.length);
+    const workoutSubscription = DeviceEventEmitter.addListener('didExitWorkout', async (event) => {
+      const today = new Date().toISOString().split('T')[0];
+      const trackerData = await AsyncStorage.getItem(`tracker_${today}`);
+      const currentData = trackerData ? JSON.parse(trackerData) : {
+        waterIntake: '0',
+        steps: '0',
+        calories: '0',
+        sleepHours: '00:00',
+        exerciseCount: '0',
+        date: today
+      };
+
+      let completedExercises = 0;
+      let skippedExercises = 0;
+
+      // Handle different event types from workout.tsx
+      if (event.type === 'workout_completed') {
+        completedExercises = event.completedExercises || 0;
+      } else if (Array.isArray(event.exercises)) {
+        // Handle direct exercise array format
+        completedExercises = event.exercises.filter((ex: any) => ex.completed).length;
+        skippedExercises = event.exercises.filter((ex: any) => ex.skipped).length;
       }
+
+      // Calculate total credits to award
+      const totalCredits = (completedExercises + skippedExercises) * 5;
+      await updateCredits(totalCredits);
+
+      // Update exercise count
+      const newExerciseCount = parseInt(currentData.exerciseCount || '0') + completedExercises;
+      currentData.exerciseCount = newExerciseCount.toString();
+      await AsyncStorage.setItem(`tracker_${today}`, JSON.stringify(currentData));
     });
 
-    const workoutDidFinishSubscription = DeviceEventEmitter.addListener('workoutDidFinish', params => {
-      console.log('Workout finished');
-      if (params.exercises) {
-        incrementExerciseCount(params.exercises.length);
-      }
+    const workoutCompletedSubscription = DeviceEventEmitter.addListener('workout_completed', async (event) => {
+      const today = new Date().toISOString().split('T')[0];
+      const trackerData = await AsyncStorage.getItem(`tracker_${today}`);
+      const currentData = trackerData ? JSON.parse(trackerData) : {
+        waterIntake: '0',
+        steps: '0',
+        calories: '0',
+        sleepHours: '00:00',
+        exerciseCount: '0',
+        date: today
+      };
+
+      const completedExercises = event.completedExercises || 
+        (Array.isArray(event.exercises) ? event.exercises.filter((ex: any) => ex.completed).length : 0);
+      
+      const skippedExercises = Array.isArray(event.exercises) ? 
+        event.exercises.filter((ex: any) => ex.skipped).length : 0;
+
+      // Calculate total credits to award
+      const totalCredits = (completedExercises + skippedExercises) * 5;
+      await updateCredits(totalCredits);
+
+      // Update exercise count
+      const newExerciseCount = parseInt(currentData.exerciseCount || '0') + completedExercises;
+      currentData.exerciseCount = newExerciseCount.toString();
+      await AsyncStorage.setItem(`tracker_${today}`, JSON.stringify(currentData));
     });
 
     return () => {
-      didExitWorkoutSubscription.remove();
-      workoutDidFinishSubscription.remove();
+      workoutSubscription.remove();
+      workoutCompletedSubscription.remove();
     };
-  }, []);
+  }, [credits]); // Add credits to dependency array
 
   useEffect(() => {
     selectDailyWorkouts();
@@ -391,12 +467,28 @@ const App = () => {
   }, []);
 
   const handleEvent = (summary) => {
-    if (summary.event === 'exercise_completed' || summary.event === 'exercise_skipped') {
-      const newCredits = credits + 5; // Exactly 5 credits per exercise
-      updateCredits(newCredits);
+    console.log('Workout event:', summary);
+    
+    // Calculate completed exercises
+    let completedExercises = 0;
+    if (summary.type === 'workout_completed') {
+      completedExercises = summary.exercises?.length || 0;
+    } else if (Array.isArray(summary.exercises)) {
+      completedExercises = summary.exercises.filter(ex => ex.completed || ex.skipped).length;
+    } else if (summary.event === 'exercise_completed' || summary.event === 'exercise_skipped') {
+      completedExercises = 1;
     }
-    setSummaryMessage(summary);
-    setModalVisible(true);
+
+    // Award 4 credits per exercise
+    if (completedExercises > 0) {
+      updateCredits(4 * completedExercises);
+      incrementExerciseCount(completedExercises);
+    }
+
+    if (summary.type === 'workout_completed') {
+      setModalVisible(true);
+      setSummaryMessage('Great job! You have completed the workout.');
+    }
   };
 
   const onDuration = (index) => {
@@ -437,157 +529,28 @@ const App = () => {
   };
 
   const handleCategorySelect = async (category: string) => {
-    try {
-      switch (category) {
-        case 'Fitness':
-          await startAssessmentSession(SMWorkoutLibrary.AssessmentTypes.Fitness, false, '');
-          break;
-        case 'Movement':
-          await startAssessmentSession(SMWorkoutLibrary.AssessmentTypes.Body360, false, '');
-          break;
-        case 'Cardio':
-          await startAssessmentSession(SMWorkoutLibrary.AssessmentTypes.Fitness, false, '');
-          break;
-        case 'Strength':
-          const strengthExercises = [
-            new SMWorkoutLibrary.SMExercise(
-              "Burpees",               // name
-              35,                      // totalSeconds
-              "BurpeesRegular",        // videoInstruction
-              null,                    // exerciseIntro
-              [SMWorkoutLibrary.UIElement.RepsCounter, SMWorkoutLibrary.UIElement.Timer],
-              "BurpeesRegular",        // detector
-              "",                      // repBased
-              null                     // exerciseClosure
-            ),
-            new SMWorkoutLibrary.SMExercise(
-              "Froggers",             // name
-              35,                     // totalSeconds
-              "FroggersRegular",      // videoInstruction
-              null,                   // exerciseIntro
-              [SMWorkoutLibrary.UIElement.RepsCounter, SMWorkoutLibrary.UIElement.Timer],
-              "FroggersRegular",      // detector
-              "",                     // repBased
-              null                    // exerciseClosure
-            )
-          ];
-          break;
-        case 'Custom Fitness':
-          const customExercises = [
-            new SMWorkoutLibrary.SMAssessmentExercise(
-              'High Plank',          // name
-              35,                     // totalSeconds
-              'PlankHighStatic',     // videoInstruction
-              null,                   // exerciseIntro
-              [SMWorkoutLibrary.UIElement.Timer], // UI elements
-              'PlankHighStatic',     // detector
-              '',                     // successSound
-              new SMWorkoutLibrary.SMScoringParams(
-                SMWorkoutLibrary.ScoringType.Time,  // scoring type
-                0.3,                     // threshold
-                30,                      // targetTime
-                null,                    // targetReps
-                null,                    // targetDistance
-                null                     // targetCalories
-              ),
-              '',                     // failedSound
-              'High Plank',           // exerciseTitle
-              'Hold the position',    // subtitle
-              'Time',                 // scoreTitle
-              'seconds'               // scoreSubtitle
-            ),
-            new SMWorkoutLibrary.SMAssessmentExercise(
-              'Air Squat',           // name
-              35,                     // totalSeconds
-              'SquatRegular',        // videoInstruction
-              null,                   // exerciseIntro
-              [SMWorkoutLibrary.UIElement.RepsCounter, SMWorkoutLibrary.UIElement.Timer, SMWorkoutLibrary.UIElement.GaugeOfMotion], // UI elements
-              'SquatRegular',        // detector
-              '',                     // successSound
-              new SMWorkoutLibrary.SMScoringParams(
-                SMWorkoutLibrary.ScoringType.Reps,  // scoring type
-                0.3,                     // threshold
-                null,                    // targetTime
-                12,                      // targetReps
-                null,                    // targetDistance
-                null                     // targetCalories
-              ),
-              '',                     // failedSound
-              'Air Squat',            // exerciseTitle
-              'Complete the exercise', // subtitle
-              'Reps',                 // scoreTitle
-              'clean reps'            // scoreSubtitle
-            ),
-            new SMWorkoutLibrary.SMAssessmentExercise(
-              'Push-ups',            // name
-              35,                     // totalSeconds
-              'PushupRegular',       // videoInstruction
-              null,                   // exerciseIntro
-              [SMWorkoutLibrary.UIElement.RepsCounter, SMWorkoutLibrary.UIElement.Timer], // UI elements
-              'PushupRegular',       // detector
-              '',                     // successSound
-              new SMWorkoutLibrary.SMScoringParams(
-                SMWorkoutLibrary.ScoringType.Reps,  // scoring type
-                0.3,                     // threshold
-                null,                    // targetTime
-                10,                      // targetReps
-                null,                    // targetDistance
-                null                     // targetCalories
-              ),
-              '',                     // failedSound
-              'Push-ups',             // exerciseTitle
-              'Complete the exercise', // subtitle
-              'Reps',                 // scoreTitle
-              'clean reps'            // scoreSubtitle
-            ),
-            new SMWorkoutLibrary.SMAssessmentExercise(
-              'OH Squat',            // name
-              35,                     // totalSeconds
-              'SquatRegularOverheadStatic', // videoInstruction
-              null,                   // exerciseIntro
-              [SMWorkoutLibrary.UIElement.Timer, SMWorkoutLibrary.UIElement.GaugeOfMotion], // UI elements
-              'SquatRegularOverheadStatic', // detector
-              '',                     // successSound
-              new SMWorkoutLibrary.SMScoringParams(
-                SMWorkoutLibrary.ScoringType.Time,  // scoring type
-                0.3,                     // threshold
-                20,                      // targetTime
-                null,                    // targetReps
-                null,                    // targetDistance
-                null                     // targetCalories
-              ),
-              '',                     // failedSound
-              'OH Squat',             // exerciseTitle
-              'Hold the position',    // subtitle
-              'Time',                 // scoreTitle
-              'seconds'               // scoreSubtitle
-            )
-          ];
-
-          const customAssessment = new SMWorkoutLibrary.SMWorkout(
-            'custom_fitness',         // id
-            'Custom Fitness Assessment', // name
-            null,                     // workoutIntro
-            null,                     // soundtrack
-            customExercises,          // exercises
-            null,                     // getInFrame
-            null,                     // bodycalFinished
-            null                      // workoutClosure
-          );
-
-          await startCustomAssessment(
-            customAssessment,
-            null,  // userData
-            false,  // forceShowUserDataScreen
-            false   // showSummary
-          );
-          break;
-        default:
-          break;
-      }
-    } catch (error) {
-      console.error('Error starting assessment:', error);
-      Alert.alert('Error', 'Failed to start assessment');
+    // Award 4 credits when starting any recommended workout
+    await updateCredits(4);
+    
+    switch (category.toLowerCase()) {
+      case 'core & abs':
+        setShowWorkoutScreen(true);
+        startCoreWorkout();
+        break;
+      case 'full body burn':
+        setShowWorkoutScreen(true);
+        startFullBodyWorkout();
+        break;
+      case 'mobility & stretch':
+        setShowWorkoutScreen(true);
+        startMobilityWorkout();
+        break;
+      case 'upper body':
+        setShowWorkoutScreen(true);
+        startWorkoutProgramSession();
+        break;
+      default:
+        console.log('Unknown category:', category);
     }
   };
 
@@ -1326,326 +1289,216 @@ const App = () => {
 
   const handleAssessment = async (type: string) => {
     try {
+      let exerciseCount = 0;
+      
       switch (type) {
         case 'FITNESS':
-          incrementExerciseCount(5); // Fitness has 5 exercises
+          exerciseCount = 5; // Fitness assessment has 5 exercises
+          await updateCredits(exerciseCount); // Award 1 credit per exercise
+          incrementExerciseCount(exerciseCount);
           await startAssessmentSession(SMWorkoutLibrary.AssessmentTypes.Fitness, false, '');
           break;
+          
         case 'MOVEMENT':
-          incrementExerciseCount(3); // Movement has 3 exercises
+          exerciseCount = 3; // Movement assessment has 3 exercises
+          await updateCredits(exerciseCount); // Award 1 credit per exercise
+          incrementExerciseCount(exerciseCount);
           await startAssessmentSession(SMWorkoutLibrary.AssessmentTypes.Body360, false, '');
           break;
+          
         case 'STRENGTH':
-          incrementExerciseCount(4); // Strength has 4 exercises
+          exerciseCount = 4; // Strength assessment has 4 exercises
+          await updateCredits(exerciseCount); // Award 1 credit per exercise
+          incrementExerciseCount(exerciseCount);
           await startAssessmentSession(SMWorkoutLibrary.AssessmentTypes.Fitness, false, '');
           break;
+          
         case 'CARDIO':
-          incrementExerciseCount(3); // Cardio has 3 exercises
+          exerciseCount = 3; // Cardio assessment has 3 exercises
+          await updateCredits(exerciseCount); // Award 1 credit per exercise
+          incrementExerciseCount(exerciseCount);
           await startAssessmentSession(SMWorkoutLibrary.AssessmentTypes.Fitness, false, '');
           break;
+          
         case 'CUSTOM':
-          incrementExerciseCount(2); // Custom has 2 exercises
-          const customExercises = [
-            new SMWorkoutLibrary.SMAssessmentExercise(
-              'Push-ups',
-              35,
-              'PushupRegular',
-              null,
-              [SMWorkoutLibrary.UIElement.RepsCounter, SMWorkoutLibrary.UIElement.Timer],
-              'PushupRegular',
-              '',
-              new SMWorkoutLibrary.SMScoringParams(
-                SMWorkoutLibrary.ScoringType.Reps,
-                0.3,
-                null,
-                10,
-                null,
-                null
-              ),
-              '',
-              'Push-ups',
-              'Complete the exercise',
-              'Reps',
-              'clean reps'
-            ),
-            new SMWorkoutLibrary.SMAssessmentExercise(
-              'Squats',
-              35,
-              'SquatRegular',
-              null,
-              [SMWorkoutLibrary.UIElement.RepsCounter, SMWorkoutLibrary.UIElement.Timer],
-              'SquatRegular',
-              '',
-              new SMWorkoutLibrary.SMScoringParams(
-                SMWorkoutLibrary.ScoringType.Reps,
-                0.3,
-                null,
-                12,
-                null,
-                null
-              ),
-              '',
-              'Squats',
-              'Complete the exercise',
-              'Reps',
-              'clean reps'
-            )
-          ];
-
-          const customWorkout = new SMWorkoutLibrary.SMWorkout(
-            'custom_assessment',
-            'Custom Assessment',
-            null,
-            null,
-            customExercises,
-            null,
-            null,
-            null
-          );
-
-          await startCustomAssessment(customWorkout, null, false, false);
+          exerciseCount = 6; // Custom assessment has 6 exercises (based on startSMKitUICustomAssessment)
+          await updateCredits(exerciseCount); // Award 1 credit per exercise
+          incrementExerciseCount(exerciseCount);
+          await startSMKitUICustomAssessment();
           break;
       }
     } catch (error) {
-      Alert.alert('Assessment Error', 'Failed to start assessment');
+      console.error('Error in handleAssessment:', error);
+      Alert.alert('Error', 'Failed to start assessment');
+    }
+  };
+
+  const handleWorkoutCompletion = (summary) => {
+    // Award 4 credits for completing exercises
+    if (summary && summary.exercises) {
+      const completedCount = summary.exercises.filter(
+        ex => ex.status === 'completed' || ex.status === 'skipped'
+      ).length;
+      updateCredits(4 * completedCount); // 4 credits per exercise
+    }
+    
+    setModalVisible(true);
+    setSummaryMessage('Workout completed! Great job!');
+  };
+
+  const startCoreWorkout = async () => {
+    try {
+      setShowWorkoutScreen(true);
+      // Award 4 credits for starting core workout
+      await updateCredits(4);
+      const exercises = [
+        new SMWorkoutLibrary.SMExercise(
+          "Side Plank",
+          coreExerciseDurations['Side Plank'],
+          "PlankSideLowStatic",
+          null,
+          [SMWorkoutLibrary.UIElement.Timer],
+          "PlankSideLowStatic",
+          "",
+          null  // Remove scoring params
+        ),
+        new SMWorkoutLibrary.SMExercise(
+          "High Plank",
+          coreExerciseDurations['High Plank'],
+          "PlankHighStatic",
+          null,
+          [SMWorkoutLibrary.UIElement.Timer],
+          "PlankHighStatic",
+          "",
+          null  // Remove scoring params
+        ),
+        new SMWorkoutLibrary.SMExercise(
+          "Tuck Hold",
+          coreExerciseDurations['Tuck Hold'],
+          "TuckHold",
+          null,
+          [SMWorkoutLibrary.UIElement.Timer],
+          "TuckHold",
+          "",
+          null  // Remove scoring params
+        ),
+        new SMWorkoutLibrary.SMExercise(
+          "Oblique Crunches",
+          coreExerciseDurations['Oblique Crunches'],
+          "StandingObliqueCrunches",
+          null,
+          [SMWorkoutLibrary.UIElement.RepsCounter, SMWorkoutLibrary.UIElement.Timer],
+          "StandingObliqueCrunches",
+          "",
+          null  // Remove scoring params
+        )
+      ];
+
+      const workout = new SMWorkoutLibrary.SMWorkout(
+        'core_workout',
+        'Core Workout',
+        null,
+        null,
+        exercises,
+        null,
+        null,
+        null
+      );
+
+      const result = await startCustomWorkout(workout);
+      handleEvent(result.summary);
+    } catch (error) {
+      console.error('Error starting core workout:', error);
     }
   };
 
   const startFullBodyWorkout = async () => {
     try {
+      setShowWorkoutScreen(true);
+      // Award 4 credits for starting full body workout
+      await updateCredits(4);
       const exercises = [
-        new SMWorkoutLibrary.SMAssessmentExercise(
-          'JumpingJacks',
+        new SMWorkoutLibrary.SMExercise(
+          "Jumping Jacks",
           exerciseDurations['Jumping Jacks'],
-          'JumpingJacks',
+          "JumpingJacks",
           null,
           [SMWorkoutLibrary.UIElement.RepsCounter, SMWorkoutLibrary.UIElement.Timer],
-          'JumpingJacks',
-          '',
-          new SMWorkoutLibrary.SMScoringParams(
-            SMWorkoutLibrary.ScoringType.Reps,
-            0.3,
-            null,
-            exerciseReps['Jumping Jacks'],
-            null,
-            null
-          ),
-          '',
-          'Jumping Jacks',
-          'Complete the exercise',
-          'Reps',
-          'clean reps'
+          "JumpingJacks",
+          "",
+          null  // Remove scoring params
         ),
-        new SMWorkoutLibrary.SMAssessmentExercise(
-          'PushupRegular',
+        new SMWorkoutLibrary.SMExercise(
+          "Push-up",
           exerciseDurations['Push-up'],
-          'PushupRegular',
+          "PushupRegular",
           null,
           [SMWorkoutLibrary.UIElement.RepsCounter, SMWorkoutLibrary.UIElement.Timer],
-          'PushupRegular',
-          '',
-          new SMWorkoutLibrary.SMScoringParams(
-            SMWorkoutLibrary.ScoringType.Reps,
-            0.3,
-            null,
-            exerciseReps['Push-up'],
-            null,
-            null
-          ),
-          '',
-          'Push-up',
-          'Complete the exercise',
-          'Reps',
-          'clean reps'
+          "PushupRegular",
+          "",
+          null  // Remove scoring params
         ),
-        new SMWorkoutLibrary.SMAssessmentExercise(
-          'SquatRegular',
+        new SMWorkoutLibrary.SMExercise(
+          "Air Squat",
           exerciseDurations['Air Squat'],
-          'SquatRegular',
+          "SquatRegular",
           null,
           [SMWorkoutLibrary.UIElement.RepsCounter, SMWorkoutLibrary.UIElement.Timer],
-          'SquatRegular',
-          '',
-          new SMWorkoutLibrary.SMScoringParams(
-            SMWorkoutLibrary.ScoringType.Reps,
-            0.3,
-            null,
-            exerciseReps['Air Squat'],
-            null,
-            null
-          ),
-          '',
-          'Air Squat',
-          'Complete the exercise',
-          'Reps',
-          'clean reps'
+          "SquatRegular",
+          "",
+          null  // Remove scoring params
         ),
-        new SMWorkoutLibrary.SMAssessmentExercise(
-          'HighKnees',
+        new SMWorkoutLibrary.SMExercise(
+          "High Knees",
           exerciseDurations['High Knees'],
-          'HighKnees',
+          "HighKnees",
           null,
           [SMWorkoutLibrary.UIElement.RepsCounter, SMWorkoutLibrary.UIElement.Timer],
-          'HighKnees',
-          '',
-          new SMWorkoutLibrary.SMScoringParams(
-            SMWorkoutLibrary.ScoringType.Reps,
-            0.3,
-            null,
-            exerciseReps['High Knees'],
-            null,
-            null
-          ),
-          '',
-          'High Knees',
-          'Complete the exercise',
-          'Reps',
-          'clean reps'
-        ),
-      ];
-
-      const workout = new SMWorkoutLibrary.SMWorkout(
-        'full_body_burn',
-        'Full Body Burn',
-        null,
-        null,
-        exercises,
-        null,
-        null,
-        null,
-      );
-
-      setWorkoutModalVisible(false);
-      const result = await startCustomAssessment(workout, null, false, false);
-      console.log('Workout result:', result.summary);
-      if (result.didFinish) {
-        handleEvent({ 
-          type: 'workout_completed',
-          exercises: exercises 
-        });
-      }
-    } catch (error) {
-      console.error('Workout error:', error);
-      Alert.alert('Error', 'Failed to start workout');
-    }
-  };
-
-  const startCoreWorkout = async () => {
-    try {
-      const exercises = [
-        new SMWorkoutLibrary.SMAssessmentExercise(
-          'PlankSideLowStatic',
-          coreExerciseDurations['Side Plank'],
-          'PlankSideLowStatic',
-          null,
-          [SMWorkoutLibrary.UIElement.Timer],
-          'PlankSideLowStatic',
-          '',
-          new SMWorkoutLibrary.SMScoringParams(
-            SMWorkoutLibrary.ScoringType.Time,
-            0.3,
-            coreExerciseDurations['Side Plank'],
-            null,
-            null,
-            null
-          ),
-          '',
-          'Side Plank',
-          'Hold the position',
-          'Time',
-          'seconds'
-        ),
-        new SMWorkoutLibrary.SMAssessmentExercise(
-          'PlankHighStatic',
-          coreExerciseDurations['High Plank'],
-          'PlankHighStatic',
-          null,
-          [SMWorkoutLibrary.UIElement.Timer],
-          'PlankHighStatic',
-          '',
-          new SMWorkoutLibrary.SMScoringParams(
-            SMWorkoutLibrary.ScoringType.Time,
-            0.3,
-            coreExerciseDurations['High Plank'],
-            null,
-            null,
-            null
-          ),
-          '',
-          'High Plank',
-          'Hold the position',
-          'Time',
-          'seconds'
-        ),
-        new SMWorkoutLibrary.SMAssessmentExercise(
-          'TuckHold',
-          coreExerciseDurations['Tuck Hold'],
-          'TuckHold',
-          null,
-          [SMWorkoutLibrary.UIElement.Timer],
-          'TuckHold',
-          '',
-          new SMWorkoutLibrary.SMScoringParams(
-            SMWorkoutLibrary.ScoringType.Time,
-            0.3,
-            coreExerciseDurations['Tuck Hold'],
-            null,
-            null,
-            null
-          ),
-          '',
-          'Tuck Hold',
-          'Hold the position',
-          'Time',
-          'seconds'
-        ),
-        new SMWorkoutLibrary.SMAssessmentExercise(
-          'StandingObliqueCrunches',
-          coreExerciseDurations['Oblique Crunches'],
-          'StandingObliqueCrunches',
-          null,
-          [SMWorkoutLibrary.UIElement.RepsCounter, SMWorkoutLibrary.UIElement.Timer],
-          'StandingObliqueCrunches',
-          '',
-          new SMWorkoutLibrary.SMScoringParams(
-            SMWorkoutLibrary.ScoringType.Reps,
-            0.3,
-            null,
-            coreExerciseReps['Oblique Crunches'],
-            null,
-            null
-          ),
-          '',
-          'Oblique Crunches',
-          'Complete the exercise',
-          'Reps',
-          'clean reps'
+          "HighKnees",
+          "",
+          null  // Remove scoring params
         )
       ];
 
       const workout = new SMWorkoutLibrary.SMWorkout(
-        'core_abs',
-        'Core & Abs',
+        'full_body_workout',
+        'Full Body Workout',
         null,
         null,
         exercises,
         null,
         null,
-        null,
+        null
       );
 
-      setCoreModalVisible(false);
-      const result = await startCustomAssessment(workout, null, false, false);
-      console.log('Workout result:', result.summary);
-      if (result.didFinish) {
-        handleEvent({ 
-          type: 'workout_completed',
-          exercises: exercises 
-        });
+      const result = await startCustomWorkout(workout);
+      handleEvent(result.summary);
+    } catch (error) {
+      console.error('Error starting full body workout:', error);
+    }
+  };
+
+  const startWorkoutProgramSession = async () => {
+    try {
+      setShowWorkoutScreen(true);
+      const parsedWeek = parseInt(week, 10);
+      if (isNaN(parsedWeek)) {
+        throw new Error('Invalid week number');
+      }
+      const config = new SMWorkoutLibrary.WorkoutConfig(
+        parsedWeek,
+        bodyZone,
+        difficulty,
+        duration,
+        language,
+        name
+      );
+      const result = await startWorkoutProgram(config);
+      if (result && result.summary) {
+        handleEvent(result.summary);
       }
     } catch (error) {
-      console.error('Workout error:', error);
-      Alert.alert('Error', 'Failed to start workout');
+      console.error('Error starting workout program:', error);
     }
   };
 
@@ -1666,30 +1519,26 @@ const App = () => {
   const incrementExerciseCount = async (count: number = 1) => {
     try {
       const today = new Date().toISOString().split('T')[0];
-      const newCount = exerciseCount + count;
-      setExerciseCount(newCount);
-      
-      // Award 5 credits for each exercise in the set
-      const newCredits = credits + (count * 5);
-      setCredits(newCredits);
-      
-      // Save to today's tracker data
-      const existingData = await AsyncStorage.getItem(`tracker_${today}`);
-      const trackerData = existingData ? JSON.parse(existingData) : {
+      const data = await AsyncStorage.getItem(`tracker_${today}`);
+      const currentData = data ? JSON.parse(data) : {
         waterIntake: '0',
         steps: '0',
         calories: '0',
         sleepHours: '00:00',
         exerciseCount: '0',
-        credits: '0',
         date: today
       };
+
+      const newCount = parseInt(currentData.exerciseCount || '0') + count;
+      currentData.exerciseCount = newCount.toString();
       
-      trackerData.exerciseCount = newCount.toString();
-      trackerData.credits = newCredits.toString();
-      await AsyncStorage.setItem(`tracker_${today}`, JSON.stringify(trackerData));
+      await AsyncStorage.setItem(`tracker_${today}`, JSON.stringify(currentData));
+      setExerciseCount(newCount);
+
+      // Emit an event to update other components
+      DeviceEventEmitter.emit('exerciseCountUpdated', { count: newCount });
     } catch (error) {
-      console.error('Error updating exercise count:', error);
+      console.error('Error incrementing exercise count:', error);
     }
   };
 
@@ -1767,28 +1616,6 @@ const App = () => {
     }
   };
 
-  const startWorkoutProgramSession = async () => {
-    try {
-      const parsedWeek = parseInt(week, 10);
-      if (isNaN(parsedWeek)) {
-        throw new Error('Invalid week number');
-      }
-      var config = new SMWorkoutLibrary.WorkoutConfig(
-        parsedWeek,
-        bodyZone,
-        difficulty,
-        duration,
-        language,
-        name,
-      );
-      var result = await startWorkoutProgram(config);
-      console.log(result.summary);
-      console.log(result.didFinish);
-    } catch (e) {
-      Alert.alert('Unable to start workout program', e.message, [{ text: 'OK', onPress: () => console.log('OK Pressed') }]);
-    }
-  };
-
   const loadTrackerData = async () => {
     try {
       const today = new Date().toISOString().split('T')[0];
@@ -1828,7 +1655,9 @@ const App = () => {
         <View style={styles.quickActions}>
           <TouchableOpacity 
             style={styles.actionItem}
-            onPress={() => setShowWorkoutScreen(true)}
+            onPress={() => {
+              setSelectedTab('workout');
+            }}
           >
             <Text style={styles.actionEmoji}>💪</Text>
             <Text style={styles.actionText}>Workout</Text>
@@ -1836,7 +1665,12 @@ const App = () => {
           
           <View style={styles.verticalLine} />
           
-          <TouchableOpacity style={styles.actionItem}>
+          <TouchableOpacity 
+            style={styles.actionItem}
+            onPress={() => {
+              setSelectedTab('progress');
+            }}
+          >
             <Text style={styles.actionEmoji}>📊</Text>
             <Text style={styles.actionText}>Progress{'\n'}Tracking</Text>
           </TouchableOpacity>
@@ -1846,8 +1680,7 @@ const App = () => {
           <TouchableOpacity 
             style={styles.actionItem}
             onPress={() => {
-              setShowTrackerScreen(true);
-              setActiveTab('TRACKER');
+              setSelectedTab('tracker');
             }}
           >
             <Text style={styles.actionEmoji}>📈</Text>
@@ -1856,9 +1689,14 @@ const App = () => {
           
           <View style={styles.verticalLine} />
           
-          <TouchableOpacity style={styles.actionItem}>
-            <Text style={styles.actionEmoji}>👥</Text>
-            <Text style={styles.actionText}>Community</Text>
+          <TouchableOpacity 
+            style={styles.actionItem}
+            onPress={() => {
+              setSelectedTab('workout');
+            }}
+          >
+            <Text style={styles.actionEmoji}>💪</Text>
+            <Text style={styles.actionText}>Workout</Text>
           </TouchableOpacity>
         </View>
 
@@ -1997,11 +1835,20 @@ const App = () => {
       {selectedTab === 'diet' && <Diet onBack={handleHomeClick} onSaveCalories={loadTrackerData} />}
       {selectedTab === 'leaderboard' && <Leaderboard credits={credits} />}
       {selectedTab === 'profile' && <Profile />}
+      {selectedTab === 'progress' && <ProgressScreen onBack={() => setSelectedTab('home')} />}
+      {selectedTab === 'workout' && (
+        <WorkoutScreen 
+          onBack={() => setSelectedTab('home')}
+          onNavigate={(screen) => setSelectedTab(screen)}
+          credits={credits}
+          setCredits={setCredits}
+        />
+      )}
 
       <View style={styles.bottomNav}>
         {renderNavItem('HOME', null, () => setSelectedTab('home'))}
         {renderNavItem('DIET', null, () => setSelectedTab('diet'))}
-        {renderNavItem('LEADERBOARD', null, () => setSelectedTab('leaderboard'))}
+        {renderNavItem('WORKOUT', null, () => setSelectedTab('workout'))}
         {renderNavItem('PROFILE', null, () => setSelectedTab('profile'))}
       </View>
 
@@ -3125,5 +2972,56 @@ const styles = StyleSheet.create({
     fontFamily: 'MinecraftTen',
   },
 });
+
+const WrappedWorkoutScreen = (props: any) => {
+  const navigation = useNavigation<NavigationProp>();
+  return (
+    <WorkoutScreen
+      {...props}
+      onBack={() => navigation.goBack()}
+      onNavigate={(screen) => navigation.navigate(screen as keyof RootStackParamList)}
+    />
+  );
+};
+
+const WrappedProgressScreen = (props: any) => {
+  const navigation = useNavigation<NavigationProp>();
+  return <ProgressScreen {...props} onBack={() => navigation.goBack()} />;
+};
+
+const WrappedDietScreen = (props: any) => {
+  const navigation = useNavigation<NavigationProp>();
+  return <Diet {...props} onBack={() => navigation.goBack()} />;
+};
+
+const WrappedTrackerScreen = (props: any) => {
+  const navigation = useNavigation<NavigationProp>();
+  return <Tracker {...props} onBack={() => navigation.goBack()} />;
+};
+
+const WrappedLeaderboardScreen = (props: any) => {
+  return <Leaderboard {...props} credits={0} />;
+};
+
+const App = () => {
+  const [credits, setCredits] = useState(0);
+  const [exerciseCount, setExerciseCount] = useState(0);
+
+  return (
+    <NavigationContainer>
+      <Stack.Navigator screenOptions={{ headerShown: false }}>
+        <Stack.Screen name="Main" component={MainContent} />
+        <Stack.Screen name="Workout" component={WrappedWorkoutScreen} />
+        <Stack.Screen name="Progress" component={WrappedProgressScreen} />
+        <Stack.Screen name="Diet" component={WrappedDietScreen} />
+        <Stack.Screen name="Tracker" component={WrappedTrackerScreen} />
+        <Stack.Screen name="Leaderboard" component={WrappedLeaderboardScreen} />
+        <Stack.Screen name="Profile" component={Profile} />
+        <Stack.Screen name="EditProfile" component={EditProfileScreen} />
+        <Stack.Screen name="PrivacyPolicy" component={PrivacyPolicyScreen} />
+      </Stack.Navigator>
+    </NavigationContainer>
+  );
+};
 
 export default App;

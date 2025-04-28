@@ -1,14 +1,13 @@
 import React, { useState, useEffect } from "react";
-import { NavigationContainer } from "@react-navigation/native";
-import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { View, Text, TouchableOpacity, StyleSheet, ScrollView, Dimensions, Linking, Platform } from "react-native";
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
+import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import EditProfileScreen from "../screens/EditProfileScreen";
 import PrivacyPolicyScreen from "../screens/PrivacyPolicyScreen";
 
 const { width } = Dimensions.get("screen");
 const CURVE_HEIGHT = 150;
-const Stack = createNativeStackNavigator();
 
 interface ProfileData {
   fullName: string;
@@ -20,7 +19,22 @@ interface ProfileData {
   address: string;
 }
 
-const ProfileScreen = ({ navigation, route }: any) => {
+type RootStackParamList = {
+  Profile: {
+    profileData?: ProfileData;
+  };
+  EditProfile: {
+    profileData?: ProfileData;
+  };
+  PrivacyPolicy: undefined;
+};
+
+type ProfileScreenNavigationProp = NativeStackNavigationProp<RootStackParamList>;
+type ProfileScreenRouteProp = RouteProp<RootStackParamList, 'Profile'>;
+
+const ProfileScreen = () => {
+  const navigation = useNavigation<ProfileScreenNavigationProp>();
+  const route = useRoute<ProfileScreenRouteProp>();
   const [profileData, setProfileData] = useState<ProfileData>({
     fullName: "",
     nickName: "",
@@ -54,10 +68,10 @@ const ProfileScreen = ({ navigation, route }: any) => {
 
   // Update profile data when returning from edit screen
   useEffect(() => {
-    if (route.params?.updatedProfile) {
-      setProfileData(route.params.updatedProfile);
+    if (route.params?.profileData) {
+      setProfileData(route.params.profileData);
     }
-  }, [route.params?.updatedProfile]);
+  }, [route.params]);
 
   // Handle notification settings
   const handleNotificationSettings = async () => {
@@ -79,7 +93,7 @@ const ProfileScreen = ({ navigation, route }: any) => {
 
   return (
     <View style={styles.container}>
-      <ScrollView contentContainerStyle={styles.scrollContainer}>
+      <ScrollView style={styles.scrollView}>
         {/* Curved Top Bar */}
         <View style={styles.curvedTopBar}>
           <View style={styles.headerIcons}>
@@ -169,36 +183,12 @@ const ProfileScreen = ({ navigation, route }: any) => {
   );
 };
 
-const App = () => {
-  return (
-    <NavigationContainer>
-      <Stack.Navigator initialRouteName="Profile">
-        <Stack.Screen 
-          name="Profile" 
-          component={ProfileScreen} 
-          options={{ headerShown: false }}
-        />
-        <Stack.Screen 
-          name="EditProfile" 
-          component={EditProfileScreen}
-          options={{ headerShown: false }}
-        />
-        <Stack.Screen 
-          name="PrivacyPolicy" 
-          component={PrivacyPolicyScreen}
-          options={{ headerShown: false }}
-        />
-      </Stack.Navigator>
-    </NavigationContainer>
-  );
-};
-
 const styles = StyleSheet.create({
   container: { 
     flex: 1, 
     backgroundColor: "#1A1A1A" 
   },
-  scrollContainer: { 
+  scrollView: { 
     paddingBottom: 20 
   },
   curvedTopBar: {
@@ -291,4 +281,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default App;
+export default ProfileScreen;
