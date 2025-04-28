@@ -31,6 +31,7 @@ import WorkoutScreen from './screens/workout';
 import Diet from './screens/diet';
 import Tracker from './screens/tracker';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import Leaderboard from './screens/leaderboard';
 
 // Add this array at the top of the file, after imports
 const MOTIVATION_QUOTES = [
@@ -67,7 +68,7 @@ const MOTIVATION_QUOTES = [
 ];
 
 const App = () => {
-  const [credits] = useState(5);
+  const [credits, setCredits] = useState(0);
   const [isConfigured, setIsConfigured] = useState(false);
   const [activeTab, setActiveTab] = useState('Home');
   const [exerciseCount, setExerciseCount] = useState(0);
@@ -133,6 +134,31 @@ const App = () => {
   });
   const [dailyQuote, setDailyQuote] = useState(MOTIVATION_QUOTES[0]);
   const [pendingSwitchToTracker, setPendingSwitchToTracker] = useState(false);
+
+  // Load credits from AsyncStorage on app start
+  useEffect(() => {
+    const loadCredits = async () => {
+      try {
+        const storedCredits = await AsyncStorage.getItem('userCredits');
+        if (storedCredits !== null) {
+          setCredits(parseInt(storedCredits, 10));
+        }
+      } catch (error) {
+        console.error('Error loading credits:', error);
+      }
+    };
+    loadCredits();
+  }, []);
+
+  // Update credits and save to AsyncStorage
+  const updateCredits = async (newCredits: number) => {
+    try {
+      setCredits(newCredits);
+      await AsyncStorage.setItem('userCredits', newCredits.toString());
+    } catch (error) {
+      console.error('Error saving credits:', error);
+    }
+  };
 
   const updateDuration = (exerciseName, increment) => {
     setExerciseDurations(prev => ({
@@ -358,17 +384,9 @@ const App = () => {
   }, []);
 
   const handleEvent = (summary) => {
-    if (summary.type === 'workout_completed') {
-      // Count all exercises in the workout regardless of completion status
-      if (summary.exercises) {
-        incrementExerciseCount(summary.exercises.length);
-      } else if (selectedExercises) {
-        // If no exercises in summary, use selectedExercises length
-        incrementExerciseCount(selectedExercises.length);
-      } else {
-        // Default to 1 if no exercise count available
-        incrementExerciseCount(1);
-      }
+    if (summary.event === 'exercise_completed' || summary.event === 'exercise_skipped') {
+      const newCredits = credits + 5; // Exactly 5 credits per exercise
+      updateCredits(newCredits);
     }
     setSummaryMessage(summary);
     setModalVisible(true);
@@ -1644,6 +1662,10 @@ const App = () => {
       const newCount = exerciseCount + count;
       setExerciseCount(newCount);
       
+      // Award 5 credits for each exercise in the set
+      const newCredits = credits + (count * 5);
+      setCredits(newCredits);
+      
       // Save to today's tracker data
       const existingData = await AsyncStorage.getItem(`tracker_${today}`);
       const trackerData = existingData ? JSON.parse(existingData) : {
@@ -1652,10 +1674,12 @@ const App = () => {
         calories: '0',
         sleepHours: '00:00',
         exerciseCount: '0',
+        credits: '0',
         date: today
       };
       
       trackerData.exerciseCount = newCount.toString();
+      trackerData.credits = newCredits.toString();
       await AsyncStorage.setItem(`tracker_${today}`, JSON.stringify(trackerData));
     } catch (error) {
       console.error('Error updating exercise count:', error);
@@ -1770,6 +1794,8 @@ const App = () => {
               setActiveTab('DIET');
             }
           }}
+          credits={credits}
+          setCredits={setCredits}
         />
       ) : showDietScreen ? (
         <Diet 
@@ -1806,6 +1832,7 @@ const App = () => {
                 calories: '0',
                 sleepHours: '00:00',
                 exerciseCount: '0',
+                credits: '0',
                 date: today
               };
               trackerData.exerciseCount = numCount.toString();
@@ -1813,12 +1840,20 @@ const App = () => {
             }
           }}
         />
+      ) : activeTab === 'LEADERBOARD' ? (
+        <Leaderboard credits={credits} />
       ) : (
         <ScrollView style={styles.scrollView}>
           {/* Header Section */}
           <View style={styles.header}>
             <View>
-              <Text style={styles.greeting}>Hi, Utkarsh</Text>
+              <View style={styles.headerTopRow}>
+                <Text style={styles.greeting}>Hi, Utkarsh</Text>
+                <View style={styles.creditsContainer}>
+                  <Text style={styles.creditsText}>{credits}</Text>
+                  <Text style={styles.creditsLabel}>Credits</Text>
+                </View>
+              </View>
               <Text style={styles.motivationalText}>
                 {dailyQuote}
               </Text>
@@ -2612,13 +2647,51 @@ const styles = StyleSheet.create({
   header: {
     padding: 20,
     paddingTop: 40,
-    paddingBottom: 10,
+    paddingBottom: 2, // Reduced from 4 to 2
+  },
+  headerTopRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 2, // Reduced from 4 to 2
+  },
+  creditsContainer: {
+    backgroundColor: '#1E1E1E',
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    borderRadius: 12,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    borderWidth: 1,
+    borderColor: '#F47551',
+    shadowColor: '#F47551',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
+  },
+  creditsText: {
+    color: '#F47551',
+    fontSize: 18,
+    fontWeight: 'bold',
+    fontFamily: 'NationalPark',
+    alignSelf: 'center'
+  },
+  creditsLabel: {
+    color: '#FFFFFF',
+    fontSize: 14,
+    fontFamily: 'NationalPark',
+    opacity: 0.8,
   },
   greeting: {
     fontSize: 32,
     fontWeight: 'bold',
     color: '#F47551',
-    marginBottom: 8,
+    marginBottom: 4, // Reduced from 8 to 4
     fontFamily: 'NationalPark',
   },
   motivationalText: {

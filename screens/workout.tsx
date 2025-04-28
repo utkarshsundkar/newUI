@@ -27,6 +27,7 @@ import * as SMWorkoutLibrary from '@sency/react-native-smkit-ui/src/SMWorkout';
 import EditText from '../components/EditText';
 import ThreeCheckboxes from '../components/ThreeCheckboxes';
 import React from 'react';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 // Add these interfaces at the top of the file, after imports
 interface ExerciseStatus {
@@ -50,7 +51,14 @@ interface WorkoutWithEvents extends SMWorkoutLibrary.SMWorkout {
   onExerciseSkipped?: (exercise: WorkoutExercise) => void;
 }
 
-const Workout = ({ onBack, onNavigate }) => {
+interface WorkoutScreenProps {
+  onBack: () => void;
+  onNavigate: (screen: string) => void;
+  credits: number;
+  setCredits: (credits: number) => void;
+}
+
+const WorkoutScreen: React.FC<WorkoutScreenProps> = ({ onBack, onNavigate, credits, setCredits }) => {
   const [didConfig, setDidConfig] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [showWFPUI, setWPFUI] = useState(false);
@@ -379,7 +387,28 @@ const Workout = ({ onBack, onNavigate }) => {
   }, []);
 
   const handleEvent = (summary) => {
-    console.log('Exercise completed:', summary);
+    console.log('Workout event:', summary);
+    if (summary.type === 'exercise_completed') {
+      console.log('Exercise completed, awarding credits');
+      const newCredits = credits + 5;
+      setCredits(newCredits);
+      
+      // Save credits to AsyncStorage
+      const today = new Date().toISOString().split('T')[0];
+      AsyncStorage.getItem(`tracker_${today}`).then(existingData => {
+        const trackerData = existingData ? JSON.parse(existingData) : {
+          waterIntake: '0',
+          steps: '0',
+          calories: '0',
+          sleepHours: '00:00',
+          exerciseCount: '0',
+          credits: '0',
+          date: today
+        };
+        trackerData.credits = newCredits.toString();
+        AsyncStorage.setItem(`tracker_${today}`, JSON.stringify(trackerData));
+      });
+    }
   };
 
   const onDuration = (index) => {
@@ -596,6 +625,50 @@ const Workout = ({ onBack, onNavigate }) => {
       <Text style={styles.workoutButtonText}>{title}</Text>
     </TouchableOpacity>
   );
+
+  const onExerciseCompleted = (exercise: WorkoutExercise) => {
+    console.log('Exercise completed callback:', exercise);
+    const newCredits = credits + 5;
+    setCredits(newCredits);
+    
+    // Save credits to AsyncStorage
+    const today = new Date().toISOString().split('T')[0];
+    AsyncStorage.getItem(`tracker_${today}`).then(existingData => {
+      const trackerData = existingData ? JSON.parse(existingData) : {
+        waterIntake: '0',
+        steps: '0',
+        calories: '0',
+        sleepHours: '00:00',
+        exerciseCount: '0',
+        credits: '0',
+        date: today
+      };
+      trackerData.credits = newCredits.toString();
+      AsyncStorage.setItem(`tracker_${today}`, JSON.stringify(trackerData));
+    });
+  };
+
+  const onExerciseSkipped = (exercise: WorkoutExercise) => {
+    console.log('Exercise skipped callback:', exercise);
+    const newCredits = credits + 5;
+    setCredits(newCredits);
+    
+    // Save credits to AsyncStorage
+    const today = new Date().toISOString().split('T')[0];
+    AsyncStorage.getItem(`tracker_${today}`).then(existingData => {
+      const trackerData = existingData ? JSON.parse(existingData) : {
+        waterIntake: '0',
+        steps: '0',
+        calories: '0',
+        sleepHours: '00:00',
+        exerciseCount: '0',
+        credits: '0',
+        date: today
+      };
+      trackerData.credits = newCredits.toString();
+      AsyncStorage.setItem(`tracker_${today}`, JSON.stringify(trackerData));
+    });
+  };
 
   return (
     <SafeAreaView style={styles.container}>
@@ -4432,4 +4505,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default Workout;
+export default WorkoutScreen;
