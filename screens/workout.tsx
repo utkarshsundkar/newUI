@@ -226,22 +226,22 @@ const WorkoutScreen: React.FC<WorkoutScreenProps> = ({ onBack, onNavigate, credi
           exerciseName,
           35,
           config.detector,
-            null,
+          null,
           config.isTimeBased 
             ? [SMWorkoutLibrary.UIElement.Timer, SMWorkoutLibrary.UIElement.GaugeOfMotion]
             : [SMWorkoutLibrary.UIElement.RepsCounter, SMWorkoutLibrary.UIElement.Timer, SMWorkoutLibrary.UIElement.GaugeOfMotion],
           config.detector,
-            '',
-            new SMWorkoutLibrary.SMScoringParams(
+          '',
+          new SMWorkoutLibrary.SMScoringParams(
             config.isTimeBased ? SMWorkoutLibrary.ScoringType.Time : SMWorkoutLibrary.ScoringType.Reps,
-              0.3,
+            0.3,
             config.isTimeBased ? config.duration : null,
             !config.isTimeBased ? config.reps : null,
-              null,
-              null
-            ),
-            '',
-            exerciseName,
+            null,
+            null
+          ),
+          '',
+          exerciseName,
           config.isTimeBased ? `Hold for ${config.duration} seconds` : `Complete ${config.reps} reps`,
           config.isTimeBased ? 'Time' : 'Reps',
           'clean reps'
@@ -257,7 +257,7 @@ const WorkoutScreen: React.FC<WorkoutScreenProps> = ({ onBack, onNavigate, credi
         null,
         null,
         null
-      ) as any; // Use any type for workout to allow event handlers
+      ) as any;
 
       // Add exercise completion handlers
       workout.onExerciseCompleted = (exercise: any) => {
@@ -276,6 +276,9 @@ const WorkoutScreen: React.FC<WorkoutScreenProps> = ({ onBack, onNavigate, credi
         onExerciseSkipped(exercise);
       };
 
+      // Close the modal before starting the workout
+      setModalVisible(false);
+      
       const result = await startCustomAssessment(workout, null, false, false);
       console.log('Assessment result:', result.summary);
       if (result.didFinish) {
