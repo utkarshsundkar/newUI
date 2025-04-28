@@ -1656,11 +1656,11 @@ const MainContent = () => {
           <TouchableOpacity 
             style={styles.actionItem}
             onPress={() => {
-              setSelectedTab('workout');
+              setSelectedTab('leaderboard');
             }}
           >
-            <Text style={styles.actionEmoji}>💪</Text>
-            <Text style={styles.actionText}>Workout</Text>
+            <Text style={styles.actionEmoji}>🏆</Text>
+            <Text style={styles.actionText}>Leaderboard</Text>
           </TouchableOpacity>
           
           <View style={styles.verticalLine} />
@@ -1689,15 +1689,10 @@ const MainContent = () => {
           
           <View style={styles.verticalLine} />
           
-          <TouchableOpacity 
-            style={styles.actionItem}
-            onPress={() => {
-              setSelectedTab('workout');
-            }}
-          >
-            <Text style={styles.actionEmoji}>💪</Text>
-            <Text style={styles.actionText}>Workout</Text>
-          </TouchableOpacity>
+          <View style={styles.actionItem}>
+            <Text style={styles.actionEmoji}>👥</Text>
+            <Text style={styles.actionText}>Community</Text>
+          </View>
         </View>
 
         {/* Avatar Section */}
