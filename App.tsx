@@ -12,6 +12,9 @@ import {
   ScrollView,
   Image,
   SafeAreaView,
+  ViewStyle,
+  TextStyle,
+  ImageStyle,
 } from 'react-native';
 import {
   configure,
@@ -95,6 +98,31 @@ const Stack = createNativeStackNavigator<RootStackParamList>();
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
 
+const AVAILABLE_EXERCISES = [
+  'Jumping Jacks',
+  'High Knees',
+  'Glute Bridge',
+  'Lunge',
+  'Shoulder Taps Plank',
+  'Push-up',
+  'Air Squat',
+  'Oblique Crunches',
+  'Shoulder Press',
+  'Side Plank',
+  'High Plank',
+  'Overhead Squat',
+  'Tuck Hold',
+  'Jefferson Curl',
+  'Standing Knee Raise (Left)',
+  'Standing Knee Raise (Right)',
+  'Side Bend (Left)',
+  'Side Bend (Right)',
+  'Hamstring Mobility',
+  'Standing Hamstring Mobility'
+];
+
+const EXERCISE_DURATIONS = [120, 150, 180, 250, 300];
+
 const MainContent = () => {
   const [credits, setCredits] = useState(0);
   const [isConfigured, setIsConfigured] = useState(false);
@@ -164,6 +192,8 @@ const MainContent = () => {
   const [pendingSwitchToTracker, setPendingSwitchToTracker] = useState(false);
   const [selectedTab, setSelectedTab] = useState('home');
   const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]);
+  const [weeklyExercise, setWeeklyExercise] = useState('');
+  const [weeklyDuration, setWeeklyDuration] = useState(0);
 
   // Load credits from AsyncStorage on component mount
   useEffect(() => {
@@ -465,6 +495,80 @@ const MainContent = () => {
 
     loadInitialExerciseCount();
   }, []);
+
+  useEffect(() => {
+    // Select random exercise and duration when component mounts
+    const randomExercise = AVAILABLE_EXERCISES[Math.floor(Math.random() * AVAILABLE_EXERCISES.length)];
+    const randomDuration = EXERCISE_DURATIONS[Math.floor(Math.random() * EXERCISE_DURATIONS.length)];
+    setWeeklyExercise(randomExercise);
+    setWeeklyDuration(randomDuration);
+  }, []);
+
+  const startWeeklyChallenge = async () => {
+    try {
+      // Award 4 credits for starting weekly challenge
+      await updateCredits(4);
+
+      const exercise = new SMWorkoutLibrary.SMExercise(
+        weeklyExercise,
+        weeklyDuration,
+        getDetectorId(weeklyExercise),
+        null,
+        [SMWorkoutLibrary.UIElement.Timer],
+        getDetectorId(weeklyExercise),
+        "",
+        null
+      );
+
+      const workout = new SMWorkoutLibrary.SMWorkout(
+        'weekly_challenge',
+        'Weekly Challenge',
+        null,
+        null,
+        [exercise],
+        null,
+        null,
+        null
+      );
+
+      const result = await startCustomWorkout(workout);
+      if (result && result.didFinish) {
+        handleEvent({ 
+          type: 'workout_completed',
+          exercises: [exercise]
+        });
+      }
+    } catch (error) {
+      console.error('Error starting weekly challenge:', error);
+      Alert.alert('Error', 'Failed to start weekly challenge');
+    }
+  };
+
+  const getDetectorId = (exerciseName: string): string => {
+    const detectorMap: { [key: string]: string } = {
+      'Jumping Jacks': 'JumpingJacks',
+      'High Knees': 'HighKnees',
+      'Glute Bridge': 'GlutesBridge',
+      'Lunge': 'LungeFront',
+      'Shoulder Taps Plank': 'PlankHighShoulderTaps',
+      'Push-up': 'PushupRegular',
+      'Air Squat': 'SquatRegular',
+      'Oblique Crunches': 'StandingObliqueCrunches',
+      'Shoulder Press': 'ShouldersPress',
+      'Side Plank': 'PlankSideLowStatic',
+      'High Plank': 'PlankHighStatic',
+      'Overhead Squat': 'SquatRegularOverheadStatic',
+      'Tuck Hold': 'TuckHold',
+      'Jefferson Curl': 'JeffersonCurlRight',
+      'Standing Knee Raise (Left)': 'StandingKneeRaiseLeft',
+      'Standing Knee Raise (Right)': 'StandingKneeRaiseRight',
+      'Side Bend (Left)': 'StandingSideBendLeft',
+      'Side Bend (Right)': 'StandingSideBendRight',
+      'Hamstring Mobility': 'HamstringMobility',
+      'Standing Hamstring Mobility': 'StandingHamstringMobility'
+    };
+    return detectorMap[exerciseName] || exerciseName;
+  };
 
   const handleEvent = (summary) => {
     console.log('Workout event:', summary);
@@ -1831,8 +1935,13 @@ const MainContent = () => {
           <Text style={styles.weeklyTitleText}>WEEKLY CHALLENGE</Text>
           <View style={styles.challengeContainer}>
             <View style={styles.challengeContent}>
-              <Text style={styles.challengeText}>Complete 30 exercises this week</Text>
-              <TouchableOpacity style={styles.startButton}>
+              <Text style={styles.challengeText}>
+                {weeklyExercise}
+              </Text>
+              <TouchableOpacity 
+                style={styles.startButton}
+                onPress={startWeeklyChallenge}
+              >
                 <Text style={styles.startButtonText}>START</Text>
               </TouchableOpacity>
             </View>
