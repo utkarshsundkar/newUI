@@ -1,7 +1,8 @@
-import React, { useState, useEffect } from "react";
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Dimensions, Animated, StatusBar, Modal, TextInput, Alert, SafeAreaView } from "react-native";
+import * as React from "react";
+import { useState, useEffect } from "react";
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Dimensions, Animated, StatusBar, Modal, TextInput, Alert } from "react-native";
+import Icon from 'react-native-vector-icons/MaterialIcons';
 import { Calendar, DateData } from 'react-native-calendars';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 
 // Enhanced color palette for dark theme
 const colors = {
@@ -841,7 +842,7 @@ const MealItem: React.FC<{
                   style={[styles.removeButton, { backgroundColor: colors.carbs + '20' }]}
                   onPress={() => onRemoveItem?.(meal.id, item.id)}
                 >
-                  <Text style={[styles.removeButtonText]}>−</Text>
+                  <Text style={[styles.removeButtonText]}>-</Text>
                 </TouchableOpacity>
               </View>
             </View>
@@ -850,7 +851,7 @@ const MealItem: React.FC<{
             style={styles.addMoreButton}
             onPress={() => onAddMeal?.()}
           >
-            <Text style={[styles.addMoreText, { marginRight: 8, color: colors.primary }]}>+</Text>
+            <Icon name="add" size={20} color={colors.primary} />
             <Text style={styles.addMoreText}>Add another item</Text>
           </TouchableOpacity>
         </View>
@@ -999,16 +1000,7 @@ const FoodListModal: React.FC<{
   );
 };
 
-const getDateKey = (dateString: string) => dateString;
-
-const MEALS_DATA_KEY = 'meals_data';
-
-interface DietProps {
-  onBack: () => void;
-  onSaveCalories?: () => Promise<void> | void;
-}
-
-const Diet: React.FC<DietProps> = ({ onBack, onSaveCalories }) => {
+const App: React.FC<{ navigation: any }> = ({ navigation }) => {
   const today = new Date();
   const [selectedDate, setSelectedDate] = useState(today.getDate().toString());
   const [showCalendar, setShowCalendar] = useState(false);
@@ -1138,13 +1130,15 @@ const Diet: React.FC<DietProps> = ({ onBack, onSaveCalories }) => {
             calories: selectedItem.calories,
             portions: selectedItem.portion,
             macros: {
-              carbs: Math.round(selectedItem.calories * 0.5 / 4),
-              protein: Math.round(selectedItem.calories * 0.3 / 4),
-              fat: Math.round(selectedItem.calories * 0.2 / 9)
+              carbs: Math.round(selectedItem.calories * 0.5 / 4), // 50% of calories from carbs
+              protein: Math.round(selectedItem.calories * 0.3 / 4), // 30% of calories from protein
+              fat: Math.round(selectedItem.calories * 0.2 / 9) // 20% of calories from fat
             }
           };
+
           const currentCalories = meal.calories || 0;
           const currentMacros = meal.macros || { carbs: 0, protein: 0, fat: 0 };
+
           return {
             ...meal,
             calories: currentCalories + selectedItem.calories,
@@ -1158,12 +1152,7 @@ const Diet: React.FC<DietProps> = ({ onBack, onSaveCalories }) => {
         }
         return meal;
       });
-      // Save total calories to AsyncStorage with full date key
-      const todayKey = getDateKey(selectedDate);
-      const totalCalories = updatedMeals.reduce((total, meal) => total + (meal.calories || 0), 0);
-      AsyncStorage.setItem(`diet_calories_${todayKey}`, totalCalories.toString()).then(() => {
-        if (onSaveCalories) onSaveCalories();
-      });
+
       return {
         ...prevMealsData,
         [selectedDate]: updatedMeals
@@ -1177,8 +1166,10 @@ const Diet: React.FC<DietProps> = ({ onBack, onSaveCalories }) => {
         if (meal.id === mealId) {
           const itemToRemove = meal.items.find(item => item.id === itemId);
           if (!itemToRemove) return meal;
+
           const updatedItems = meal.items.filter(item => item.id !== itemId);
           const currentMacros = meal.macros || { carbs: 0, protein: 0, fat: 0 };
+
           return {
             ...meal,
             items: updatedItems,
@@ -1192,12 +1183,7 @@ const Diet: React.FC<DietProps> = ({ onBack, onSaveCalories }) => {
         }
         return meal;
       });
-      // Save total calories to AsyncStorage with full date key
-      const todayKey = getDateKey(selectedDate);
-      const totalCalories = updatedMeals.reduce((total, meal) => total + (meal.calories || 0), 0);
-      AsyncStorage.setItem(`diet_calories_${todayKey}`, totalCalories.toString()).then(() => {
-        if (onSaveCalories) onSaveCalories();
-      });
+
       return {
         ...prevMealsData,
         [selectedDate]: updatedMeals
@@ -1209,35 +1195,6 @@ const Diet: React.FC<DietProps> = ({ onBack, onSaveCalories }) => {
     setDailyQuote(getDailyQuote());
   }, []);
 
-  useEffect(() => {
-    // Save calories for the selected date whenever mealsData or selectedDate changes
-    const meals = mealsData[selectedDate] || [];
-    const totalCalories = meals.reduce((total, meal) => total + (meal.calories || 0), 0);
-    AsyncStorage.setItem(`diet_calories_${getDateKey(selectedDate)}`, totalCalories.toString()).then(() => {
-      if (onSaveCalories) onSaveCalories();
-    });
-  }, [mealsData, selectedDate]);
-
-  // Load mealsData from AsyncStorage on mount and when selectedDate changes
-  useEffect(() => {
-    const loadMealsData = async () => {
-      try {
-        const stored = await AsyncStorage.getItem(MEALS_DATA_KEY);
-        if (stored) {
-          setMealsData(JSON.parse(stored));
-        }
-      } catch (e) {
-        // ignore
-      }
-    };
-    loadMealsData();
-  }, [selectedDate]);
-
-  // Save mealsData to AsyncStorage whenever it changes
-  useEffect(() => {
-    AsyncStorage.setItem(MEALS_DATA_KEY, JSON.stringify(mealsData));
-  }, [mealsData]);
-
   const renderWeekView = () => (
     <View style={styles.weekViewContainer}>
       <TouchableOpacity
@@ -1245,7 +1202,7 @@ const Diet: React.FC<DietProps> = ({ onBack, onSaveCalories }) => {
         onPress={() => setShowCalendar(true)}
       >
         <Text style={styles.weekViewText}>Week View</Text>
-        <Text style={[styles.weekViewText, { marginLeft: 4 }]}></Text>
+        <Text style={[styles.weekViewText, { marginLeft: 4 }]}>v</Text>
       </TouchableOpacity>
       <View style={styles.daysContainer}>
         {DAYS.map((day, index) => {
@@ -1342,7 +1299,11 @@ const Diet: React.FC<DietProps> = ({ onBack, onSaveCalories }) => {
     return (
       <View style={styles.mainContent}>
         <View style={styles.header}>
-          <Text style={styles.headerTitle}>Diet</Text>
+          <TouchableOpacity onPress={() => navigation.goBack()}>
+            <Text style={styles.backArrow}>←</Text>
+          </TouchableOpacity>
+          <Text style={styles.headerTitle}>Daily Meal Plan</Text>
+          <View style={{ width: 24 }} />
         </View>
         <View style={styles.quoteContainer}>
           <Text style={styles.quoteText}>{dailyQuote}</Text>
@@ -1375,7 +1336,7 @@ const Diet: React.FC<DietProps> = ({ onBack, onSaveCalories }) => {
 
         <View style={styles.contentContainer}>
           <Text style={styles.sectionTitle}>Planned Meals</Text>
-          <ScrollView style={styles.mealsList}>
+          <View style={styles.mealsList}>
             {meals.map((meal) => (
               <MealItem
                 key={meal.id}
@@ -1386,15 +1347,15 @@ const Diet: React.FC<DietProps> = ({ onBack, onSaveCalories }) => {
                 onRemoveItem={(mealId, itemId) => handleRemoveItem(mealId, itemId)}
               />
             ))}
-          </ScrollView>
+          </View>
         </View>
       </View>
     );
   };
 
   return (
-    <SafeAreaView style={styles.container}>
-      <StatusBar barStyle="light-content" backgroundColor="#1A1A1A" />
+    <View style={styles.container}>
+      <StatusBar barStyle="dark-content" backgroundColor={colors.background} />
       <View style={styles.mainContent}>
         {renderContent()}
       </View>
@@ -1407,7 +1368,7 @@ const Diet: React.FC<DietProps> = ({ onBack, onSaveCalories }) => {
           onSelect={(food) => handleSelectFood(showMealOptions, food)}
         />
       )}
-    </SafeAreaView>
+    </View>
   );
 };
 
@@ -1424,22 +1385,28 @@ const styles = StyleSheet.create({
   },
   header: {
     flexDirection: 'row',
-    justifyContent: 'center',
     alignItems: 'center',
     paddingHorizontal: 20,
     paddingTop: 16,
     paddingBottom: 12,
-    backgroundColor: '#1A1A1A',
+    backgroundColor: colors.background,
   },
   headerTitle: {
     fontSize: 25,
     color: '#F47551',
+    flex: 1,
     textAlign: 'center',
-    fontWeight: 'bold',
+    fontFamily: 'MinecraftTen',
+    marginRight: 24,
+  },
+  backArrow: {
+    fontSize: 28,
+    color: '#F47551',
+    fontWeight: '600',
   },
   weekViewContainer: {
-    paddingTop: 4,
-    paddingBottom: 12,
+    paddingTop: 8,
+    paddingBottom: 16,
     backgroundColor: colors.background,
   },
   weekHeaderButton: {
@@ -1449,7 +1416,7 @@ const styles = StyleSheet.create({
     paddingBottom: 12,
   },
   weekViewText: {
-    fontSize: 18,
+    fontSize: 15,
     color: colors.text,
     marginRight: 4,
     fontWeight: 'bold',
@@ -1489,11 +1456,11 @@ const styles = StyleSheet.create({
     marginTop: 4,
   },
   statsContainer: {
-    paddingHorizontal: 30,
-    paddingVertical: 20,
-    marginHorizontal: 10,
+    paddingHorizontal: 20,
+    paddingVertical: 24,
+    marginHorizontal: 20,
     marginTop: 8,
-    height: 140,
+    height: 160,
     backgroundColor: '#FFFFFF',
     borderRadius: 16,
     shadowColor: colors.cardShadow,
@@ -1510,7 +1477,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     borderRightWidth: 1,
     borderRightColor: '#E0E0E0',
-    paddingRight: 24,
+    paddingRight: 20,
   },
   calorieNumber: {
     fontSize: 36,
@@ -1525,54 +1492,53 @@ const styles = StyleSheet.create({
   },
   macrosContainer: {
     flex: 1,
-    paddingLeft: 4,
+    paddingLeft: 5,
     justifyContent: 'center',
   },
   macroItem: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    justifyContent: 'flex-start',
     alignItems: 'center',
     marginBottom: 12,
+    paddingLeft: -10,
   },
   macroLabel: {
     fontSize: 13,
     fontWeight: '600',
     color: '#000000',
-    width: 60,
+    width: 55,
+    marginRight: 8,
   },
   macroAmount: {
     fontSize: 13,
     color: '#666666',
     fontWeight: '500',
-    minWidth: 90,
-    textAlign: 'right',
   },
   contentContainer: {
     flex: 1,
     paddingHorizontal: 20,
-    paddingTop: 12,
-    paddingBottom: 20,
+    paddingTop: 24,
+    paddingBottom: 80,
   },
   sectionTitle: {
     fontSize: 20,
     color: '#F47551',
     marginBottom: 16,
     alignSelf: 'flex-start',
-    fontWeight: 'bold',
+    fontFamily: 'MinecraftTen',
   },
   mealsList: {
     flex: 1,
-    marginBottom: 0,
+    marginBottom: 20,
   },
   mealItemContainer: {
     width: '100%',
-    marginBottom: 8,
-    minHeight: 60,
+    marginBottom: 12,
   },
   mealItem: {
     backgroundColor: colors.mealItemBg,
-    borderRadius: 12,
-    padding: 12,
+    borderRadius: 16,
+    padding: 16,
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
@@ -1593,13 +1559,13 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   mealIcon: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
+    width: 44,
+    height: 44,
+    borderRadius: 22,
     backgroundColor: colors.progressBg,
     justifyContent: 'center',
     alignItems: 'center',
-    marginRight: 10,
+    marginRight: 12,
   },
   mealInfo: {
     flex: 1,
@@ -1721,7 +1687,7 @@ const styles = StyleSheet.create({
   },
   modalOverlay: {
     flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.2)',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
     justifyContent: 'flex-end',
   },
   modalContent: {
@@ -1955,20 +1921,20 @@ const styles = StyleSheet.create({
   },
   quoteContainer: {
     paddingHorizontal: 20,
-    paddingVertical: 8,
-    backgroundColor: 'rgba(247, 219, 167, 0.1)',
+    paddingVertical: 12,
+    backgroundColor: 'rgba(247, 219, 167, 0.1)', // Light gold background
     marginHorizontal: 20,
-    marginTop: 4,
-    marginBottom: 12,
+    marginTop: 8,
+    marginBottom: 16,
     borderRadius: 12,
   },
   quoteText: {
     fontSize: 14,
-    color: '#F7DBA7',
+    color: '#F7DBA7', // Gold color to match theme
     fontStyle: 'italic',
     textAlign: 'center',
     lineHeight: 20,
   },
 });
 
-export default Diet;
+export default App;

@@ -192,8 +192,9 @@ const MainContent = () => {
   const [pendingSwitchToTracker, setPendingSwitchToTracker] = useState(false);
   const [selectedTab, setSelectedTab] = useState('home');
   const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]);
-  const [weeklyExercise, setWeeklyExercise] = useState('');
-  const [weeklyDuration, setWeeklyDuration] = useState(0);
+  const [weeklyExercise, setWeeklyExercise] = useState<string>('');
+  const [weeklyDuration, setWeeklyDuration] = useState<number>(0);
+  const [lastChallengeUpdate, setLastChallengeUpdate] = useState<string>('');
 
   // Load credits from AsyncStorage on component mount
   useEffect(() => {
@@ -504,20 +505,104 @@ const MainContent = () => {
     setWeeklyDuration(randomDuration);
   }, []);
 
-  const startWeeklyChallenge = async () => {
-    try {
-      // Award 4 credits for starting weekly challenge
-      await updateCredits(4);
+  // Function to check if it's Monday
+  const isMonday = (date: Date): boolean => {
+    return date.getDay() === 1; // 1 represents Monday
+  };
 
-      const exercise = new SMWorkoutLibrary.SMExercise(
+  // Function to get the start of the current week (Monday)
+  const getStartOfWeek = (date: Date): Date => {
+    const day = date.getDay();
+    const diff = date.getDate() - day + (day === 0 ? -6 : 1); // Adjust when day is Sunday
+    return new Date(date.setDate(diff));
+  };
+
+  // Function to load or generate weekly challenge
+  const loadWeeklyChallenge = async () => {
+    try {
+      const storedChallenge = await AsyncStorage.getItem('weeklyChallenge');
+      const storedUpdateDate = await AsyncStorage.getItem('lastChallengeUpdate');
+      
+      const today = new Date();
+      const startOfWeek = getStartOfWeek(new Date());
+      
+      if (storedChallenge && storedUpdateDate) {
+        const lastUpdate = new Date(storedUpdateDate);
+        const parsedChallenge = JSON.parse(storedChallenge);
+        
+        // If it's Monday and the last update was before this week's Monday
+        if (isMonday(today) && lastUpdate < startOfWeek) {
+          // Generate new challenge
+          generateNewChallenge();
+        } else {
+          // Use stored challenge
+          setWeeklyExercise(parsedChallenge.exercise);
+          setWeeklyDuration(parsedChallenge.duration);
+          setLastChallengeUpdate(storedUpdateDate);
+        }
+      } else {
+        // No stored challenge, generate new one
+        generateNewChallenge();
+      }
+    } catch (error) {
+      console.error('Error loading weekly challenge:', error);
+      generateNewChallenge();
+    }
+  };
+
+  // Function to generate new challenge
+  const generateNewChallenge = async () => {
+    try {
+      const randomExercise = AVAILABLE_EXERCISES[Math.floor(Math.random() * AVAILABLE_EXERCISES.length)];
+      const randomDuration = EXERCISE_DURATIONS[Math.floor(Math.random() * EXERCISE_DURATIONS.length)];
+      
+      const challenge = {
+        exercise: randomExercise,
+        duration: randomDuration
+      };
+      
+      const today = new Date();
+      await AsyncStorage.setItem('weeklyChallenge', JSON.stringify(challenge));
+      await AsyncStorage.setItem('lastChallengeUpdate', today.toISOString());
+      
+      setWeeklyExercise(randomExercise);
+      setWeeklyDuration(randomDuration);
+      setLastChallengeUpdate(today.toISOString());
+    } catch (error) {
+      console.error('Error generating new challenge:', error);
+    }
+  };
+
+  // Load weekly challenge when component mounts
+  useEffect(() => {
+    loadWeeklyChallenge();
+  }, []);
+
+  const startWeeklyChallenge = async () => {
+    if (!weeklyExercise) return;
+    
+    try {
+      const exercise = new SMWorkoutLibrary.SMAssessmentExercise(
         weeklyExercise,
-        weeklyDuration,
+        35,
         getDetectorId(weeklyExercise),
         null,
         [SMWorkoutLibrary.UIElement.Timer],
         getDetectorId(weeklyExercise),
-        "",
-        null
+        '',
+        new SMWorkoutLibrary.SMScoringParams(
+          SMWorkoutLibrary.ScoringType.Time,
+          0.3,
+          weeklyDuration,
+          null,
+          null,
+          null
+        ),
+        '',
+        weeklyExercise,
+        `Hold for ${weeklyDuration} seconds`,
+        'Time',
+        'seconds'
       );
 
       const workout = new SMWorkoutLibrary.SMWorkout(
@@ -531,8 +616,8 @@ const MainContent = () => {
         null
       );
 
-      const result = await startCustomWorkout(workout);
-      if (result && result.didFinish) {
+      const result = await startCustomAssessment(workout, null, false, false);
+      if (result.didFinish) {
         handleEvent({ 
           type: 'workout_completed',
           exercises: [exercise]
@@ -1931,25 +2016,30 @@ const MainContent = () => {
         </View>
 
         {/* Weekly Challenge Section */}
-        <View style={styles.weeklyChallenge}>
-          <Text style={styles.weeklyTitleText}>WEEKLY CHALLENGE</Text>
-          <View style={styles.challengeContainer}>
-            <View style={styles.challengeContent}>
-              <Text style={styles.challengeText}>
-                {weeklyExercise}
-              </Text>
-              <TouchableOpacity 
-                style={styles.startButton}
-                onPress={startWeeklyChallenge}
-              >
-                <Text style={styles.startButtonText}>START</Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-        </View>
+        {renderWeeklyChallenge()}
       </ScrollView>
     );
   };
+
+  // Update the weekly challenge section in the render
+  const renderWeeklyChallenge = () => (
+    <View style={styles.weeklyChallenge}>
+      <Text style={styles.weeklyTitleText}>WEEKLY CHALLENGE</Text>
+      <View style={styles.challengeContainer}>
+        <View style={styles.challengeContent}>
+          <Text style={styles.challengeText}>
+            {weeklyExercise ? weeklyExercise : 'Loading challenge...'}
+          </Text>
+          <TouchableOpacity
+            style={styles.startButton}
+            onPress={startWeeklyChallenge}
+          >
+            <Text style={styles.startButtonText}>START</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
+    </View>
+  );
 
   return (
     <SafeAreaView style={styles.container}>
@@ -1978,7 +2068,14 @@ const MainContent = () => {
           }}
         />
       )}
-      {selectedTab === 'diet' && <Diet onBack={handleHomeClick} onSaveCalories={loadTrackerData} />}
+      {selectedTab === 'diet' && (
+        <Diet 
+          navigation={{ 
+            goBack: handleHomeClick,
+            navigate: () => {},
+          }} 
+        />
+      )}
       {selectedTab === 'leaderboard' && <Leaderboard credits={credits} />}
       {selectedTab === 'profile' && <Profile />}
       {selectedTab === 'progress' && <ProgressScreen onBack={() => setSelectedTab('home')} />}

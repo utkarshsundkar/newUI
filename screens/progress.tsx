@@ -319,12 +319,10 @@ const ProgressScreen: React.FC<ProgressScreenProps> = ({ onBack }) => {
       <StatusBar barStyle="light-content" backgroundColor="#121212" />
       <View style={styles.header}>
         <TouchableOpacity onPress={onBack}>
-          <Icon name="arrow-back" size={24} color="#FFFFFF" />
+          <Text style={styles.backArrow}>←</Text>
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Progress</Text>
-        <TouchableOpacity onPress={() => navigation.navigate('Workout')}>
-          <Icon name="barbell" size={24} color="#FFFFFF" />
-        </TouchableOpacity>
+        <View style={{ width: 24 }} />
       </View>
       <ScrollView contentContainerStyle={styles.content}>
         <View style={styles.timeframeSelector}>
@@ -556,7 +554,12 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
     fontSize: 14,
     marginTop: 4,
-  }
+  },
+  backArrow: {
+    fontSize: 28,
+    color: '#F47551',
+    fontWeight: '600',
+  },
 });
 
 export default ProgressScreen; 
