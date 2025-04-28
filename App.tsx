@@ -1542,66 +1542,108 @@ const MainContent = () => {
     }
   };
 
-  // Function to select random workouts
-  const selectDailyWorkouts = () => {
-    const currentDate = new Date().toDateString();
-    if (currentDate === lastUpdatedDate) return; // Don't update if it's the same day
-
-    const allWorkouts = [
-      {
-        title: 'FULL BODY BURN',
-        exercises: [
-          { name: 'Jumping Jacks', reps: 60, duration: 0 },
-          { name: 'High Knees', reps: 60, duration: 0 },
-          { name: 'Push-up', reps: 15, duration: 0 },
-          { name: 'Air Squat', reps: 15, duration: 0 }
-        ]
-      },
-      {
-        title: 'CORE & ABS',
-        exercises: [
-          { name: 'Side Plank', reps: 0, duration: 45 },
-          { name: 'High Plank', reps: 0, duration: 45 },
-          { name: 'Tuck Hold', reps: 0, duration: 45 },
-          { name: 'Oblique Crunches', reps: 15, duration: 0 }
-        ]
-      },
-      {
-        title: 'MOBILITY & STRETCH',
-        exercises: [
-          { name: 'Side Bend (Left)', reps: 0, duration: 45 },
-          { name: 'Side Bend (Right)', reps: 0, duration: 45 },
-          { name: 'Standing Hamstring Mobility', reps: 0, duration: 45 },
-          { name: 'Hamstring Mobility', reps: 0, duration: 45 }
-        ]
-      },
-      {
-        title: 'UPPER BODY',
-        exercises: [
-          { name: 'Push-up', reps: 15, duration: 0 },
-          { name: 'Shoulder Press', reps: 15, duration: 0 },
-          { name: 'Shoulder Taps Plank', reps: 20, duration: 0 },
-          { name: 'High Plank', reps: 0, duration: 45 }
-        ]
-      },
-      {
-        title: 'LOWER BODY',
-        exercises: [
-          { name: 'Air Squat', reps: 15, duration: 0 },
-          { name: 'Lunge', reps: 15, duration: 0 },
-          { name: 'Glute Bridge', reps: 15, duration: 0 },
-          { name: 'Overhead Squat', reps: 0, duration: 45 }
-        ]
-      }
-    ];
-
-    // Shuffle array and pick first 3
-    const shuffled = [...allWorkouts].sort(() => 0.5 - Math.random());
-    const selected = shuffled.slice(0, 3);
+  // Function to check if it's a new day
+  const isNewDay = (lastUpdate: string | null): boolean => {
+    if (!lastUpdate) return true;
     
-    setDailyWorkouts(selected);
-    setLastUpdatedDate(currentDate);
+    const now = new Date();
+    const last = new Date(lastUpdate);
+    
+    return now.getDate() !== last.getDate() ||
+           now.getMonth() !== last.getMonth() ||
+           now.getFullYear() !== last.getFullYear();
   };
+
+  // Function to select random workouts
+  const selectDailyWorkouts = async () => {
+    try {
+      const lastUpdateStr = await AsyncStorage.getItem('lastWorkoutUpdate');
+      
+      // Only update if it's a new day
+      if (isNewDay(lastUpdateStr)) {
+        const allWorkouts = [
+          {
+            title: 'FULL BODY BURN',
+            exercises: [
+              { name: 'Jumping Jacks', reps: 60, duration: 0 },
+              { name: 'High Knees', reps: 60, duration: 0 },
+              { name: 'Push-up', reps: 15, duration: 0 },
+              { name: 'Air Squat', reps: 15, duration: 0 }
+            ]
+          },
+          {
+            title: 'CORE & ABS',
+            exercises: [
+              { name: 'Side Plank', reps: 0, duration: 45 },
+              { name: 'High Plank', reps: 0, duration: 45 },
+              { name: 'Tuck Hold', reps: 0, duration: 45 },
+              { name: 'Oblique Crunches', reps: 15, duration: 0 }
+            ]
+          },
+          {
+            title: 'MOBILITY & STRETCH',
+            exercises: [
+              { name: 'Side Bend (Left)', reps: 0, duration: 45 },
+              { name: 'Side Bend (Right)', reps: 0, duration: 45 },
+              { name: 'Standing Hamstring Mobility', reps: 0, duration: 45 },
+              { name: 'Hamstring Mobility', reps: 0, duration: 45 }
+            ]
+          },
+          {
+            title: 'UPPER BODY',
+            exercises: [
+              { name: 'Push-up', reps: 15, duration: 0 },
+              { name: 'Shoulder Press', reps: 15, duration: 0 },
+              { name: 'Shoulder Taps Plank', reps: 20, duration: 0 },
+              { name: 'High Plank', reps: 0, duration: 45 }
+            ]
+          },
+          {
+            title: 'LOWER BODY',
+            exercises: [
+              { name: 'Air Squat', reps: 15, duration: 0 },
+              { name: 'Lunge', reps: 15, duration: 0 },
+              { name: 'Glute Bridge', reps: 15, duration: 0 },
+              { name: 'Overhead Squat', reps: 0, duration: 45 }
+            ]
+          }
+        ];
+
+        // Shuffle array and pick first 3
+        const shuffled = [...allWorkouts].sort(() => 0.5 - Math.random());
+        const selected = shuffled.slice(0, 3);
+        
+        // Save selected workouts and update time
+        await AsyncStorage.setItem('dailyWorkouts', JSON.stringify(selected));
+        await AsyncStorage.setItem('lastWorkoutUpdate', new Date().toISOString());
+        
+        setDailyWorkouts(selected);
+      } else {
+        // Load existing workouts if same day
+        const savedWorkouts = await AsyncStorage.getItem('dailyWorkouts');
+        if (savedWorkouts) {
+          setDailyWorkouts(JSON.parse(savedWorkouts));
+        }
+      }
+    } catch (error) {
+      console.error('Error updating daily workouts:', error);
+    }
+  };
+
+  // Load initial workouts and set up midnight refresh
+  useEffect(() => {
+    selectDailyWorkouts();
+
+    // Set up interval to check for midnight
+    const interval = setInterval(async () => {
+      const now = new Date();
+      if (now.getHours() === 0 && now.getMinutes() === 0) {
+        await selectDailyWorkouts();
+      }
+    }, 60000); // Check every minute
+
+    return () => clearInterval(interval);
+  }, []);
 
   const configureSMKitUI = async () => {
     setIsLoading(true);
