@@ -32,6 +32,7 @@ import Diet from './screens/diet';
 import Tracker from './screens/tracker';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Leaderboard from './screens/leaderboard';
+import Profile from './screens/profile';
 
 // Add this array at the top of the file, after imports
 const MOTIVATION_QUOTES = [
@@ -66,6 +67,11 @@ const MOTIVATION_QUOTES = [
   "Be stronger than your\nstrongest excuse.",
   "Your only competition is yourself."
 ];
+
+// Enhanced color palette for dark theme
+const colors = {
+  navigationBg: '#000000',
+};
 
 const App = () => {
   const [credits, setCredits] = useState(0);
@@ -134,6 +140,7 @@ const App = () => {
   });
   const [dailyQuote, setDailyQuote] = useState(MOTIVATION_QUOTES[0]);
   const [pendingSwitchToTracker, setPendingSwitchToTracker] = useState(false);
+  const [selectedTab, setSelectedTab] = useState('home');
 
   // Load credits from AsyncStorage on app start
   useEffect(() => {
@@ -1296,11 +1303,11 @@ const App = () => {
   };
 
   const renderNavItem = (name: string, icon: any, onPress?: () => void) => {
-    const isActive = activeTab === name;
+    const isActive = selectedTab === name.toLowerCase();
     return (
-      <TouchableOpacity 
+      <TouchableOpacity
         style={styles.navItem}
-        onPress={onPress || (() => setActiveTab(name))}
+        onPress={onPress}
       >
         {isActive && <View style={styles.activeIndicator} />}
         <Text style={[styles.navText, isActive && styles.activeNavText]}>{name}</Text>
@@ -1782,43 +1789,190 @@ const App = () => {
     }
   };
 
-  return (
-    <SafeAreaView style={styles.container}>
-      {showWorkoutScreen ? (
-        <WorkoutScreen 
-          onBack={() => setShowWorkoutScreen(false)} 
-          onNavigate={(screen) => {
-            if (screen === 'Diet') {
-              setShowWorkoutScreen(false);
-              setShowDietScreen(true);
-              setActiveTab('DIET');
-            }
-          }}
-          credits={credits}
-          setCredits={setCredits}
-        />
-      ) : showDietScreen ? (
-        <Diet 
-          onBack={() => {
-            setShowDietScreen(false);
-            setActiveTab('HOME');
-          }}
-          onSaveCalories={async () => {
-            if (pendingSwitchToTracker) {
-              setShowDietScreen(false);
+  const loadTrackerData = async () => {
+    try {
+      const today = new Date().toISOString().split('T')[0];
+      const data = await AsyncStorage.getItem(`tracker_${today}`);
+      if (data) {
+        const parsedData = JSON.parse(data);
+        if (parsedData.waterIntake && parsedData.steps && parsedData.calories && parsedData.sleepHours) {
+          // Just trigger a refresh without returning data
+          return;
+        }
+      }
+    } catch (error) {
+      console.error('Error loading tracker data:', error);
+    }
+  };
+
+  const renderHomeContent = () => {
+    return (
+      <ScrollView style={styles.scrollView}>
+        {/* Header Section */}
+        <View style={styles.header}>
+          <View>
+            <View style={styles.headerTopRow}>
+              <Text style={styles.greeting}>Hi, Utkarsh</Text>
+              <View style={styles.creditsContainer}>
+                <Text style={styles.creditsText}>{credits}</Text>
+                <Text style={styles.creditsLabel}>Credits</Text>
+              </View>
+            </View>
+            <Text style={styles.motivationalText}>
+              {dailyQuote}
+            </Text>
+          </View>
+        </View>
+
+        {/* Quick Actions */}
+        <View style={styles.quickActions}>
+          <TouchableOpacity 
+            style={styles.actionItem}
+            onPress={() => setShowWorkoutScreen(true)}
+          >
+            <Text style={styles.actionEmoji}>💪</Text>
+            <Text style={styles.actionText}>Workout</Text>
+          </TouchableOpacity>
+          
+          <View style={styles.verticalLine} />
+          
+          <TouchableOpacity style={styles.actionItem}>
+            <Text style={styles.actionEmoji}>📊</Text>
+            <Text style={styles.actionText}>Progress{'\n'}Tracking</Text>
+          </TouchableOpacity>
+          
+          <View style={styles.verticalLine} />
+          
+          <TouchableOpacity 
+            style={styles.actionItem}
+            onPress={() => {
               setShowTrackerScreen(true);
               setActiveTab('TRACKER');
-              setPendingSwitchToTracker(false);
-            }
-          }}
-        />
-      ) : showTrackerScreen ? (
+            }}
+          >
+            <Text style={styles.actionEmoji}>📈</Text>
+            <Text style={styles.actionText}>Tracker</Text>
+          </TouchableOpacity>
+          
+          <View style={styles.verticalLine} />
+          
+          <TouchableOpacity style={styles.actionItem}>
+            <Text style={styles.actionEmoji}>👥</Text>
+            <Text style={styles.actionText}>Community</Text>
+          </TouchableOpacity>
+        </View>
+
+        {/* Avatar Section */}
+        <View style={styles.avatarContainer}>
+          <Image 
+            source={require('./assets/Figurew.png')} 
+            style={styles.avatar}
+          />
+        </View>
+
+        {/* Assessments Section */}
+        <View style={styles.assessmentsSection}>
+          <View style={styles.assessmentHeader}>
+            <Text style={styles.assessmentTitle}>Assessments</Text>
+            <Text style={styles.letsGoText}>See all</Text>
+          </View>
+          
+          <View style={styles.assessmentGrid}>
+            <View style={styles.assessmentRow}>
+              <TouchableOpacity 
+                style={styles.assessmentButton}
+                onPress={() => handleAssessment('FITNESS')}
+              >
+                <Text style={styles.assessmentButtonText}>FITNESS</Text>
+              </TouchableOpacity>
+              <TouchableOpacity 
+                style={styles.assessmentButton}
+                onPress={() => handleAssessment('MOVEMENT')}
+              >
+                <Text style={styles.assessmentButtonText}>MOVEMENT</Text>
+              </TouchableOpacity>
+            </View>
+            <View style={styles.assessmentRow}>
+              <TouchableOpacity 
+                style={styles.assessmentButton}
+                onPress={() => handleAssessment('STRENGTH')}
+              >
+                <Text style={styles.assessmentButtonText}>STRENGTH</Text>
+              </TouchableOpacity>
+              <TouchableOpacity 
+                style={styles.assessmentButton}
+                onPress={() => handleAssessment('CARDIO')}
+              >
+                <Text style={styles.assessmentButtonText}>CARDIO</Text>
+              </TouchableOpacity>
+            </View>
+            <TouchableOpacity 
+              style={styles.customFitnessButton}
+              onPress={() => handleAssessment('CUSTOM')}
+            >
+              <Text style={styles.assessmentButtonText}>CUSTOM FITNESS</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+
+        {/* Recommendations Section */}
+        <View style={styles.recommendationsSection}>
+          <Text style={styles.recommendationsTitle}>Recommendations : {getCurrentDate()}</Text>
+          <Text style={styles.recommendationsSubtitle}>Exercise for today</Text>
+          
+          {dailyWorkouts.map((workout, index) => (
+            <TouchableOpacity 
+              key={index}
+              style={styles.workoutCard}
+              onPress={() => {
+                incrementExerciseCount(workout.exercises.length);
+                switch(workout.title) {
+                  case 'FULL BODY BURN':
+                    setWorkoutModalVisible(true);
+                    break;
+                  case 'MOBILITY & STRETCH':
+                    setMobilityModalVisible(true);
+                    break;
+                  case 'CORE & ABS':
+                    setCoreModalVisible(true);
+                    break;
+                  default:
+                    setWorkoutModalVisible(true);
+                }
+              }}
+            >
+              <View style={styles.workoutInfo}>
+                <Text style={styles.workoutTitle}>{workout.title}</Text>
+                <View style={styles.workoutMeta}>
+                  <Text style={styles.workoutDuration}>{workout.exercises.length} exercises</Text>
+                </View>
+              </View>
+            </TouchableOpacity>
+          ))}
+        </View>
+
+        {/* Weekly Challenge Section */}
+        <View style={styles.weeklyChallenge}>
+          <Text style={styles.weeklyTitleText}>WEEKLY CHALLENGE</Text>
+          <View style={styles.challengeContainer}>
+            <View style={styles.challengeContent}>
+              <Text style={styles.challengeText}>Complete 30 exercises this week</Text>
+              <TouchableOpacity style={styles.startButton}>
+                <Text style={styles.startButtonText}>START</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </ScrollView>
+    );
+  };
+
+  return (
+    <SafeAreaView style={styles.container}>
+      {selectedTab === 'home' && renderHomeContent()}
+      {selectedTab === 'tracker' && (
         <Tracker 
-          onBack={() => {
-            setShowTrackerScreen(false);
-            setShowDietScreen(false);
-            setActiveTab('HOME');
-          }}
+          onBack={handleHomeClick}
           exerciseCount={exerciseCount.toString()}
           onExerciseCountUpdate={async (count) => {
             const numCount = parseInt(count);
@@ -1832,7 +1986,6 @@ const App = () => {
                 calories: '0',
                 sleepHours: '00:00',
                 exerciseCount: '0',
-                credits: '0',
                 date: today
               };
               trackerData.exerciseCount = numCount.toString();
@@ -1840,189 +1993,16 @@ const App = () => {
             }
           }}
         />
-      ) : activeTab === 'LEADERBOARD' ? (
-        <Leaderboard credits={credits} />
-      ) : (
-        <ScrollView style={styles.scrollView}>
-          {/* Header Section */}
-          <View style={styles.header}>
-            <View>
-              <View style={styles.headerTopRow}>
-                <Text style={styles.greeting}>Hi, Utkarsh</Text>
-                <View style={styles.creditsContainer}>
-                  <Text style={styles.creditsText}>{credits}</Text>
-                  <Text style={styles.creditsLabel}>Credits</Text>
-                </View>
-              </View>
-              <Text style={styles.motivationalText}>
-                {dailyQuote}
-              </Text>
-            </View>
-          </View>
-
-          {/* Quick Actions */}
-          <View style={styles.quickActions}>
-            <TouchableOpacity 
-              style={styles.actionItem}
-              onPress={() => setShowWorkoutScreen(true)}
-            >
-              <Text style={styles.actionEmoji}>💪</Text>
-              <Text style={styles.actionText}>Workout</Text>
-            </TouchableOpacity>
-            
-            <View style={styles.verticalLine} />
-            
-            <TouchableOpacity style={styles.actionItem}>
-              <Text style={styles.actionEmoji}>📊</Text>
-              <Text style={styles.actionText}>Progress{'\n'}Tracking</Text>
-            </TouchableOpacity>
-            
-            <View style={styles.verticalLine} />
-            
-            <TouchableOpacity 
-              style={styles.actionItem}
-              onPress={() => {
-                setShowTrackerScreen(true);
-                setActiveTab('TRACKER');
-              }}
-            >
-              <Text style={styles.actionEmoji}>📈</Text>
-              <Text style={styles.actionText}>Tracker</Text>
-            </TouchableOpacity>
-            
-            <View style={styles.verticalLine} />
-            
-            <TouchableOpacity style={styles.actionItem}>
-              <Text style={styles.actionEmoji}>👥</Text>
-              <Text style={styles.actionText}>Community</Text>
-            </TouchableOpacity>
-          </View>
-
-          {/* Avatar Section */}
-          <View style={styles.avatarContainer}>
-            <Image 
-              source={require('./assets/Figurew.png')} 
-              style={styles.avatar}
-            />
-          </View>
-
-          {/* Assessments Section */}
-          <View style={styles.assessmentsSection}>
-            <View style={styles.assessmentHeader}>
-              <Text style={styles.assessmentTitle}>Assessments</Text>
-              <Text style={styles.letsGoText}>See all</Text>
-            </View>
-            
-            <View style={styles.assessmentGrid}>
-              <View style={styles.assessmentRow}>
-                <TouchableOpacity 
-                  style={styles.assessmentButton}
-                  onPress={() => handleAssessment('FITNESS')}
-                >
-                  <Text style={styles.assessmentButtonText}>FITNESS</Text>
-                </TouchableOpacity>
-                <TouchableOpacity 
-                  style={styles.assessmentButton}
-                  onPress={() => handleAssessment('MOVEMENT')}
-                >
-                  <Text style={styles.assessmentButtonText}>MOVEMENT</Text>
-                </TouchableOpacity>
-              </View>
-              <View style={styles.assessmentRow}>
-                <TouchableOpacity 
-                  style={styles.assessmentButton}
-                  onPress={() => handleAssessment('STRENGTH')}
-                >
-                  <Text style={styles.assessmentButtonText}>STRENGTH</Text>
-                </TouchableOpacity>
-                <TouchableOpacity 
-                  style={styles.assessmentButton}
-                  onPress={() => handleAssessment('CARDIO')}
-                >
-                  <Text style={styles.assessmentButtonText}>CARDIO</Text>
-                </TouchableOpacity>
-              </View>
-              <TouchableOpacity 
-                style={styles.customFitnessButton}
-                onPress={() => handleAssessment('CUSTOM')}
-              >
-                <Text style={styles.assessmentButtonText}>CUSTOM FITNESS</Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-
-          {/* Recommendations Section */}
-          <View style={styles.recommendationsSection}>
-            <Text style={styles.recommendationsTitle}>Recommendations : {getCurrentDate()}</Text>
-            <Text style={styles.recommendationsSubtitle}>Exercise for today</Text>
-            
-            {dailyWorkouts.map((workout, index) => (
-              <TouchableOpacity 
-                key={index}
-                style={styles.workoutCard}
-                onPress={() => {
-                  incrementExerciseCount(workout.exercises.length);
-                  switch(workout.title) {
-                    case 'FULL BODY BURN':
-                      setWorkoutModalVisible(true);
-                      break;
-                    case 'MOBILITY & STRETCH':
-                      setMobilityModalVisible(true);
-                      break;
-                    case 'CORE & ABS':
-                      setCoreModalVisible(true);
-                      break;
-                    default:
-                      setWorkoutModalVisible(true);
-                  }
-                }}
-              >
-                <View style={styles.workoutInfo}>
-                  <Text style={styles.workoutTitle}>{workout.title}</Text>
-                  <View style={styles.workoutMeta}>
-                    <Text style={styles.workoutDuration}>{workout.exercises.length} exercises</Text>
-                  </View>
-                </View>
-              </TouchableOpacity>
-            ))}
-          </View>
-
-          {/* Weekly Challenge Section */}
-          <View style={styles.weeklyChallenge}>
-            <Text style={styles.weeklyTitleText}>WEEKLY CHALLENGE</Text>
-            <View style={styles.challengeContainer}>
-              <View style={styles.challengeContent}>
-                <Text style={styles.challengeText}>Complete 30 exercises this week</Text>
-                <TouchableOpacity style={styles.startButton}>
-                  <Text style={styles.startButtonText}>START</Text>
-                </TouchableOpacity>
-              </View>
-            </View>
-          </View>
-        </ScrollView>
       )}
+      {selectedTab === 'diet' && <Diet onBack={handleHomeClick} onSaveCalories={loadTrackerData} />}
+      {selectedTab === 'leaderboard' && <Leaderboard credits={credits} />}
+      {selectedTab === 'profile' && <Profile />}
 
-      {/* Bottom Navigation */}
       <View style={styles.bottomNav}>
-        {renderNavItem('HOME', null, () => {
-          setShowWorkoutScreen(false);
-          setShowDietScreen(false);
-          setShowTrackerScreen(false);
-          setActiveTab('HOME');
-        })}
-        {renderNavItem('DIET', null, () => {
-          setShowDietScreen(true);
-          setShowWorkoutScreen(false);
-          setShowTrackerScreen(false);
-          setActiveTab('DIET');
-        })}
-        {renderNavItem('LEADERBOARD', null, () => {
-          setActiveTab('LEADERBOARD');
-          setShowWorkoutScreen(false);
-          setShowDietScreen(false);
-          setShowTrackerScreen(false);
-        })}
-        {renderNavItem('PROFILE', null)}
+        {renderNavItem('HOME', null, () => setSelectedTab('home'))}
+        {renderNavItem('DIET', null, () => setSelectedTab('diet'))}
+        {renderNavItem('LEADERBOARD', null, () => setSelectedTab('leaderboard'))}
+        {renderNavItem('PROFILE', null, () => setSelectedTab('profile'))}
       </View>
 
       <Modal
@@ -2917,16 +2897,20 @@ const styles = StyleSheet.create({
   },
   bottomNav: {
     flexDirection: 'row',
-    justifyContent: 'space-around',
-    backgroundColor: '#000000',
-    paddingVertical: 16,
+    backgroundColor: colors.navigationBg,
+    paddingTop: 12,
+    paddingBottom: 24,
     borderTopWidth: 1,
-    borderTopColor: '#333333',
+    borderTopColor: '#2C2C2C',
+    justifyContent: 'space-between',
+    paddingHorizontal: 30,
   },
   navItem: {
     alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 8,
     position: 'relative',
-    paddingHorizontal: 16,
+    minWidth: 80,
   },
   activeIndicator: {
     position: 'absolute',
