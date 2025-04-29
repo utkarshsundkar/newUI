@@ -674,9 +674,6 @@ const WorkoutScreen: React.FC<WorkoutScreenProps> = ({ onBack, onNavigate, credi
       <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollViewContent}>
         {/* Header moved inside ScrollView */}
         <View style={styles.header}> 
-          <TouchableOpacity onPress={onBack} style={styles.backButton}>
-            <Text style={styles.backIcon}>←</Text>
-          </TouchableOpacity>
           <Text style={styles.headerTitle}>Workout</Text>
         </View>
         <View style={styles.difficultyContainer}>
@@ -714,7 +711,13 @@ const WorkoutScreen: React.FC<WorkoutScreenProps> = ({ onBack, onNavigate, credi
           </TouchableOpacity>
         </View>
 
-        <Text style={styles.sectionTitle}>Let's go Beginner</Text>
+        <Text style={styles.sectionTitle}>
+          {difficultyLevel === SMWorkoutLibrary.WorkoutDifficulty.LowDifficulty
+            ? "Let's go Beginner"
+            : difficultyLevel === SMWorkoutLibrary.WorkoutDifficulty.MidDifficulty
+            ? "Let's go Intermediate"
+            : "Let's go Advanced"}
+        </Text>
         <Text style={styles.sectionSubtitle}>EXPLORE DIFFERENT WORKOUT STYLES</Text>
 
         <View style={styles.workoutOptionsContainer}>
@@ -1151,25 +1154,6 @@ const WorkoutScreen: React.FC<WorkoutScreenProps> = ({ onBack, onNavigate, credi
                     console.error('Error starting workout:', error);
                     Alert.alert('Error', 'Failed to start workout. Please try again.');
                   }
-                }}
-              />
-              <WorkoutButton 
-                title="CORE & ABS" 
-                onPress={() => {
-                  const coreExercises = [
-                    // ... existing core exercises ...
-                  ];
-                  const workout = new SMWorkoutLibrary.SMWorkout(
-                    'core_abs_workout',
-                    'Core & Abs Workout',
-                    null,
-                    null,
-                    coreExercises,
-                    null,
-                    null,
-                    null,
-                  );
-                  startCustomAssessment(workout, null, true, true);
                 }}
               />
               <WorkoutButton 
@@ -2152,25 +2136,6 @@ const WorkoutScreen: React.FC<WorkoutScreenProps> = ({ onBack, onNavigate, credi
                 }}
               />
               <WorkoutButton 
-                title="CORE & ABS" 
-                onPress={() => {
-                  const coreExercises = [
-                    // ... existing core exercises ...
-                  ];
-                  const workout = new SMWorkoutLibrary.SMWorkout(
-                    'core_abs_workout',
-                    'Core & Abs Workout',
-                    null,
-                    null,
-                    coreExercises,
-                    null,
-                    null,
-                    null,
-                  );
-                  startCustomAssessment(workout, null, true, true);
-                }}
-              />
-              <WorkoutButton 
                 title="PUSH-UPS CHALLENGE" 
                 onPress={() => {
                   // Push-ups workout code remains the same
@@ -3019,7 +2984,7 @@ const WorkoutScreen: React.FC<WorkoutScreenProps> = ({ onBack, onNavigate, credi
                       [SMWorkoutLibrary.UIElement.Timer, SMWorkoutLibrary.UIElement.GaugeOfMotion],
                       'PlankSideLowStatic',
                       '',
-              new SMWorkoutLibrary.SMScoringParams(
+                      new SMWorkoutLibrary.SMScoringParams(
                         SMWorkoutLibrary.ScoringType.Time,
                         0.3,
                         60,
@@ -3120,25 +3085,6 @@ const WorkoutScreen: React.FC<WorkoutScreenProps> = ({ onBack, onNavigate, credi
                     console.error('Error starting workout:', error);
                     Alert.alert('Error', 'Failed to start workout. Please try again.');
                   }
-                }}
-              />
-              <WorkoutButton 
-                title="CORE & ABS" 
-                onPress={() => {
-                  const coreExercises = [
-                    // ... existing core exercises ...
-                  ];
-                  const workout = new SMWorkoutLibrary.SMWorkout(
-                    'core_abs_workout',
-                    'Core & Abs Workout',
-                    null,
-                    null,
-                    coreExercises,
-                    null,
-                    null,
-                    null,
-                  );
-                  startCustomAssessment(workout, null, true, true);
                 }}
               />
               <WorkoutButton 
@@ -4213,7 +4159,7 @@ function showAlert(title, message) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#1A1A1A',
+    backgroundColor: '#000000', // changed from '#1A1A1A'
   },
   scrollView: {
     flex: 1,
@@ -4224,28 +4170,25 @@ const styles = StyleSheet.create({
   header: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: '5%', // Changed from 20px to 5%
-    paddingTop: '4%', // Changed from 16px to 4%
-    paddingBottom: '3%', // Changed from 12px to 3%
-    backgroundColor: 'transparent',
-    position: 'relative',
+    justifyContent: 'center',
+    paddingHorizontal: 20,
+    paddingTop: 16,
+    paddingBottom: 12,
+    backgroundColor: '#000000', // set header strip to black
   },
   headerTitle: {
     fontSize: 25,
-    color: '#F47551',
-    flex: 1,
+    color: '#FFA500',
     textAlign: 'center',
-    fontWeight: 'bold',
-  },
-  backButton: {
-    position: 'absolute',
-    left: 0,
-    padding: '2%', // Changed from 8px to 2%
-    zIndex: 1,
+    fontFamily: 'MinecraftTen',
+    marginRight: 0,
+    marginTop: 0,
+    flex: 1,
+    
   },
   backIcon: {
     fontSize: 28,
-    color: '#F47551',
+    color: '#FFA500',
     fontWeight: '600',
   },
   difficultyContainer: {
@@ -4310,7 +4253,7 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 24,
     fontWeight: 'bold',
-    color: '#FF8C00',
+    color: '#FFA500',
     marginLeft: '5%', // Changed from 20px to 5%
   },
   sectionSubtitle: {
@@ -4321,19 +4264,30 @@ const styles = StyleSheet.create({
     marginBottom: '5%', // Changed from 20px to 5%
   },
   workoutOptionsContainer: {
-    padding: '5%', // Changed from 20px to 5%
-    marginBottom: '5%', // Changed from 20px to 5%
+    paddingHorizontal: 20,
+    paddingTop: 30, // increased from 10 to 30 for more space at the top
   },
   workoutButton: {
-    backgroundColor: '#333333',
-    padding: '5%', // Changed from 20px to 5%
+    backgroundColor: '#1E1E1E',
     borderRadius: 15,
-    marginBottom: '2.5%', // Changed from 10px to 2.5%
+    marginBottom: 10,
+    padding: 20,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 4,
+    },
+    shadowOpacity: 0.15,
+    shadowRadius: 8,
+    elevation: 4,
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: '100%',
   },
   workoutButtonText: {
     color: '#FFFFFF',
     fontSize: 16,
-    fontWeight: 'bold',
+    fontWeight: '600',
     textAlign: 'center',
   },
   bottomSpacer: {

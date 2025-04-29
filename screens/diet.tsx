@@ -1,12 +1,12 @@
 import * as React from "react";
 import { useState, useEffect } from "react";
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Dimensions, Animated, StatusBar, Modal, TextInput, Alert } from "react-native";
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Dimensions, Animated, StatusBar, Modal, TextInput, Alert, Platform } from "react-native";
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { Calendar, DateData } from 'react-native-calendars';
 
 // Enhanced color palette for dark theme
 const colors = {
-  primary: "#F47551",
+  primary: "#FFA500",
   primaryLight: "rgba(244, 117, 81, 0.15)", // More transparent for light gold theme
   background: "#121212",
   text: "#FFFFFF",
@@ -14,12 +14,12 @@ const colors = {
   cardBg: "#1E1E1E",
   progressBg: "#2C2C2C",
   carbs: "#FF4B55",
-  protein: "#F47551",
+  protein: "#FFA500",
   fat: "#A45EE5",
   border: "#2C2C2C",
-  accent: "#F47551",
-  calendarSelected: "#F47551",
-  dotIndicator: "#F47551",
+  accent: "#FFA500",
+  calendarSelected: "#FFA500",
+  dotIndicator: "#FFA500",
   cardShadow: "rgba(0, 0, 0, 0.3)",
   mealItemBg: "#1E1E1E",
   navigationBg: "#1E1E1E"
@@ -1299,11 +1299,7 @@ const App: React.FC<{ navigation: any }> = ({ navigation }) => {
     return (
       <View style={styles.mainContent}>
         <View style={styles.header}>
-          <TouchableOpacity onPress={() => navigation.goBack()}>
-            <Text style={styles.backArrow}>←</Text>
-          </TouchableOpacity>
           <Text style={styles.headerTitle}>Daily Meal Plan</Text>
-          <View style={{ width: 24 }} />
         </View>
         <View style={styles.quoteContainer}>
           <Text style={styles.quoteText}>{dailyQuote}</Text>
@@ -1375,34 +1371,31 @@ const App: React.FC<{ navigation: any }> = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.background,
+    backgroundColor: '#000000',
     overflow: 'hidden',
   },
   mainContent: {
     flex: 1,
-    backgroundColor: colors.background,
+    backgroundColor: '#000000',
     overflow: 'hidden',
   },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'center',
     paddingHorizontal: 20,
     paddingTop: 16,
     paddingBottom: 12,
-    backgroundColor: colors.background,
+    backgroundColor: '#000000',
   },
   headerTitle: {
     fontSize: 25,
-    color: '#F47551',
-    flex: 1,
+    color: '#FFA500',
     textAlign: 'center',
     fontFamily: 'MinecraftTen',
-    marginRight: 24,
-  },
-  backArrow: {
-    fontSize: 28,
-    color: '#F47551',
-    fontWeight: '600',
+    marginRight: 0,
+    marginTop: 0,
+    flex: 1,
   },
   weekViewContainer: {
     paddingTop: 8,
@@ -1492,7 +1485,7 @@ const styles = StyleSheet.create({
   },
   macrosContainer: {
     flex: 1,
-    paddingLeft: 5,
+    paddingLeft: Platform.OS === 'ios' ? 10 : 20,
     justifyContent: 'center',
   },
   macroItem: {
@@ -1500,13 +1493,12 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-start',
     alignItems: 'center',
     marginBottom: 12,
-    paddingLeft: -10,
   },
   macroLabel: {
     fontSize: 13,
     fontWeight: '600',
     color: '#000000',
-    width: 55,
+    width: 60,
     marginRight: 8,
   },
   macroAmount: {
@@ -1522,7 +1514,7 @@ const styles = StyleSheet.create({
   },
   sectionTitle: {
     fontSize: 20,
-    color: '#F47551',
+    color: '#FFA500',
     marginBottom: 16,
     alignSelf: 'flex-start',
     fontFamily: 'MinecraftTen',

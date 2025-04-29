@@ -42,6 +42,7 @@ import Profile from './screens/profile';
 import ProgressScreen from './screens/progress';
 import EditProfileScreen from './screens/EditProfileScreen';
 import PrivacyPolicyScreen from './screens/PrivacyPolicyScreen';
+import Community from './screens/Community';
 
 // Add this array at the top of the file, after imports
 const MOTIVATION_QUOTES = [
@@ -92,6 +93,7 @@ type RootStackParamList = {
   Profile: undefined;
   EditProfile: undefined;
   PrivacyPolicy: undefined;
+  Community: undefined;
 };
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -195,6 +197,8 @@ const MainContent = () => {
   const [weeklyExercise, setWeeklyExercise] = useState<string>('');
   const [weeklyDuration, setWeeklyDuration] = useState<number>(0);
   const [lastChallengeUpdate, setLastChallengeUpdate] = useState<string>('');
+  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
+  const [nickname, setNickname] = useState('');
 
   // Load credits from AsyncStorage on component mount
   useEffect(() => {
@@ -582,27 +586,38 @@ const MainContent = () => {
     if (!weeklyExercise) return;
     
     try {
+      // Determine if the exercise should use reps or time based scoring
+      const isTimeBasedExercise = [
+        'High Plank',
+        'Side Plank',
+        'Tuck Hold',
+        'Hamstring Mobility',
+        'Standing Hamstring Mobility',
+        'Side Bend (Left)',
+        'Side Bend (Right)'
+      ].includes(weeklyExercise);
+
       const exercise = new SMWorkoutLibrary.SMAssessmentExercise(
         weeklyExercise,
         35,
         getDetectorId(weeklyExercise),
         null,
-        [SMWorkoutLibrary.UIElement.Timer],
+        [isTimeBasedExercise ? SMWorkoutLibrary.UIElement.Timer : SMWorkoutLibrary.UIElement.RepsCounter],
         getDetectorId(weeklyExercise),
         '',
         new SMWorkoutLibrary.SMScoringParams(
-          SMWorkoutLibrary.ScoringType.Time,
+          isTimeBasedExercise ? SMWorkoutLibrary.ScoringType.Time : SMWorkoutLibrary.ScoringType.Reps,
           0.3,
-          weeklyDuration,
-          null,
+          isTimeBasedExercise ? weeklyDuration : null,
+          !isTimeBasedExercise ? 15 : null,
           null,
           null
         ),
         '',
         weeklyExercise,
-        `Hold for ${weeklyDuration} seconds`,
-        'Time',
-        'seconds'
+        isTimeBasedExercise ? `Hold for ${weeklyDuration} seconds` : 'Complete maximum reps with perfect form',
+        isTimeBasedExercise ? 'Time' : 'Reps',
+        isTimeBasedExercise ? 'seconds' : 'clean reps'
       );
 
       const workout = new SMWorkoutLibrary.SMWorkout(
@@ -1870,7 +1885,7 @@ const MainContent = () => {
         <View style={styles.header}>
           <View>
             <View style={styles.headerTopRow}>
-              <Text style={styles.greeting}>Hi, Utkarsh</Text>
+              <Text style={styles.greeting}>{nickname ? `Hi, ${nickname}` : 'Hi'}</Text>
               <View style={styles.creditsContainer}>
                 <Text style={styles.creditsText}>{credits}</Text>
                 <Text style={styles.creditsLabel}>Credits</Text>
@@ -1903,7 +1918,7 @@ const MainContent = () => {
             }}
           >
             <Text style={styles.actionEmoji}>📊</Text>
-            <Text style={styles.actionText}>Progress{'\n'}Tracking</Text>
+            <Text style={styles.actionText}>Progress{"\n"}Tracking</Text>
           </TouchableOpacity>
           
           <View style={styles.verticalLine} />
@@ -1920,10 +1935,16 @@ const MainContent = () => {
           
           <View style={styles.verticalLine} />
           
-          <View style={styles.actionItem}>
+          <TouchableOpacity 
+            style={styles.actionItem}
+            onPress={() => {
+              // Navigate to Community screen
+              navigation.navigate('Community');
+            }}
+          >
             <Text style={styles.actionEmoji}>👥</Text>
             <Text style={styles.actionText}>Community</Text>
-          </View>
+          </TouchableOpacity>
         </View>
 
         {/* Avatar Section */}
@@ -1938,7 +1959,7 @@ const MainContent = () => {
         <View style={styles.assessmentsSection}>
           <View style={styles.assessmentHeader}>
             <Text style={styles.assessmentTitle}>Assessments</Text>
-            <Text style={styles.letsGoText}>See all</Text>
+            <Text style={styles.letsGoText}></Text>
           </View>
           
           <View style={styles.assessmentGrid}>
@@ -2040,6 +2061,36 @@ const MainContent = () => {
       </View>
     </View>
   );
+
+  // Load nickname from AsyncStorage on mount and listen for profile updates
+  useEffect(() => {
+    const loadNickname = async () => {
+      try {
+        const savedProfileData = await AsyncStorage.getItem('profileData');
+        if (savedProfileData) {
+          const parsedData = JSON.parse(savedProfileData);
+          if (parsedData.nickName) {
+            setNickname(parsedData.nickName);
+          }
+        }
+      } catch (error) {
+        console.error('Error loading nickname:', error);
+      }
+    };
+
+    // Load initial nickname
+    loadNickname();
+
+    // Listen for profile updates
+    const profileUpdateListener = DeviceEventEmitter.addListener(
+      'profileUpdated',
+      loadNickname
+    );
+
+    return () => {
+      profileUpdateListener.remove();
+    };
+  }, []);
 
   return (
     <SafeAreaView style={styles.container}>
@@ -2709,15 +2760,17 @@ function showAlert(title, message) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#1A1A1A',
+    backgroundColor: '#000000', // changed from '#1A1A1A'
   },
   scrollView: {
     flex: 1,
+    backgroundColor: '#000000', // ensure scrollView is also black
   },
   header: {
     padding: 20,
     paddingTop: 40,
-    paddingBottom: 2, // Reduced from 4 to 2
+    paddingBottom: 2,
+    backgroundColor: '#000000', // ensure header is also black
   },
   headerTopRow: {
     flexDirection: 'row',
@@ -2734,8 +2787,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 8,
     borderWidth: 1,
-    borderColor: '#F47551',
-    shadowColor: '#F47551',
+    borderColor: '#FFA500',
+    shadowColor: '#FFA500',
     shadowOffset: {
       width: 0,
       height: 2,
@@ -2745,7 +2798,7 @@ const styles = StyleSheet.create({
     elevation: 5,
   },
   creditsText: {
-    color: '#F47551',
+    color: '#FFA500',
     fontSize: 18,
     fontWeight: 'bold',
     fontFamily: 'NationalPark',
@@ -2760,7 +2813,7 @@ const styles = StyleSheet.create({
   greeting: {
     fontSize: 32,
     fontWeight: 'bold',
-    color: '#F47551',
+    color: '#FFA500',
     marginBottom: 4, // Reduced from 8 to 4
     fontFamily: 'NationalPark',
   },
@@ -2818,13 +2871,12 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   assessmentTitle: {
-    color: '#F47551',
+    color: '#FFA500',
     fontSize: 24,
-    fontWeight: 'bold',
-    fontFamily: 'NationalPark',
+    fontFamily: 'MinecraftTen',
   },
   letsGoText: {
-    color: '#F47551',
+    color: '#FFA500',
     fontSize: 20,
     fontWeight: '600',
     fontFamily: 'NationalPark',
@@ -2873,7 +2925,7 @@ const styles = StyleSheet.create({
     paddingBottom: 10, // Reduced padding at bottom
   },
   recommendationsTitle: {
-    color: '#F47551',
+    color: '#FFA500',
     fontSize: 20,
     fontWeight: 'bold',
     fontFamily: 'NationalPark',
@@ -2917,7 +2969,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   workoutDuration: {
-    color: '#F47551',
+    color: '#FFA500',
     fontSize: 16,
     fontFamily: 'MinecraftTen',
     marginRight: 15,
@@ -2947,7 +2999,7 @@ const styles = StyleSheet.create({
     elevation: 4,
   },
   weeklyTitleText: {
-    color: '#F47551',
+    color: '#FFA500',
     fontSize: 20,
     fontFamily: 'NationalPark',
     fontWeight: 'bold',
@@ -2973,7 +3025,7 @@ const styles = StyleSheet.create({
     letterSpacing: 0.5,
   },
   startButton: {
-    backgroundColor: '#F47551',
+    backgroundColor: '#FFA500',
     paddingHorizontal: 20,
     paddingVertical: 8,
     borderRadius: 8,
@@ -3008,7 +3060,7 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     height: 2,
-    backgroundColor: '#F47551',
+    backgroundColor: '#FFA500',
     borderRadius: 1,
   },
   navText: {
@@ -3018,7 +3070,7 @@ const styles = StyleSheet.create({
     fontWeight: '500',
   },
   activeNavText: {
-    color: '#F47551',
+    color: '#FFA500',
     fontWeight: '600',
   },
   modalBackground: {
@@ -3262,6 +3314,7 @@ const App = () => {
         <Stack.Screen name="Profile" component={Profile} />
         <Stack.Screen name="EditProfile" component={EditProfileScreen} />
         <Stack.Screen name="PrivacyPolicy" component={PrivacyPolicyScreen} />
+        <Stack.Screen name="Community" component={Community} />
       </Stack.Navigator>
     </NavigationContainer>
   );

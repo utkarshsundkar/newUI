@@ -13,7 +13,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 // Enhanced color palette for dark theme
 const colors = {
-  primary: "#F47551",
+  primary: "#FFA500",
   background: "#000",
   text: "#FFFFFF",
   textLight: "#9E9E93",
@@ -92,9 +92,13 @@ const Leaderboard: React.FC<LeaderboardProps> = ({ credits }) => {
     }
   };
 
+  const onBack = () => {
+    // Implement the back functionality
+  };
+
   return (
     <SafeAreaView style={styles.container}>
-      <StatusBar barStyle="light-content" backgroundColor="#1A1A1A" />
+      <StatusBar barStyle="light-content" backgroundColor="#000000" />
       <View style={styles.mainContent}>
         <View style={styles.header}>
           <Text style={styles.headerTitle}>LEADERBOARD</Text>
@@ -212,13 +216,16 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingTop: 16,
     paddingBottom: 12,
-    backgroundColor: '#1A1A1A',
+    backgroundColor: '#000000',
   },
   headerTitle: {
     fontSize: 25,
-    color: '#F47551',
+    color: '#FFA500',
     textAlign: 'center',
-    fontWeight: 'bold',
+    fontFamily: 'MinecraftTen',
+    marginRight: 0,
+    marginTop: 0,
+    flex: 1,
   },
   tabContainer: {
     flexDirection: 'row',

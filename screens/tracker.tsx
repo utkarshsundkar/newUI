@@ -191,7 +191,7 @@ const WaterAnimation = ({ progress }: { progress: number }) => {
   return (
     <View style={styles.waterContainer}>
       <LinearGradient
-        colors={['#F47551', '#F47551']}
+        colors={['#FFA500', '#FFA500']}
         style={[StyleSheet.absoluteFill, { height: `${height}%` }]}
         start={{ x: 0, y: 0 }}
         end={{ x: 0, y: 1 }}
@@ -236,8 +236,8 @@ const SleepVisual = ({ hours }: { hours: string }) => {
         <Svg height="110" width="110" viewBox="0 0 100 100">
           <Defs>
             <SvgGradient id="sleepGradient" x1="0" y1="0" x2="1" y2="1">
-              <Stop offset="0" stopColor="#F47551" stopOpacity="0.2" />
-              <Stop offset="1" stopColor="#F47551" />
+              <Stop offset="0" stopColor="#FFA500" stopOpacity="0.2" />
+              <Stop offset="1" stopColor="#FFA500" />
             </SvgGradient>
           </Defs>
           <Circle
@@ -290,7 +290,7 @@ const ProgressRing = ({ progress }: { progress: number }) => {
           cx={size/2}
           cy={size/2}
           r={radius}
-          stroke="#F47551"
+          stroke="#FFA500"
           strokeWidth={strokeWidth}
           fill="none"
           strokeDasharray={`${circumference} ${circumference}`}
@@ -699,7 +699,7 @@ const Tracker = ({
 
   return (
     <SafeAreaView style={styles.container}>
-      <StatusBar barStyle="light-content" backgroundColor="#121212" />
+      <StatusBar barStyle="light-content" backgroundColor="#000000" />
       <View style={styles.header}>
         <Text style={styles.headerTitle}>Tracker</Text>
       </View>
@@ -838,15 +838,17 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingTop: 12,
     paddingBottom: 8,
-    backgroundColor: '#1A1A1A',
+    backgroundColor: '#000000',
     width: '100%',
   },
   headerTitle: {
     fontSize: 25,
-    color: '#F47551',
+    color: '#FFA500',
     textAlign: 'center',
-    fontWeight: 'bold',
-    fontFamily: Platform.OS === 'ios' ? 'System' : 'Roboto',
+    fontFamily: 'MinecraftTen',
+    marginRight: 0,
+    marginTop: 0,
+    flex: 1,
   },
   quoteContainer: {
     paddingHorizontal: 20,
@@ -1059,7 +1061,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     bottom: 0,
     width: '100%',
-    backgroundColor: '#F47551',
+    backgroundColor: '#FFA500',
     borderRadius: 4,
   },
   waterInfoContainer: {
@@ -1200,7 +1202,7 @@ const styles = StyleSheet.create({
     borderRadius: 50,
     backgroundColor: '#1A1A1A',
     borderWidth: 3,
-    borderColor: '#F47551',
+    borderColor: '#FFA500',
     alignItems: 'center',
     justifyContent: 'center',
     padding: 8,
@@ -1248,7 +1250,7 @@ const styles = StyleSheet.create({
   selectedDay: {
     backgroundColor: 'rgba(244, 117, 81, 0.15)',
     borderWidth: 1,
-    borderColor: '#F47551',
+    borderColor: '#FFA500',
     borderRadius: 24,
   },
   dayText: {
@@ -1262,28 +1264,28 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
   },
   selectedDayText: {
-    color: '#F47551',
+    color: '#FFA500',
     fontWeight: '600',
   },
   dateDot: {
     width: 4,
     height: 4,
     borderRadius: 2,
-    backgroundColor: '#F47551',
+    backgroundColor: '#FFA500',
     marginTop: 4,
   },
   selectedDayDot: {
-    backgroundColor: '#F47551',
+    backgroundColor: '#FFA500',
   },
   todayText: {
-    color: '#F47551',
+    color: '#FFA500',
     fontWeight: '500',
   },
   todaySelectedDay: {
     backgroundColor: 'rgba(244, 117, 81, 0.15)',
   },
   todaySelectedDayText: {
-    color: '#F47551',
+    color: '#FFA500',
     fontWeight: '600',
   },
   currentDateCircle: {
@@ -1294,7 +1296,7 @@ const styles = StyleSheet.create({
     height: 72,
     borderRadius: 24,
     borderWidth: 1.5,
-    borderColor: '#F47551',
+    borderColor: '#FFA500',
     backgroundColor: 'rgba(244, 117, 81, 0.15)',
     zIndex: -1,
   },

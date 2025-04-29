@@ -10,6 +10,7 @@ import {
   Modal,
   FlatList,
   SafeAreaView,
+  DeviceEventEmitter,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -195,6 +196,9 @@ const EditProfileScreen = ({ navigation, route }: any) => {
     try {
       // Save the entire profile data to AsyncStorage
       await AsyncStorage.setItem('profileData', JSON.stringify(profileData));
+      
+      // Emit profile updated event
+      DeviceEventEmitter.emit('profileUpdated');
       
       // Navigate back to profile
       navigation.navigate('Profile', { 
@@ -419,7 +423,7 @@ const styles = StyleSheet.create({
   headerTitle: {
     fontSize: 18,
     fontWeight: 'bold',
-    color: '#F47551',
+    color: '#FFA500',
   },
   headerEmoji: {
     fontSize: 24,
@@ -483,7 +487,7 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
   },
   submitButton: {
-    backgroundColor: '#F47551',
+    backgroundColor: '#FFA500',
     borderRadius: 50,
     padding: 16,
     alignItems: 'center',

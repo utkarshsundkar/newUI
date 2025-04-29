@@ -20,20 +20,23 @@ interface ProfileData {
 }
 
 type RootStackParamList = {
-  Profile: {
-    profileData?: ProfileData;
-  };
-  EditProfile: {
-    profileData?: ProfileData;
-  };
+  Main: undefined;
+  Workout: undefined;
+  Progress: undefined;
+  Diet: undefined;
+  Tracker: undefined;
+  Leaderboard: undefined;
+  Profile: { profileData?: ProfileData };
+  EditProfile: { profileData: ProfileData };
   PrivacyPolicy: undefined;
+  Community: undefined;
 };
 
-type ProfileScreenNavigationProp = NativeStackNavigationProp<RootStackParamList>;
 type ProfileScreenRouteProp = RouteProp<RootStackParamList, 'Profile'>;
+type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
 
 const ProfileScreen = () => {
-  const navigation = useNavigation<ProfileScreenNavigationProp>();
+  const navigation = useNavigation<NavigationProp>();
   const route = useRoute<ProfileScreenRouteProp>();
   const [profileData, setProfileData] = useState<ProfileData>({
     fullName: "",
@@ -45,7 +48,6 @@ const ProfileScreen = () => {
     address: "",
   });
 
-  const [notificationEnabled, setNotificationEnabled] = useState<boolean>(false);
   const [selectedEmoji, setSelectedEmoji] = useState<string>("👤");
 
   // Load profile data from AsyncStorage
@@ -73,20 +75,6 @@ const ProfileScreen = () => {
     }
   }, [route.params]);
 
-  // Handle notification settings
-  const handleNotificationSettings = async () => {
-    try {
-      if (Platform.OS === 'ios') {
-        await Linking.openURL('app-settings:');
-      } else {
-        await Linking.openSettings();
-      }
-      setNotificationEnabled(!notificationEnabled);
-    } catch (error) {
-      console.log('Error opening settings:', error);
-    }
-  };
-
   const handleEditProfile = () => {
     navigation.navigate('EditProfile', { profileData });
   };
@@ -98,12 +86,10 @@ const ProfileScreen = () => {
         <View style={styles.curvedTopBar}>
           <View style={styles.headerIcons}>
             <TouchableOpacity 
-              style={styles.headerButton}
-              onPress={handleNotificationSettings}
+              style={styles.backButton}
+              onPress={() => navigation.navigate('Main')}
             >
-              <Text style={styles.headerEmoji}>
-                {notificationEnabled ? '🔔' : '🔕'}
-              </Text>
+              <Text style={styles.headerEmoji}>←</Text>
             </TouchableOpacity>
             <TouchableOpacity style={styles.headerButton}>
               <Text style={styles.headerEmoji}>⋮</Text>
@@ -128,15 +114,6 @@ const ProfileScreen = () => {
           >
             <Text style={styles.settingEmoji}>👤</Text>
             <Text style={styles.settingText}>Edit profile information</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity 
-            style={styles.settingItem}
-            onPress={handleNotificationSettings}
-          >
-            <Text style={styles.settingEmoji}>{notificationEnabled ? '🔔' : '🔕'}</Text>
-            <Text style={styles.settingText}>Notifications</Text>
-            <Text style={styles.settingValue}>{notificationEnabled ? 'On' : 'Off'}</Text>
           </TouchableOpacity>
 
           <TouchableOpacity style={styles.settingItem}>
@@ -194,7 +171,7 @@ const styles = StyleSheet.create({
   curvedTopBar: {
     width: width,
     height: CURVE_HEIGHT,
-    backgroundColor: "#F47551",
+    backgroundColor: "#FFA500",
     borderBottomLeftRadius: CURVE_HEIGHT / 2,
     borderBottomRightRadius: CURVE_HEIGHT / 2,
     alignItems: "center",
@@ -205,19 +182,21 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    width: "90%",
-    marginTop: Platform.OS === 'ios' ? 40 : 10,
-    paddingHorizontal: 15,
+    width: "100%",
+    marginTop: Platform.OS === 'ios' ? 40 : 25,
+    paddingHorizontal: 20,
   },
   headerEmoji: {
-    fontSize: 28,
+    fontSize: Platform.OS === 'android' ? 28 : 24,
     color: '#FFF',
-    padding: 10,
   },
   headerButton: {
-    padding: 8,
+    padding: 12,
     borderRadius: 20,
     backgroundColor: 'rgba(0, 0, 0, 0.1)',
+  },
+  backButton: {
+    padding: 12,
   },
   profileSection: { 
     alignItems: "center", 
@@ -233,7 +212,7 @@ const styles = StyleSheet.create({
     justifyContent: "center", 
     position: "relative",
     borderWidth: 3,
-    borderColor: "#F47551"
+    borderColor: "#FFA500"
   },
   emojiAvatar: {
     fontSize: 70,
@@ -273,7 +252,7 @@ const styles = StyleSheet.create({
   },
   settingValue: { 
     fontSize: 16, 
-    color: "#F47551" 
+    color: "#FFA500" 
   },
   settingEmoji: {
     fontSize: 24,
