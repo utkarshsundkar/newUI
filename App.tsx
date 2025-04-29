@@ -1950,7 +1950,7 @@ const MainContent = () => {
         {/* Avatar Section */}
         <View style={styles.avatarContainer}>
           <Image 
-            source={require('./assets/Figure.png')} 
+            source={require('./assets/FigureG.png')} 
             style={styles.avatar}
           />
         </View>
@@ -2927,8 +2927,7 @@ const styles = StyleSheet.create({
   recommendationsTitle: {
     color: '#FFA500',
     fontSize: 20,
-    fontWeight: 'bold',
-    fontFamily: 'NationalPark',
+    fontFamily: 'MinecraftTen',
     marginBottom: 5,
   },
   recommendationsSubtitle: {

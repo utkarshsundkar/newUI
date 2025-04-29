@@ -1195,6 +1195,13 @@ const App: React.FC<{ navigation: any }> = ({ navigation }) => {
     setDailyQuote(getDailyQuote());
   }, []);
 
+  const totalCalories = calculateTotalCalories();
+  const macros = calculateMacros();
+  const currentDate = new Date().getDate().toString();
+  const hasConsumption = mealsData[selectedDate]?.some(meal => meal.calories > 0) || false;
+  const showStats = selectedDate === currentDate || hasConsumption;
+  const caloriesConsumed = showStats ? Math.min(DEFAULT_DAILY_CALORIES, totalCalories) : 0;
+
   const renderWeekView = () => (
     <View style={styles.weekViewContainer}>
       <TouchableOpacity
@@ -1263,17 +1270,17 @@ const App: React.FC<{ navigation: any }> = ({ navigation }) => {
             onDayPress={(day: DateData) => {
               handleDateSelect(day.day.toString());
             }}
-        theme={{
-              backgroundColor: colors.background,
-              calendarBackground: colors.background,
-              textSectionTitleColor: colors.text,
+            theme={{
+              backgroundColor: '#000000',
+              calendarBackground: '#000000',
+              textSectionTitleColor: '#FFFFFF',
               selectedDayBackgroundColor: colors.primary,
-              selectedDayTextColor: colors.background,
+              selectedDayTextColor: '#000000',
               todayTextColor: colors.primary,
-              dayTextColor: colors.text,
-              textDisabledColor: colors.textLight,
+              dayTextColor: '#FFFFFF',
+              textDisabledColor: '#666666',
               dotColor: colors.primary,
-              monthTextColor: colors.text,
+              monthTextColor: '#FFFFFF',
               arrowColor: colors.primary,
               textDayFontSize: 16,
               textMonthFontSize: 16,
@@ -1286,16 +1293,6 @@ const App: React.FC<{ navigation: any }> = ({ navigation }) => {
   );
 
   const renderContent = () => {
-    const totalCalories = calculateTotalCalories();
-    const macros = calculateMacros();
-    const currentDate = new Date().getDate().toString();
-    
-    // Only show calories and macros if there are meals with calories on the selected date
-    const hasConsumption = mealsData[selectedDate]?.some(meal => meal.calories > 0) || false;
-    const showStats = selectedDate === currentDate || hasConsumption;
-    
-    const caloriesConsumed = showStats ? Math.min(DEFAULT_DAILY_CALORIES, totalCalories) : 0;
-
     return (
       <View style={styles.mainContent}>
         <View style={styles.header}>
@@ -1352,9 +1349,58 @@ const App: React.FC<{ navigation: any }> = ({ navigation }) => {
   return (
     <View style={styles.container}>
       <StatusBar barStyle="dark-content" backgroundColor={colors.background} />
-      <View style={styles.mainContent}>
-        {renderContent()}
-      </View>
+      <ScrollView 
+        style={styles.mainContent}
+        showsVerticalScrollIndicator={false}
+      >
+        <View style={styles.header}>
+          <Text style={styles.headerTitle}>Daily Meal Plan</Text>
+        </View>
+        <View style={styles.quoteContainer}>
+          <Text style={styles.quoteText}>{dailyQuote}</Text>
+        </View>
+
+        {renderWeekView()}
+
+        <View style={styles.statsContainer}>
+          <View style={styles.calorieDisplay}>
+            <Text style={styles.calorieNumber}>
+              {showStats ? caloriesConsumed : '-'}
+            </Text>
+            <Text style={styles.calorieLabel}>KCALS CONSUMED</Text>
+          </View>
+          <View style={styles.macrosContainer}>
+            <MacroBar
+              label="CARBS"
+              amount={showStats ? macros.carbs : 0}
+            />
+            <MacroBar
+              label="PROTEIN"
+              amount={showStats ? macros.protein : 0}
+            />
+            <MacroBar
+              label="FAT"
+              amount={showStats ? macros.fat : 0}
+            />
+          </View>
+        </View>
+
+        <View style={styles.contentContainer}>
+          <Text style={styles.sectionTitle}>Planned Meals</Text>
+          <View style={styles.mealsList}>
+            {meals.map((meal) => (
+              <MealItem
+                key={meal.id}
+                meal={meal}
+                onPress={() => toggleMealExpand(meal.id)}
+                isExpanded={expandedMealId === meal.id}
+                onAddMeal={() => handleAddMeal(meal.id)}
+                onRemoveItem={(mealId, itemId) => handleRemoveItem(mealId, itemId)}
+              />
+            ))}
+          </View>
+        </View>
+      </ScrollView>
       {renderCalendarModal()}
       {showMealOptions && (
         <FoodListModal
@@ -1377,7 +1423,6 @@ const styles = StyleSheet.create({
   mainContent: {
     flex: 1,
     backgroundColor: '#000000',
-    overflow: 'hidden',
   },
   header: {
     flexDirection: 'row',
@@ -1507,10 +1552,9 @@ const styles = StyleSheet.create({
     fontWeight: '500',
   },
   contentContainer: {
-    flex: 1,
     paddingHorizontal: 20,
     paddingTop: 24,
-    paddingBottom: 80,
+    paddingBottom: 120,
   },
   sectionTitle: {
     fontSize: 20,
@@ -1520,8 +1564,7 @@ const styles = StyleSheet.create({
     fontFamily: 'MinecraftTen',
   },
   mealsList: {
-    flex: 1,
-    marginBottom: 20,
+    paddingBottom: 20,
   },
   mealItemContainer: {
     width: '100%',
@@ -1914,7 +1957,7 @@ const styles = StyleSheet.create({
   quoteContainer: {
     paddingHorizontal: 20,
     paddingVertical: 12,
-    backgroundColor: 'rgba(247, 219, 167, 0.1)', // Light gold background
+    backgroundColor: 'rgba(247, 219, 167, 0.1)',
     marginHorizontal: 20,
     marginTop: 8,
     marginBottom: 16,
@@ -1922,7 +1965,7 @@ const styles = StyleSheet.create({
   },
   quoteText: {
     fontSize: 14,
-    color: '#F7DBA7', // Gold color to match theme
+    color: '#F7DBA7',
     fontStyle: 'italic',
     textAlign: 'center',
     lineHeight: 20,

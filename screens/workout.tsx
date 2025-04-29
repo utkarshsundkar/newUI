@@ -4252,7 +4252,7 @@ const styles = StyleSheet.create({
   },
   sectionTitle: {
     fontSize: 24,
-    fontWeight: 'bold',
+    fontFamily: 'MinecraftTen',
     color: '#FFA500',
     marginLeft: '5%', // Changed from 20px to 5%
   },

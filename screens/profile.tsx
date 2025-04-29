@@ -218,8 +218,8 @@ const styles = StyleSheet.create({
     fontSize: 70,
   },
   profileName: { 
-    fontSize: 22, 
-    fontWeight: "bold", 
+    fontSize: 22,
+    fontFamily: 'MinecraftTen',
     marginTop: 10,
     color: "#FFFFFF"
   },
