@@ -2,7 +2,7 @@
 
 import * as React from 'react';
 import { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, SafeAreaView, StatusBar, ScrollView, ViewStyle, Dimensions, Modal, TextInput, TouchableOpacity, Platform, Alert, Animated, Easing, Keyboard, TouchableWithoutFeedback, KeyboardTypeOptions } from 'react-native';
+import { View, Text, StyleSheet, SafeAreaView, StatusBar, ScrollView, ViewStyle, Dimensions, Modal, TextInput, TouchableOpacity, Platform, Alert, Animated, Easing, Keyboard, TouchableWithoutFeedback, KeyboardTypeOptions, Image } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons'; // For bottom nav icons
 import LinearGradient from 'react-native-linear-gradient';
 import { Svg, Path, Circle, Defs, Stop, LinearGradient as SvgGradient } from 'react-native-svg';
@@ -22,6 +22,7 @@ interface CardProps {
   keyboardType?: 'numeric' | 'default';
   value?: string;
   unit?: string;
+  showInfoButton?: boolean;
 }
 
 interface ModalInputProps {
@@ -311,10 +312,27 @@ const Card: React.FC<CardProps> = ({
   placeholder,
   keyboardType = 'numeric',
   value,
-  unit
+  unit,
+  showInfoButton
 }: CardProps) => {
   const [isEditing, setIsEditing] = useState(false);
   const [inputValue, setInputValue] = useState(value || '');
+  const [showInfoModal, setShowInfoModal] = useState(false);
+
+  const getInfoImage = () => {
+    switch (title) {
+      case 'Sleep':
+        return require('../assets/sleep-info.png');
+      case 'Water':
+        return require('../assets/water-info.png');
+      case 'Exercises':
+        return require('../assets/exercise-info.png');
+      case 'Walk':
+        return require('../assets/walk-info.png');
+      default:
+        return null;
+    }
+  };
 
   const handleSubmit = () => {
     if (onUpdate) {
@@ -324,40 +342,68 @@ const Card: React.FC<CardProps> = ({
     Keyboard.dismiss();
   };
 
+  const infoImage = getInfoImage();
+
   return (
-    <TouchableWithoutFeedback onPress={() => editable && setIsEditing(true)}>
-      <View style={[styles.card, customStyle]}>
-        <View style={styles.cardHeader}>
-          <Text style={styles.cardTitle}>{title}</Text>
-          {editable && (
-            <TouchableOpacity
-              style={styles.editButton}
-              onPress={() => setIsEditing(true)}
-            >
-            </TouchableOpacity>
-          )}
+    <>
+      <TouchableWithoutFeedback onPress={() => editable && setIsEditing(true)}>
+        <View style={[styles.card, customStyle]}>
+          <View style={styles.cardHeader}>
+            <Text style={styles.cardTitle}>{title}</Text>
+            {showInfoButton && infoImage && (
+              <TouchableOpacity
+                style={styles.infoButton}
+                onPress={() => setShowInfoModal(true)}
+              >
+                <Text style={styles.infoButtonText}>i</Text>
+              </TouchableOpacity>
+            )}
+          </View>
+          <View style={styles.cardContent}>
+            {editable && isEditing ? (
+              <View style={styles.editContainer}>
+                <TextInput
+                  style={styles.editInput}
+                  value={inputValue}
+                  onChangeText={setInputValue}
+                  placeholder={placeholder}
+                  keyboardType={keyboardType}
+                  autoFocus
+                  onBlur={handleSubmit}
+                  onSubmitEditing={handleSubmit}
+                />
+                {unit && <Text style={styles.editUnit}>{unit}</Text>}
+              </View>
+            ) : (
+              children
+            )}
+          </View>
         </View>
-        <View style={styles.cardContent}>
-          {editable && isEditing ? (
-            <View style={styles.editContainer}>
-              <TextInput
-                style={styles.editInput}
-                value={inputValue}
-                onChangeText={setInputValue}
-                placeholder={placeholder}
-                keyboardType={keyboardType}
-                autoFocus
-                onBlur={handleSubmit}
-                onSubmitEditing={handleSubmit}
+      </TouchableWithoutFeedback>
+
+      <Modal
+        visible={showInfoModal}
+        transparent={true}
+        animationType="fade"
+        onRequestClose={() => setShowInfoModal(false)}
+      >
+        <TouchableOpacity 
+          style={styles.modalOverlay}
+          activeOpacity={1}
+          onPress={() => setShowInfoModal(false)}
+        >
+          <View style={styles.infoModalContent}>
+            {infoImage && (
+              <Image 
+                source={infoImage}
+                style={styles.infoImage}
+                resizeMode="contain"
               />
-              {unit && <Text style={styles.editUnit}>{unit}</Text>}
-            </View>
-          ) : (
-            children
-          )}
-        </View>
-      </View>
-    </TouchableWithoutFeedback>
+            )}
+          </View>
+        </TouchableOpacity>
+      </Modal>
+    </>
   );
 };
 
@@ -761,6 +807,7 @@ const Tracker = ({
             placeholder="Enter litres"
             value={waterIntake}
             unit="litres"
+            showInfoButton
           >
             <WaterLevelVisualization level={parseFloat(waterIntake) * 1000} maxLevel={3000} />
           </Card>
@@ -773,6 +820,7 @@ const Tracker = ({
             placeholder="Enter steps"
             value={steps}
             unit="steps"
+            showInfoButton
           >
             <View style={styles.walkContent}>
               <ProgressRing progress={parseInt(steps) / 10000} />
@@ -790,6 +838,7 @@ const Tracker = ({
             value={sleepHours}
             unit="hours"
             keyboardType="default"
+            showInfoButton
           >
             <SleepVisual hours={sleepHours} />
           </Card>
@@ -802,6 +851,7 @@ const Tracker = ({
             placeholder="Enter count"
             value={exerciseCount}
             unit="completed"
+            showInfoButton
           >
             <View style={styles.exerciseContent}>
               <View style={styles.exerciseCircle}>
@@ -1135,7 +1185,7 @@ const styles = StyleSheet.create({
   },
   modalOverlay: {
     flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.7)',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -1299,6 +1349,29 @@ const styles = StyleSheet.create({
     borderColor: '#FFA500',
     backgroundColor: 'rgba(244, 117, 81, 0.15)',
     zIndex: -1,
+  },
+  infoButton: {
+    width: 20,
+    height: 20,
+    borderRadius: 10,
+    backgroundColor: '#222222',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  infoButtonText: {
+    color: '#FFFFFF',
+    fontSize: 14,
+    fontWeight: 'bold',
+  },
+  infoModalContent: {
+    width: '90%',
+    aspectRatio: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  infoImage: {
+    width: '100%',
+    height: '100%',
   },
 });
 

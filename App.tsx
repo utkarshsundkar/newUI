@@ -125,6 +125,32 @@ const AVAILABLE_EXERCISES = [
 
 const EXERCISE_DURATIONS = [120, 150, 180, 250, 300];
 
+interface AssessmentSummary {
+  score: number;
+  exercises: Array<{
+    name: string;
+    score: number;
+  }>;
+}
+
+interface AssessmentResult {
+  score: number;
+  date: string;
+  exercises: Array<{
+    name: string;
+    score: number;
+  }>;
+}
+
+// Add these interfaces near the top of the file with other interfaces
+interface ExerciseResult {
+  name: string;
+  status: 'completed' | 'skipped';
+  reps?: number;
+  time?: number;
+  score?: number;
+}
+
 const MainContent = () => {
   const [credits, setCredits] = useState(0);
   const [isConfigured, setIsConfigured] = useState(false);
@@ -199,6 +225,9 @@ const MainContent = () => {
   const [lastChallengeUpdate, setLastChallengeUpdate] = useState<string>('');
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const [nickname, setNickname] = useState('');
+  const [assessmentResults, setAssessmentResults] = useState<{
+    [key: string]: AssessmentResult;
+  }>({});
 
   // Load credits from AsyncStorage on component mount
   useEffect(() => {
@@ -675,23 +704,54 @@ const MainContent = () => {
     
     // Calculate completed exercises
     let completedExercises = 0;
+    let exerciseResults: ExerciseResult[] = [];
+    
     if (summary.type === 'workout_completed') {
       completedExercises = summary.exercises?.length || 0;
+      exerciseResults = summary.exercises || [];
     } else if (Array.isArray(summary.exercises)) {
       completedExercises = summary.exercises.filter(ex => ex.completed || ex.skipped).length;
+      exerciseResults = summary.exercises;
     } else if (summary.event === 'exercise_completed' || summary.event === 'exercise_skipped') {
       completedExercises = 1;
+      exerciseResults = [{
+        name: summary.exerciseName || 'Exercise',
+        status: summary.event === 'exercise_completed' ? 'completed' : 'skipped',
+        reps: summary.reps,
+        time: summary.time,
+        score: summary.score
+      }];
     }
 
-    // Award 4 credits per exercise
+    // Award credits per exercise
     if (completedExercises > 0) {
       updateCredits(4 * completedExercises);
       incrementExerciseCount(completedExercises);
     }
 
-    if (summary.type === 'workout_completed') {
+    // Show results modal
+    if (exerciseResults.length > 0) {
+      let summaryText = `Exercise Assessment Results\n\n`;
+      
+      exerciseResults.forEach(ex => {
+        if (ex.name) {
+          let details = `${ex.name}:\n`;
+          if (ex.reps !== undefined) {
+            details += `Reps: ${ex.reps}\n`;
+          }
+          if (ex.time !== undefined) {
+            details += `Time: ${ex.time}s\n`;
+          }
+          if (ex.score !== undefined) {
+            details += `Score: ${Math.round(ex.score)}%\n`;
+          }
+          details += `Status: ${ex.status === 'skipped' ? 'Skipped' : 'Completed'}\n\n`;
+          summaryText += details;
+        }
+      });
+
       setModalVisible(true);
-      setSummaryMessage('Great job! You have completed the workout.');
+      setSummaryMessage(summaryText);
     }
   };
 
@@ -1497,38 +1557,103 @@ const MainContent = () => {
       
       switch (type) {
         case 'FITNESS':
-          exerciseCount = 5; // Fitness assessment has 5 exercises
-          await updateCredits(exerciseCount); // Award 1 credit per exercise
+          exerciseCount = 5;
+          await updateCredits(exerciseCount);
           incrementExerciseCount(exerciseCount);
-          await startAssessmentSession(SMWorkoutLibrary.AssessmentTypes.Fitness, false, '');
+          const fitnessResult = (await startAssessmentSession(SMWorkoutLibrary.AssessmentTypes.Fitness, true, '')) as unknown as { summary: AssessmentSummary };
+          if (fitnessResult?.summary) {
+            setAssessmentResults(prev => ({
+              ...prev,
+              FITNESS: {
+                score: fitnessResult.summary.score,
+                date: new Date().toISOString(),
+                exercises: fitnessResult.summary.exercises.map(ex => ({
+                  name: ex.name,
+                  score: ex.score
+                }))
+              }
+            }));
+          }
           break;
           
         case 'MOVEMENT':
-          exerciseCount = 3; // Movement assessment has 3 exercises
-          await updateCredits(exerciseCount); // Award 1 credit per exercise
+          exerciseCount = 3;
+          await updateCredits(exerciseCount);
           incrementExerciseCount(exerciseCount);
-          await startAssessmentSession(SMWorkoutLibrary.AssessmentTypes.Body360, false, '');
+          const movementResult = (await startAssessmentSession(SMWorkoutLibrary.AssessmentTypes.Body360, true, '')) as unknown as { summary: AssessmentSummary };
+          if (movementResult?.summary) {
+            setAssessmentResults(prev => ({
+              ...prev,
+              MOVEMENT: {
+                score: movementResult.summary.score,
+                date: new Date().toISOString(),
+                exercises: movementResult.summary.exercises.map(ex => ({
+                  name: ex.name,
+                  score: ex.score
+                }))
+              }
+            }));
+          }
           break;
           
         case 'STRENGTH':
-          exerciseCount = 4; // Strength assessment has 4 exercises
-          await updateCredits(exerciseCount); // Award 1 credit per exercise
+          exerciseCount = 4;
+          await updateCredits(exerciseCount);
           incrementExerciseCount(exerciseCount);
-          await startAssessmentSession(SMWorkoutLibrary.AssessmentTypes.Fitness, false, '');
+          const strengthResult = (await startAssessmentSession(SMWorkoutLibrary.AssessmentTypes.Fitness, true, '')) as unknown as { summary: AssessmentSummary };
+          if (strengthResult?.summary) {
+            setAssessmentResults(prev => ({
+              ...prev,
+              STRENGTH: {
+                score: strengthResult.summary.score,
+                date: new Date().toISOString(),
+                exercises: strengthResult.summary.exercises.map(ex => ({
+                  name: ex.name,
+                  score: ex.score
+                }))
+              }
+            }));
+          }
           break;
           
         case 'CARDIO':
-          exerciseCount = 3; // Cardio assessment has 3 exercises
-          await updateCredits(exerciseCount); // Award 1 credit per exercise
+          exerciseCount = 3;
+          await updateCredits(exerciseCount);
           incrementExerciseCount(exerciseCount);
-          await startAssessmentSession(SMWorkoutLibrary.AssessmentTypes.Fitness, false, '');
+          const cardioResult = (await startAssessmentSession(SMWorkoutLibrary.AssessmentTypes.Fitness, true, '')) as unknown as { summary: AssessmentSummary };
+          if (cardioResult?.summary) {
+            setAssessmentResults(prev => ({
+              ...prev,
+              CARDIO: {
+                score: cardioResult.summary.score,
+                date: new Date().toISOString(),
+                exercises: cardioResult.summary.exercises.map(ex => ({
+                  name: ex.name,
+                  score: ex.score
+                }))
+              }
+            }));
+          }
           break;
           
         case 'CUSTOM':
-          exerciseCount = 6; // Custom assessment has 6 exercises (based on startSMKitUICustomAssessment)
-          await updateCredits(exerciseCount); // Award 1 credit per exercise
+          exerciseCount = 6;
+          await updateCredits(exerciseCount);
           incrementExerciseCount(exerciseCount);
-          await startSMKitUICustomAssessment();
+          const customResult = (await startSMKitUICustomAssessment()) as unknown as { summary: AssessmentSummary };
+          if (customResult?.summary) {
+            setAssessmentResults(prev => ({
+              ...prev,
+              CUSTOM: {
+                score: customResult.summary.score,
+                date: new Date().toISOString(),
+                exercises: customResult.summary.exercises.map(ex => ({
+                  name: ex.name,
+                  score: ex.score
+                }))
+              }
+            }));
+          }
           break;
       }
     } catch (error) {
@@ -1537,7 +1662,32 @@ const MainContent = () => {
     }
   };
 
+  const renderAssessmentResults = (type: string) => {
+    const result = assessmentResults[type];
+    if (!result) return null;
+
+    return (
+      <View style={styles.assessmentResultContainer}>
+        <Text style={styles.assessmentResultTitle}>Last Assessment Results</Text>
+        <Text style={styles.assessmentResultScore}>Score: {result.score}%</Text>
+        <Text style={styles.assessmentResultDate}>
+          Date: {new Date(result.date).toLocaleDateString()}
+        </Text>
+        <View style={styles.assessmentExercisesContainer}>
+          {result.exercises.map((exercise, index) => (
+            <View key={index} style={styles.assessmentExerciseItem}>
+              <Text style={styles.assessmentExerciseName}>{exercise.name}</Text>
+              <Text style={styles.assessmentExerciseScore}>{exercise.score}%</Text>
+            </View>
+          ))}
+        </View>
+      </View>
+    );
+  };
+
   const handleWorkoutCompletion = (summary) => {
+    console.log('Workout completion summary:', summary);
+    
     // Award 4 credits for completing exercises
     if (summary && summary.exercises) {
       const completedCount = summary.exercises.filter(
@@ -1546,8 +1696,62 @@ const MainContent = () => {
       updateCredits(4 * completedCount); // 4 credits per exercise
     }
     
+    // Show summary modal with detailed results
     setModalVisible(true);
-    setSummaryMessage('Workout completed! Great job!');
+    if (summary && summary.exercises) {
+      const completedExercises = summary.exercises.filter(ex => ex.status === 'completed' || (!ex.skipped && !ex.failed)).length;
+      const skippedExercises = summary.exercises.filter(ex => ex.status === 'skipped' || ex.skipped).length;
+      const totalExercises = summary.exercises.length;
+      
+      // Calculate average score if available
+      let averageScore = 0;
+      let scoreCount = 0;
+      summary.exercises.forEach(ex => {
+        if (ex.score !== undefined) {
+          averageScore += ex.score;
+          scoreCount++;
+        }
+      });
+      
+      const avgScore = scoreCount > 0 ? Math.round(averageScore / scoreCount) : null;
+      
+      // Build detailed summary message
+      let summaryText = `Workout Assessment Results\n\n`;
+      summaryText += `Exercises completed: ${completedExercises}/${totalExercises}\n`;
+      summaryText += `Skipped: ${skippedExercises}\n`;
+      if (avgScore !== null) {
+        summaryText += `Average Score: ${avgScore}%\n`;
+      }
+      
+      // Add individual exercise results if available
+      if (summary.exercises.some(ex => ex.name && (ex.score !== undefined || ex.reps !== undefined || ex.time !== undefined))) {
+        summaryText += '\nExercise Details:\n';
+        summary.exercises.forEach(ex => {
+          if (ex.name) {
+            let details = `${ex.name}: `;
+            if (ex.score !== undefined) {
+              details += `${Math.round(ex.score)}% `;
+            }
+            if (ex.reps !== undefined) {
+              details += `(${ex.reps} reps) `;
+            }
+            if (ex.time !== undefined) {
+              details += `(${ex.time}s) `;
+            }
+            if (ex.status === 'skipped' || ex.skipped) {
+              details += '[Skipped]';
+            } else if (ex.status === 'completed' || (!ex.skipped && !ex.failed)) {
+              details += '[Completed]';
+            }
+            summaryText += `${details}\n`;
+          }
+        });
+      }
+      
+      setSummaryMessage(summaryText);
+    } else {
+      setSummaryMessage('Workout completed! Great job!');
+    }
   };
 
   const startCoreWorkout = async () => {
@@ -1969,12 +2173,14 @@ const MainContent = () => {
                 onPress={() => handleAssessment('FITNESS')}
               >
                 <Text style={styles.assessmentButtonText}>FITNESS</Text>
+                {renderAssessmentResults('FITNESS')}
               </TouchableOpacity>
               <TouchableOpacity 
                 style={styles.assessmentButton}
                 onPress={() => handleAssessment('MOVEMENT')}
               >
                 <Text style={styles.assessmentButtonText}>MOVEMENT</Text>
+                {renderAssessmentResults('MOVEMENT')}
               </TouchableOpacity>
             </View>
             <View style={styles.assessmentRow}>
@@ -1983,12 +2189,14 @@ const MainContent = () => {
                 onPress={() => handleAssessment('STRENGTH')}
               >
                 <Text style={styles.assessmentButtonText}>STRENGTH</Text>
+                {renderAssessmentResults('STRENGTH')}
               </TouchableOpacity>
               <TouchableOpacity 
                 style={styles.assessmentButton}
                 onPress={() => handleAssessment('CARDIO')}
               >
                 <Text style={styles.assessmentButtonText}>CARDIO</Text>
+                {renderAssessmentResults('CARDIO')}
               </TouchableOpacity>
             </View>
             <TouchableOpacity 
@@ -1996,6 +2204,7 @@ const MainContent = () => {
               onPress={() => handleAssessment('CUSTOM')}
             >
               <Text style={styles.assessmentButtonText}>CUSTOM FITNESS</Text>
+              {renderAssessmentResults('CUSTOM')}
             </TouchableOpacity>
           </View>
         </View>
@@ -3264,6 +3473,46 @@ const styles = StyleSheet.create({
   cancelButtonText: {
     color: '#666666',
     fontFamily: 'MinecraftTen',
+  },
+  assessmentResultContainer: {
+    marginTop: 10,
+    padding: 10,
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    borderRadius: 8,
+  },
+  assessmentResultTitle: {
+    color: '#FFA500',
+    fontSize: 14,
+    fontWeight: '600',
+    marginBottom: 5,
+  },
+  assessmentResultScore: {
+    color: '#FFFFFF',
+    fontSize: 16,
+    fontWeight: 'bold',
+    marginBottom: 5,
+  },
+  assessmentResultDate: {
+    color: '#FFFFFF',
+    fontSize: 12,
+    marginBottom: 10,
+  },
+  assessmentExercisesContainer: {
+    gap: 5,
+  },
+  assessmentExerciseItem: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingVertical: 5,
+  },
+  assessmentExerciseName: {
+    color: '#FFFFFF',
+    fontSize: 12,
+  },
+  assessmentExerciseScore: {
+    color: '#FFA500',
+    fontSize: 12,
+    fontWeight: '600',
   },
 });
 

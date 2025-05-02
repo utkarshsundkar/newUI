@@ -178,8 +178,253 @@ const FOOD_LIST = {
       totalCalories: 310,
       image: '🥢'
     }
+  ],
+  eveningsnacks: [
+    {
+      id: 'es1',
+      name: 'Healthy Snacks',
+      items: [
+        { name: 'Mixed Nuts', calories: 160, portion: '30g' },
+        { name: 'Green Tea', calories: 0, portion: '1 cup' },
+        { name: 'Fruit Mix', calories: 100, portion: '1 cup' }
+      ],
+      totalCalories: 260,
+      image: '🥜'
+    },
+    {
+      id: 'es2',
+      name: 'Light Bites',
+      items: [
+        { name: 'Whole Grain Crackers', calories: 120, portion: '4-5 pieces' },
+        { name: 'Hummus', calories: 70, portion: '2 tbsp' },
+        { name: 'Cucumber Slices', calories: 8, portion: '1 cup' }
+      ],
+      totalCalories: 198,
+      image: '🍘'
+    },
+    {
+      id: 'es3',
+      name: 'Protein Snack',
+      items: [
+        { name: 'Greek Yogurt', calories: 100, portion: '1 small cup' },
+        { name: 'Honey', calories: 60, portion: '1 tbsp' },
+        { name: 'Granola', calories: 120, portion: '2 tbsp' }
+      ],
+      totalCalories: 280,
+      image: '🥄'
+    }
   ]
 };
+
+// Add back the DIET_PLANS constant
+const DIET_PLANS = {
+  'veg_loss': [
+    {
+      meal: 'Breakfast',
+      items: [
+        '1 cup Tea/Coffee [without sugar]',
+        '2-3 tbsp cornflakes OR overnight soaked 1 tsp chia seeds in 2-3 tbsp Oats in 1 cup milk with few drops of honey',
+        'Oats omelette [2 tbsp Oats mixed in 2 eggs]'
+      ]
+    },
+    {
+      meal: 'Lunch',
+      items: [
+        '1 small plate Carrot/Cucumber Salad',
+        '1 cup Rice (Preferably brown rice) + 1 bowl Dal OR 1 bowl Vegetable Khichdi',
+        '1 cup Curd (unsweetened)'
+      ]
+    },
+    {
+      meal: 'Evening Snacks',
+      items: [
+        'Handful Of Makhanas OR Popcorn',
+        'Sprouts/Chaat OR Corn Salad',
+        '1 cup Green Tea/Green Coffee'
+      ]
+    },
+    {
+      meal: 'Dinner',
+      items: [
+        '1 vati mixed Salad',
+        '2 Jowar Roti',
+        '1 small bowl Sabzi OR Dal'
+      ]
+    }
+  ],
+  'veg_gain': [
+    {
+      meal: 'Breakfast',
+      items: [
+        '1 cup Tea/Coffee',
+        '1 plate Poha/2 Besan Chilla/2 Utti with Sambhar',
+        '2 Peanuts/Cheese Sandwich OR 2 Paneer Sandwich'
+      ]
+    },
+    {
+      meal: 'Lunch',
+      items: [
+        '3 Roti OR 1 cup Rice',
+        '1 small bowl Sabzi OR Dal',
+        '1 bowl Pasta',
+        '1 cup Curd'
+      ]
+    },
+    {
+      meal: 'Evening Snacks',
+      items: [
+        'Mixed Nuts (1 handful)',
+        'Fruit Smoothie',
+        'Whole Grain Crackers with Cheese'
+      ]
+    },
+    {
+      meal: 'Dinner',
+      items: [
+        '2 paneer Paratha with Curd OR Paneer Bhurji with 4 Bread OR Paneer tikka',
+        '2 Roti OR 1 cup Rice',
+        '1 small bowl Sabzi OR Dal'
+      ]
+    }
+  ],
+  'nonveg_loss': [
+    {
+      meal: 'Breakfast',
+      items: [
+        '1 cup Tea/Coffee [without sugar]',
+        '2-3 tbsp cornflakes OR overnight soaked 1 tsp chia seeds in 2-3 tbsp Oats in 1 cup milk with few drops of honey',
+        'Oats omelette [2 tbsp Oats mixed in 2 eggs]'
+      ]
+    },
+    {
+      meal: 'Lunch',
+      items: [
+        '1 cup Rice (Preferably brown rice) + 1 bowl Chicken Curry/Dal',
+        '1 small plate Carrot/Cucumber Salad',
+        '1 cup Curd (unsweetened)'
+      ]
+    },
+    {
+      meal: 'Evening Snacks',
+      items: [
+        'Boiled Egg White',
+        'Handful of Mixed Seeds',
+        'Green Tea'
+      ]
+    },
+    {
+      meal: 'Dinner',
+      items: [
+        '1 vati mixed Salad',
+        '2 Jowar Roti',
+        '1 small bowl Sabzi OR Dal OR 3-4 medium piece of Chicken OR 1 Fish (In grilled or gravy form)'
+      ]
+    }
+  ],
+  'nonveg_gain': [
+    {
+      meal: 'Breakfast',
+      items: [
+        '1 cup Tea/Coffee',
+        '1 plate Poha/2 Besan Chilla/2 Utti with Sambhar',
+        'Peanuts/Cheese Sandwich OR 4 Egg Whites (Omelette/scrambled/boiled)'
+      ]
+    },
+    {
+      meal: 'Lunch',
+      items: [
+        '3 Roti OR 1 cup Rice',
+        '1 small bowl Sabzi OR Dal OR 3-4 medium piece of Chicken OR 1 Fish (In grilled or gravy form)',
+        '1 bowl Pasta',
+        '1 cup Curd'
+      ]
+    },
+    {
+      meal: 'Evening Snacks',
+      items: [
+        'Protein Shake',
+        'Mixed Nuts and Dried Fruits',
+        'Egg White Omelette'
+      ]
+    },
+    {
+      meal: 'Dinner',
+      items: [
+        '2 paneer Paratha with Curd OR Egg Bhurji with 4 Bread OR Paneer tikka/Chicken Tikka',
+        '2 Roti OR 1 cup Rice',
+        '1 small bowl Sabzi OR Dal OR 3-4 medium piece of Chicken OR 1 Fish (In grilled or gravy form)'
+      ]
+    }
+  ],
+  'vegan_loss': [
+    {
+      meal: 'Breakfast',
+      items: [
+        '1 cup Black Tea/Coffee [without sugar]',
+        '1 serving Poha/2 Besan Chilla/2 Utti with Sambhar/1 small bowl Oats Upma/Vegan Smoothie Bowl (oats+nuts+fruits and seeds)'
+      ]
+    },
+    {
+      meal: 'Lunch',
+      items: [
+        '1 small plate Carrot/Cucumber Salad',
+        '1 cup Rice (Preferably brown rice) + 1 bowl Dal OR 1 bowl Vegetable Khichdi',
+        '1 cup Vegan Curd (unsweetened)'
+      ]
+    },
+    {
+      meal: 'Evening Snacks',
+      items: [
+        'Roasted Chickpeas',
+        'Fresh Fruit',
+        'Green Tea'
+      ]
+    },
+    {
+      meal: 'Dinner',
+      items: [
+        '1 vati mixed Salad',
+        '2 Jowar Roti + 1 small bowl Sabzi & Dal OR Mixed Veg Curry with Quinoa'
+      ]
+    }
+  ],
+  'vegan_gain': [
+    {
+      meal: 'Breakfast',
+      items: [
+        '1 cup vegan Milk',
+        '1 plate Poha/2 Besan Chilla/2 Utti with Sambhar',
+        '2 Bread with Hazelnut Butter OR Spinach Smoothie made with Plant Milk + Vegan Sandwich with Tofu, Lettuce, Tomato OR Chickpea and Onion Omelette'
+      ]
+    },
+    {
+      meal: 'Lunch',
+      items: [
+        '2 Roti OR 1 cup Rice',
+        '1 small bowl Sabzi OR Dal',
+        '1 bowl Pasta OR 1 bowl Tofu Noodle Soup OR 1 Bowl Mix Veg Khichdi',
+        '1 cup Vegan Yoghurt'
+      ]
+    },
+    {
+      meal: 'Evening Snacks',
+      items: [
+        'Protein-Rich Trail Mix',
+        'Soy Milk Smoothie',
+        'Whole Grain Toast with Avocado'
+      ]
+    },
+    {
+      meal: 'Dinner',
+      items: [
+        '[Whole Meal - Roti/Rice- Sabzi/Dal]',
+        '2 Roti OR 1 cup Rice',
+        '1 small bowl Sabzi OR Dal',
+        '1 Serving Quinoa Veg Pulao OR 4-5 Vegan Spring Roll'
+      ]
+    }
+  ]
+} as const;
 
 const DEFAULT_WEEKLY_MEALS = {
   1: [ // Monday
@@ -240,6 +485,15 @@ const DEFAULT_WEEKLY_MEALS = {
     },
     {
       id: '3',
+      name: "Evening Snacks",
+      calories: 0,
+      icon: "coffee",
+      isPlanned: true,
+      items: [],
+      macros: { carbs: 0, protein: 0, fat: 0 }
+    },
+    {
+      id: '4',
       name: "Dinner",
       calories: 580,
       icon: "dinner-dining",
@@ -314,6 +568,15 @@ const DEFAULT_WEEKLY_MEALS = {
     },
     {
       id: '3',
+      name: "Evening Snacks",
+      calories: 0,
+      icon: "coffee",
+      isPlanned: true,
+      items: [],
+      macros: { carbs: 0, protein: 0, fat: 0 }
+    },
+    {
+      id: '4',
       name: "Dinner",
       calories: 600,
       icon: "dinner-dining",
@@ -388,6 +651,15 @@ const DEFAULT_WEEKLY_MEALS = {
     },
     {
       id: '3',
+      name: "Evening Snacks",
+      calories: 0,
+      icon: "coffee",
+      isPlanned: true,
+      items: [],
+      macros: { carbs: 0, protein: 0, fat: 0 }
+    },
+    {
+      id: '4',
       name: "Dinner",
       calories: 580,
       icon: "dinner-dining",
@@ -462,6 +734,15 @@ const DEFAULT_WEEKLY_MEALS = {
     },
     {
       id: '3',
+      name: "Evening Snacks",
+      calories: 0,
+      icon: "coffee",
+      isPlanned: true,
+      items: [],
+      macros: { carbs: 0, protein: 0, fat: 0 }
+    },
+    {
+      id: '4',
       name: "Dinner",
       calories: 590,
       icon: "dinner-dining",
@@ -536,6 +817,15 @@ const DEFAULT_WEEKLY_MEALS = {
     },
     {
       id: '3',
+      name: "Evening Snacks",
+      calories: 0,
+      icon: "coffee",
+      isPlanned: true,
+      items: [],
+      macros: { carbs: 0, protein: 0, fat: 0 }
+    },
+    {
+      id: '4',
       name: "Dinner",
       calories: 620,
       icon: "dinner-dining",
@@ -610,6 +900,15 @@ const DEFAULT_WEEKLY_MEALS = {
     },
     {
       id: '3',
+      name: "Evening Snacks",
+      calories: 0,
+      icon: "coffee",
+      isPlanned: true,
+      items: [],
+      macros: { carbs: 0, protein: 0, fat: 0 }
+    },
+    {
+      id: '4',
       name: "Dinner",
       calories: 650,
       icon: "dinner-dining",
@@ -684,6 +983,15 @@ const DEFAULT_WEEKLY_MEALS = {
     },
     {
       id: '3',
+      name: "Evening Snacks",
+      calories: 0,
+      icon: "coffee",
+      isPlanned: true,
+      items: [],
+      macros: { carbs: 0, protein: 0, fat: 0 }
+    },
+    {
+      id: '4',
       name: "Dinner",
       calories: 520,
       icon: "dinner-dining",
@@ -773,6 +1081,8 @@ const MealItem: React.FC<{
         return '🍳';
       case 'lunch':
         return '🍱';
+      case 'evening snacks':
+        return '🥨';
       case 'dinner':
         return '🍽️';
       default:
@@ -864,38 +1174,22 @@ const FoodListModal: React.FC<{
   visible: boolean;
   mealType: string;
   onClose: () => void;
-  onSelect: (meal: any) => void;
+  onSelect: (food: any) => void;
 }> = ({ visible, mealType, onClose, onSelect }) => {
   const [selectedItems, setSelectedItems] = useState<{ [key: string]: number }>({});
+  const [activeDietType, setActiveDietType] = useState<'veg' | 'nonveg' | 'vegan'>('veg');
+  const [activeDietGoal, setActiveDietGoal] = useState<'loss' | 'gain'>('loss');
+  
+  // Get diet-specific meals
+  const getDietMeals = () => {
+    const planKey = `${activeDietType}_${activeDietGoal}`;
+    const plan = DIET_PLANS[planKey] || [];
+    const currentMeal = plan.find(m => m.meal.toLowerCase() === mealType.toLowerCase());
+    return currentMeal?.items || [];
+  };
+
   const foods = FOOD_LIST[mealType.toLowerCase() as keyof typeof FOOD_LIST] || [];
-
-  const handleAddItem = (food: any, item: any, index: number) => {
-    const itemKey = `${food.id}-${index}`;
-    const newCount = (selectedItems[itemKey] || 0) + 1;
-    setSelectedItems(prev => ({
-      ...prev,
-      [itemKey]: newCount
-    }));
-
-    onSelect({
-      id: `${food.id}-item-${index}`,
-      name: item.name,
-      calories: item.calories,
-      portion: item.portion,
-      image: food.image
-    });
-  };
-
-  const handleRemoveItem = (food: any, index: number) => {
-    const itemKey = `${food.id}-${index}`;
-    const currentCount = selectedItems[itemKey] || 0;
-    if (currentCount > 0) {
-      setSelectedItems(prev => ({
-        ...prev,
-        [itemKey]: currentCount - 1
-      }));
-    }
-  };
+  const dietMeals = getDietMeals();
 
   return (
     <Modal
@@ -919,7 +1213,130 @@ const FoodListModal: React.FC<{
             </TouchableOpacity>
           </View>
 
+          {/* Diet Type and Goal Selection */}
+          <View style={styles.dietSelector}>
+            <ScrollView 
+              horizontal 
+              showsHorizontalScrollIndicator={false} 
+              contentContainerStyle={styles.dietButtonsContainer}
+            >
+              {/* Diet Type Buttons */}
+              {['veg', 'nonveg', 'vegan'].map(type => (
+                <TouchableOpacity
+                  key={type}
+                  style={[
+                    styles.dietButton,
+                    activeDietType === type && styles.activeDietButton,
+                    { marginRight: 8 }
+                  ]}
+                  onPress={() => setActiveDietType(type as any)}
+                >
+                  <Text style={[
+                    styles.dietButtonText,
+                    activeDietType === type && styles.activeDietButtonText
+                  ]}>
+                    {type.charAt(0).toUpperCase() + type.slice(1)}
+                  </Text>
+                </TouchableOpacity>
+              ))}
+
+              {/* Goal Buttons */}
+              {['loss', 'gain'].map(goal => (
+                <TouchableOpacity
+                  key={goal}
+                  style={[
+                    styles.dietButton,
+                    activeDietGoal === goal && styles.activeDietButton,
+                    { marginRight: 8 }
+                  ]}
+                  onPress={() => setActiveDietGoal(goal as any)}
+                >
+                  <Text style={[
+                    styles.dietButtonText,
+                    activeDietGoal === goal && styles.activeDietButtonText
+                  ]}>
+                    Weight {goal.charAt(0).toUpperCase() + goal.slice(1)}
+                  </Text>
+                </TouchableOpacity>
+              ))}
+            </ScrollView>
+          </View>
+
           <ScrollView style={styles.foodList}>
+            {/* Diet Plan Suggestions */}
+            {dietMeals.length > 0 && (
+              <View style={styles.foodItemCard}>
+                <View style={styles.foodItemHeader}>
+                  <Text style={[styles.foodEmoji, { marginRight: 8 }]}>🎯</Text>
+                  <View style={styles.foodItemInfo}>
+                    <Text style={styles.foodName}>Suggested {mealType}</Text>
+                    <Text style={styles.foodCalories}>From your selected diet plan</Text>
+                  </View>
+                </View>
+                <View style={styles.foodItemIngredients}>
+                  {dietMeals.map((item, index) => {
+                    const itemKey = `diet-${index}`;
+                    const itemCount = selectedItems[itemKey] || 0;
+
+                    return (
+                      <View key={index} style={[
+                        styles.ingredientRow,
+                        itemCount > 0 && styles.selectedIngredient
+                      ]}>
+                        <View style={styles.ingredientLeft}>
+                          <View style={styles.ingredientNameContainer}>
+                            <Text style={styles.ingredientName}>• {item}</Text>
+                            {itemCount > 0 && (
+                              <View style={styles.countBadge}>
+                                <Text style={styles.countText}>×{itemCount}</Text>
+                              </View>
+                            )}
+                          </View>
+                        </View>
+                        <View style={styles.quantityControls}>
+                          <TouchableOpacity
+                            style={[
+                              styles.quantityButton,
+                              itemCount === 0 && styles.quantityButtonDisabled
+                            ]}
+                            onPress={() => {
+                              if (itemCount > 0) {
+                                setSelectedItems(prev => ({
+                                  ...prev,
+                                  [itemKey]: itemCount - 1
+                                }));
+                              }
+                            }}
+                            disabled={itemCount === 0}
+                          >
+                            <Text style={styles.quantityButtonText}>-</Text>
+                          </TouchableOpacity>
+                          <Text style={styles.quantityText}>{itemCount}</Text>
+                          <TouchableOpacity
+                            style={styles.quantityButton}
+                            onPress={() => {
+                              setSelectedItems(prev => ({
+                                ...prev,
+                                [itemKey]: (prev[itemKey] || 0) + 1
+                              }));
+                              onSelect({
+                                name: item,
+                                calories: 100, // Placeholder calories
+                                portion: '1 serving'
+                              });
+                            }}
+                          >
+                            <Text style={styles.quantityButtonText}>+</Text>
+                          </TouchableOpacity>
+                        </View>
+                      </View>
+                    );
+                  })}
+                </View>
+              </View>
+            )}
+
+            {/* Regular food items */}
             {foods.map((food) => (
               <View key={food.id} style={styles.foodItemCard}>
                 <View style={styles.foodItemHeader}>
@@ -962,7 +1379,15 @@ const FoodListModal: React.FC<{
                               styles.quantityButton,
                               itemCount === 0 && styles.quantityButtonDisabled
                             ]}
-                            onPress={() => handleRemoveItem(food, index)}
+                            onPress={() => {
+                              const currentCount = selectedItems[itemKey] || 0;
+                              if (currentCount > 0) {
+                                setSelectedItems(prev => ({
+                                  ...prev,
+                                  [itemKey]: currentCount - 1
+                                }));
+                              }
+                            }}
                             disabled={itemCount === 0}
                           >
                             <Text style={[
@@ -973,7 +1398,20 @@ const FoodListModal: React.FC<{
                           <Text style={styles.quantityText}>{itemCount}</Text>
                           <TouchableOpacity
                             style={styles.quantityButton}
-                            onPress={() => handleAddItem(food, item, index)}
+                            onPress={() => {
+                              const newCount = (selectedItems[itemKey] || 0) + 1;
+                              setSelectedItems(prev => ({
+                                ...prev,
+                                [itemKey]: newCount
+                              }));
+                              onSelect({
+                                id: `${food.id}-item-${index}`,
+                                name: item.name,
+                                calories: item.calories,
+                                portion: item.portion,
+                                image: food.image
+                              });
+                            }}
                           >
                             <Text style={styles.quantityButtonText}>+</Text>
                           </TouchableOpacity>
@@ -1002,6 +1440,9 @@ const FoodListModal: React.FC<{
 
 const App: React.FC<{ navigation: any }> = ({ navigation }) => {
   const today = new Date();
+  const [dietType, setDietType] = useState<'veg' | 'nonveg' | 'vegan'>('veg');
+  const [dietGoal, setDietGoal] = useState<'loss' | 'gain'>('loss');
+  const [showDietPlanModal, setShowDietPlanModal] = useState(false);
   const [selectedDate, setSelectedDate] = useState(today.getDate().toString());
   const [showCalendar, setShowCalendar] = useState(false);
   const [mealsData, setMealsData] = useState<{ [key: string]: MealData[] }>({
@@ -1026,6 +1467,15 @@ const App: React.FC<{ navigation: any }> = ({ navigation }) => {
       },
       {
         id: '3',
+        name: "Evening Snacks",
+        calories: 0,
+        icon: "coffee",
+        isPlanned: true,
+        items: [],
+        macros: { carbs: 0, protein: 0, fat: 0 }
+      },
+      {
+        id: '4',
         name: "Dinner",
         calories: 0,
         icon: "dinner-dining",
@@ -1070,6 +1520,15 @@ const App: React.FC<{ navigation: any }> = ({ navigation }) => {
           },
           {
             id: '3',
+            name: "Evening Snacks",
+            calories: 0,
+            icon: "coffee",
+            isPlanned: true,
+            items: [],
+            macros: { carbs: 0, protein: 0, fat: 0 }
+          },
+          {
+            id: '4',
             name: "Dinner",
             calories: 0,
             icon: "dinner-dining",
@@ -1969,6 +2428,38 @@ const styles = StyleSheet.create({
     fontStyle: 'italic',
     textAlign: 'center',
     lineHeight: 20,
+  },
+  dietSelector: {
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: colors.border,
+  },
+  dietButtonsContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingRight: 16,
+  },
+  dietButton: {
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    borderRadius: 20,
+    backgroundColor: colors.progressBg,
+    minWidth: 80,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  activeDietButton: {
+    backgroundColor: colors.primary,
+  },
+  dietButtonText: {
+    color: colors.text,
+    fontSize: 14,
+    fontWeight: '500',
+  },
+  activeDietButtonText: {
+    color: colors.background,
+    fontWeight: '600',
   },
 });
 
